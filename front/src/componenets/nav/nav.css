@@ -1,0 +1,27 @@
+/* 스크롤바의 전체 너비 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* 스크롤바의 트랙 (스크롤바가 움직이는 트랙) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+/* 스크롤바의 핸들 (드래그할 수 있는 부분) */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+/* 핸들을 호버했을 때 */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+/* .classes-state-root.disabled {
+  width:1000px;
+  color:rgb(17, 119, 106);
+} */
+

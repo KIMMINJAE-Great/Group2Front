@@ -1,0 +1,12 @@
+.mainPage-container {
+  height: 100%;
+}
+.nav-container {
+  height: 87.1vh;
+  width: 245px;
+}
+
+.navhide {
+  width: 0px;
+  height: 87.1vh;
+}

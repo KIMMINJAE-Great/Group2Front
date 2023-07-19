@@ -1,0 +1,25 @@
+.header-container{
+  padding:10px 20px;
+  height:40px;
+  font-size:13px;
+}
+
+.img-container{
+  float:left;
+  padding-top:10px;
+}
+
+.header-select .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+.bar{
+  display: flex;
+  align-items: center; /* 중앙 정렬을 위한 선언 */
+  justify-content: flex-start; /* 아이템들을 왼쪽에서 시작하도록 */
+  height:45px;
+  width:100%;
+  background-color: #00AAFF; 
+  font-size: 20px;
+ 
+}
+
