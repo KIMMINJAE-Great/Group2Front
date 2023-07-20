@@ -37,13 +37,12 @@ class Login extends Component {
         this.props.history.push("/mainpage");
 
       }).catch(error => {
-        if (error.response.status === 404) {
-
+        if (error.response.status === 404) {          
           this.setState({ usernameError: true });
           this.setState({ passwordError: true });
           this.setState({ errorMessage: '아이디 혹은 비밀번호가 잘못되었습니다.' })
         }
-        console.log('로그인 요청 에러', error);
+        console.log('로그인 요청 에러 ', error);
       });
 
   };

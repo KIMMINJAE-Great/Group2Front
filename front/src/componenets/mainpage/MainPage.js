@@ -17,6 +17,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 //import PrivateRoute from '../componenets/routes/PrivateRoute';
 import { Switch } from 'react-router-dom';
 
+import CompanyRegTest from "../nav/companyReg/CompanyRegTest";
 
 class MainPage extends Component {
 
@@ -58,14 +59,14 @@ class MainPage extends Component {
 
               <Nav onButtonClick={this.handleButtonClick} ></Nav>
             </div>
-            <div class="section-container" style={{ paddingLeft: 2 }} >
+            <div class="section-container" >
 
               <Switch>
 
                 <Route path='/empmanagement' component={EmpManagement} />
                 <Route path='/depmanagement' component={DepManagement} />
                 <Route path='/trademanagement' component={TradeManagement} />
-                <Route path='/companyreg' component={CompanyReg} />
+                <Route path='/companyreg' component={CompanyRegTest} />
                 <Route path='/regcar' component={RegCar} />
                 <Route path='/cardrivelogmanagement' component={CarDriveLogManagement} />
                 <Route path='/relcoststate' component={RelCostState} />
