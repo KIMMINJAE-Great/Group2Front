@@ -46,7 +46,10 @@ backgroundColor: '#FAFAFA',
 }));
 */
 
-/* <TextField variant=
+
+
+/* 아래 코드는 
+<TextField variant=
 "outlined" inputProps={{ style: { height: '12px' } }} 
 style={{ marginLeft: "10px", width:"100%" }} />*/
 const MyTextField = styled(TextField)(({theme}) => ({
@@ -60,7 +63,32 @@ padding: theme.spacing(0.5),
     borderRadius: 0, // 모서리를 완전히 직사각형으로 만듭니다.    
 },
 }));
+
+const FieldName = styled(Typography)(({theme}) => ({
+fontWeight: 'bold',
+fontSize: '14px'
+}));
+
+
+
+
+
 class CompanyRegTest extends React.Component {
+    //저장버튼
+    handleSave = () => {        
+        // Save related logic
+        console.log('Save button clicked');
+      };
+    //삭제버튼
+    handleDelete = () => {
+        // Delete related logic
+        console.log('Delete button clicked');
+      };
+    //Erp 연동활성화
+    handleErpActivation = () => {
+        // ERP Activation related logic
+        console.log('ERP Activation button clicked');
+      };
     
   render() {
     const { classes } = this.props;
@@ -72,7 +100,7 @@ class CompanyRegTest extends React.Component {
           <hr />
         </div>
         <div style={{ display: "flex", float: "left" }}>
-          <div style={{ flex:0.7}}>
+          <div style={{ flex:0.7, marginRight:30}}>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <Card>
                 <CardContent>
@@ -92,6 +120,7 @@ class CompanyRegTest extends React.Component {
             <div>
               <div
                 style={{
+                  marginLeft:"10px",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -99,9 +128,9 @@ class CompanyRegTest extends React.Component {
               >
                 <p style={{height:'3px'}}>기본정보</p>
                 <div>
-                  <button>저장</button>
-                  <button>삭제</button>
-                  <button>erp연동활성화</button>
+                  <button onClick={this.handleSave}>저장</button>
+                  <button onClick={this.handleDelete}>삭제</button>
+                  <button onClick={this.handleErpActivation}>erp연동활성화</button>
                 </div>
               </div>
               <hr style={{height:'3px', color:'black'}}/>
@@ -113,14 +142,14 @@ class CompanyRegTest extends React.Component {
                 
                 <Grid container >
                     <GridItem1 item xs={2}>
-                        <Typography variant="body1">회사코드</Typography>
+                        <FieldName variant="body1">회사코드</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">사용여부</Typography>
+                        <FieldName variant="subtitle1" >사용여부</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -143,7 +172,7 @@ class CompanyRegTest extends React.Component {
               {/* 2번째 */}
                 <Grid container>
                     <GridItem1 item xs={2}>
-                        <Typography variant="subtitle1">회사명</Typography>
+                        <FieldName variant="subtitle1">회사명</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={10} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -155,14 +184,14 @@ class CompanyRegTest extends React.Component {
                 {/* 3번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">회사약정</Typography>
+                        <FieldName variant="subtitle1">회사약정</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">기본언어</Typography>
+                        <FieldName variant="subtitle1">기본언어</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -173,7 +202,7 @@ class CompanyRegTest extends React.Component {
                 {/* 4번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">행정표준코드</Typography>
+                        <FieldName variant="subtitle1">행정표준코드</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={9} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -187,14 +216,14 @@ class CompanyRegTest extends React.Component {
                 {/* 5번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">업태</Typography>
+                        <FieldName variant="subtitle1">업태</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2}  >
-                        <Typography variant="subtitle1">종목</Typography>
+                        <FieldName variant="subtitle1">종목</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -204,7 +233,7 @@ class CompanyRegTest extends React.Component {
                 {/* 6번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">대표전화</Typography>
+                        <FieldName variant="subtitle1">대표전화</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -215,7 +244,7 @@ class CompanyRegTest extends React.Component {
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">대표팩스</Typography>
+                        <FieldName variant="subtitle1">대표팩스</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -225,14 +254,14 @@ class CompanyRegTest extends React.Component {
                 {/* 7번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">사업자번호</Typography>
+                        <FieldName variant="subtitle1">사업자번호</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">법인번호</Typography>
+                        <FieldName variant="subtitle1">법인번호</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -246,14 +275,14 @@ class CompanyRegTest extends React.Component {
                 {/* 8번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">설립일</Typography>
+                        <FieldName variant="subtitle1">설립일</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">개/폐업일</Typography>
+                        <FieldName variant="subtitle1">개/폐업일</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={0.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -267,14 +296,14 @@ class CompanyRegTest extends React.Component {
                 {/* 9번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">대표자명</Typography>
+                        <FieldName variant="subtitle1">대표자명</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
                         <MyTextField variant="outlined" />
                     </Grid>
                     <GridItem3 item xs={2} >
-                        <Typography variant="subtitle1">주민등록번호</Typography>
+                        <FieldName variant="subtitle1">주민등록번호</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -288,7 +317,7 @@ class CompanyRegTest extends React.Component {
                 {/* 10번째 */}
                 <Grid container >
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">기본도메인</Typography>
+                        <FieldName variant="subtitle1">기본도메인</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={7} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -299,7 +328,7 @@ class CompanyRegTest extends React.Component {
                 {/* 10번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">회사주소</Typography>
+                        <FieldName variant="subtitle1">회사주소</FieldName>
                     </GridItem1>
                     <Grid item xs={6} container >
                         <Grid item xs={12} container>
@@ -324,7 +353,7 @@ class CompanyRegTest extends React.Component {
                 {/* 12번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">회계기수</Typography>
+                        <FieldName variant="subtitle1">회계기수</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -343,7 +372,7 @@ class CompanyRegTest extends React.Component {
                 {/* 13번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">회사계정유형</Typography>
+                        <FieldName variant="subtitle1">회사계정유형</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={10} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -353,7 +382,7 @@ class CompanyRegTest extends React.Component {
                 {/* 14번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <Typography variant="subtitle1">홈페이지주소</Typography>
+                        <FieldName variant="subtitle1">홈페이지주소</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >

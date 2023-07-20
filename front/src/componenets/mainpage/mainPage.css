@@ -1,5 +1,6 @@
 .mainPage-container {
   height: 100%;
+  width: 100%;
 }
 .nav-container {
   height: 87.1vh;
@@ -12,10 +13,8 @@
 }
 
 .section-container{
-  width: 98%;
+  width: 99.9%;
   height: 100%;
   padding-left: 15px;
-  margin-top: 5px;
-  
-    
+  margin-top: 5px;    
 }
