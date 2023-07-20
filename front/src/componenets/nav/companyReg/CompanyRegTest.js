@@ -45,8 +45,20 @@ justifyContent: "flex-end",
 backgroundColor: '#FAFAFA',
 }));
 */
-const myTextField = styled(TextField)(({theme}) => ({
 
+/* <TextField variant=
+"outlined" inputProps={{ style: { height: '12px' } }} 
+style={{ marginLeft: "10px", width:"100%" }} />*/
+const MyTextField = styled(TextField)(({theme}) => ({
+marginLeft: "10px",
+width:"100%",
+padding: theme.spacing(0.5),
+'& input': {
+    height: '12px',   
+}, 
+'& .MuiOutlinedInput-root': { // TextField의 루트 요소에 스타일 적용
+    borderRadius: 0, // 모서리를 완전히 직사각형으로 만듭니다.    
+},
 }));
 class CompanyRegTest extends React.Component {
     
@@ -76,7 +88,7 @@ class CompanyRegTest extends React.Component {
               </Card>
             </Grid>
           </div>
-          <div style={{flex:2.5}}>
+          <div style={{flex:2.5}}> 
             <div>
               <div
                 style={{
@@ -100,14 +112,14 @@ class CompanyRegTest extends React.Component {
                 {/* 1번째 */}
                 
                 <Grid container >
-                    <GridItem1 item xs={1}>
+                    <GridItem1 item xs={2}>
                         <Typography variant="body1">회사코드</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField inputProps={{ style: { height: '12px' } }} variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">사용여부</Typography>
                     </GridItem3>
                     <Grid
@@ -130,40 +142,42 @@ class CompanyRegTest extends React.Component {
                 
               {/* 2번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1}>
+                    <GridItem1 item xs={2}>
                         <Typography variant="subtitle1">회사명</Typography>
                     </GridItem1>
                     <Grid
-                        item xs={8.8} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" ,width:"100%"}} />
+                        item xs={10} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
+                        <MyTextField variant="outlined" />
+                        <button>▼</button> 
                     </Grid>          
-                    <button>▼</button>      
+                         
                 </Grid>
                 {/* 3번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">회사약정</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">기본언어</Typography>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
+                        <button>▼</button>
                     </Grid>
                 </Grid>
                 {/* 4번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">행정표준코드</Typography>
                     </GridItem1>
                     <Grid
-                        item xs={8.25} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        item xs={9} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
+                        <MyTextField variant="outlined" />
                     </Grid>
                     <Grid 
                         item xs={1} style={{display:"flex", flexDirection:"row", alignItems: "right"}} >
@@ -172,149 +186,149 @@ class CompanyRegTest extends React.Component {
                 </Grid>
                 {/* 5번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">업태</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1}  >
+                    <GridItem3 item xs={2}  >
                         <Typography variant="subtitle1">종목</Typography>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                 </Grid>
                 {/* 6번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">대표전화</Typography>
                     </GridItem1>
                     <Grid
                         item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                     <Grid
                         item xs={3} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">대표팩스</Typography>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                 </Grid>
                 {/* 7번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">사업자번호</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%"  }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
-                        <Typography variant="subtitle1">주민등록번호</Typography>
+                    <GridItem3 item xs={2} >
+                        <Typography variant="subtitle1">법인번호</Typography>
                     </GridItem3>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                 </Grid>
                 {/* 8번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">설립일</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">개/폐업일</Typography>
                     </GridItem3>
                     <Grid
                         item xs={0.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                     <Grid
                         item xs={0.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                 </Grid>
                 {/* 9번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">대표자명</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">주민등록번호</Typography>
                     </GridItem3>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined"  />
                     </Grid>
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined"  />
                     </Grid>
                 </Grid>
                 {/* 10번째 */}
                 <Grid container >
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">기본도메인</Typography>
                     </GridItem1>
                     <Grid
-                        item xs={9} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        @<TextField variant="outlined" style={{ marginLeft: "10px",width:"100%" }} />
+                        item xs={7} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
+                        @<MyTextField variant="outlined" />
                     </Grid>                    
                 </Grid>
 
                 {/* 10번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">회사주소</Typography>
                     </GridItem1>
-                    <Grid item xs={11} container >
+                    <Grid item xs={6} container >
                         <Grid item xs={12} container>
                             <Grid
                                 item xs={0} style={{display: "flex", flexDirection: "column", alignItems: "center",}} >
-                                <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                                <MyTextField variant="outlined"  />
                             </Grid>
                             <button>우편번호</button>
                             </Grid>
                         <Grid item xs={12} container>
                             <Grid
-                                item xs={4} style={{display: "flex", flexDirection: "column", alignItems: "center",}} >
-                                <TextField variant="outlined" style={{ marginLeft: "10px" ,width:"100%"}} />
+                                item xs={0} style={{display: "flex", flexDirection: "column", alignItems: "center",}} >
+                                <MyTextField variant="outlined"  />
                             </Grid>
                             <Grid
-                                item xs={6} style={{display: "flex", flexDirection: "column", alignItems: "center",}} >
-                                <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%"}} />
+                                item xs={0} style={{display: "flex", flexDirection: "column", alignItems: "center",}} >
+                                <MyTextField variant="outlined" />
                             </Grid>
                         </Grid>
                     </Grid>       
                 </Grid>
                 {/* 12번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">회계기수</Typography>
                     </GridItem1>
                     <Grid
                         item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined"  />
                     </Grid>
                     <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -322,41 +336,55 @@ class CompanyRegTest extends React.Component {
                     </Grid>
                     <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px" }} />
+                        <MyTextField variant="outlined" />
                     </Grid>
                     <button>회계기수 등록</button>
                 </Grid>
                 {/* 13번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">회사계정유형</Typography>
                     </GridItem1>
                     <Grid
-                        item xs={9} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px", width:"100%" }} />
+                        item xs={10} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
+                        <MyTextField variant="outlined" label="일반" />
                     </Grid>
                 </Grid>
                 {/* 14번째 */}
                 <Grid container>
-                    <GridItem1 item xs={1} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
+                    <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <Typography variant="subtitle1">홈페이지주소</Typography>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%"  }} />
+                        <MyTextField variant="outlined"  />
                     </Grid>
-                    <GridItem3 item xs={1} >
+                    <GridItem3 item xs={2} >
                         <Typography variant="subtitle1">정렬</Typography>
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <TextField variant="outlined" style={{ marginLeft: "10px",width:"100%"  }} />
+                        <MyTextField variant="outlined"  />
                     </Grid>
                 </Grid>
                   
-            </Grid>            
+            </Grid>     
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{height:'3px'}}>인감정보</p>
+                
+              </div>
+              <hr style={{height:'3px', color:'black'}}/>
+            </div>       
             </div>
           </div>
+          
         </div>
       </form>
     );
