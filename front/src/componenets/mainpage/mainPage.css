@@ -1,5 +1,9 @@
 .mainPage-container {
   height: 100%;
+<<<<<<< Updated upstream
+=======
+  width: 99.9%;
+>>>>>>> Stashed changes
 }
 .nav-container {
   height: 87.1vh;
@@ -10,3 +14,16 @@
   width: 0px;
   height: 87.1vh;
 }
+<<<<<<< Updated upstream
+=======
+
+.section-container{
+  
+  width: 98%;
+  height: 100%;
+  padding-left: 15px;
+  margin-top: 5px;
+  
+    
+}
+>>>>>>> Stashed changes
