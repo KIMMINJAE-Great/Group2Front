@@ -17,7 +17,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Box } from "@mui/system";
 
 class Acc1011 extends Component {
+
+  
   render() {
+    const employeeCards = Array.from({ length: 10 }); // 10개의 빈 카드 배열 생성
 
 
     return (
