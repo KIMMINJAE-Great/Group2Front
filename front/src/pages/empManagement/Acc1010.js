@@ -3,14 +3,14 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-class EmpManagement extends Component {
+class Acc1010 extends Component {
     render() {
         return (
-           <h1>사원관리</h1>
+            <h1>사원관리</h1>
 
         )
     }
 
 }
 
-export default EmpManagement;
+export default Acc1010;

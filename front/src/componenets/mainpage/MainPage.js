@@ -4,19 +4,20 @@ import { Link } from 'react-router-dom';
 import Nav from "../nav/Nav.js";
 import LoginImage from '../../images/mainPage.png'
 import './mainPage.css';
-import EmpManagement from "../nav/empManagement/EmpManagement";
-import DepManagement from "../nav/depManagement/DepManagement";
-import TradeManagement from './../nav/tradeManagement/TradeManagement';
-import CompanyReg from './../nav/companyReg/CompanyReg';
-import RegCar from "../nav/regCar/RegCar";
-import CarDriveLogManagement from "../nav/carDriveLogManagement/CarDriveLogManagement";
-import RelCostState from "../nav/relCostState/RelCostState";
-import CarDriveLogPersonal from './../nav/carDriveLogPersonal/CarDriveLogPersonal';
-import CarDriveExcelUpload from './../nav/carDriveExcelUpload/CarDriveExcelUpload';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 //import PrivateRoute from '../componenets/routes/PrivateRoute';
 import { Switch } from 'react-router-dom';
+import Acc1010 from './../../pages/empManagement/Acc1010';
+import Acc1011 from './../../pages/depManagement/Acc1011';
+import Acc1012 from './../../pages/tradeManagement/Acc1012';
+import Acd1010 from './../../pages/regCar/Acd1010';
+import Acd1011 from './../../pages/carDriveLogManagement/Acd1011';
+import Acd1012 from './../../pages/relCostState/Acd1012';
+import Ace1010 from './../../pages/carDriveLogPersonal/Ace1010';
+import Ace1011 from './../../pages/carDriveExcelUpload/Ace1011';
+import Acc1013 from './../../pages/companyReg/Acc1013';
 
+import { Redirect } from "react-router-dom/cjs/react-router-dom";
 
 class MainPage extends Component {
 
@@ -24,6 +25,7 @@ class MainPage extends Component {
     super(props);
     this.state = {
       selectedButton: '',
+      isButtonClicked: false,// 이미지 제거 
       componentToShow: null,
       drawer: true,
 
@@ -32,7 +34,7 @@ class MainPage extends Component {
   }
   // 네브 바 메뉴 열기
   handleButtonClick = async (value) => {
-    this.setState({ selectedButton: value }, () => {
+    this.setState({ selectedButton: value, isButtonClicked: true }, () => {
 
     });
 
@@ -45,7 +47,7 @@ class MainPage extends Component {
 
   render() {
 
-    const { selectedButton, drawer } = this.state;
+    const { selectedButton, drawer, isButtonClicked } = this.state;
 
     return (
       <Router>
@@ -59,18 +61,23 @@ class MainPage extends Component {
               <Nav onButtonClick={this.handleButtonClick} ></Nav>
             </div>
             <div class="section-container" style={{ paddingLeft: 2 }} >
-
+              {!isButtonClicked && (
+                <img src={LoginImage}
+                  alt=""
+                  style={{ marginLeft: '300px', marginTop: '20px', width: '85%', height: 'auto', maxHeight: '100%', objectFit: 'cover' }}
+                />
+              )}
               <Switch>
 
-                <Route path='/empmanagement' component={EmpManagement} />
-                <Route path='/depmanagement' component={DepManagement} />
-                <Route path='/trademanagement' component={TradeManagement} />
-                <Route path='/companyreg' component={CompanyReg} />
-                <Route path='/regcar' component={RegCar} />
-                <Route path='/cardrivelogmanagement' component={CarDriveLogManagement} />
-                <Route path='/relcoststate' component={RelCostState} />
-                <Route path='/cardriveexcelupload' component={CarDriveExcelUpload} />
-                <Route path='/cardrivelogpersonal' component={CarDriveLogPersonal} />
+                <Route path='/empmanagement' component={Acc1010} />
+                <Route path='/depmanagement' component={Acc1011} />
+                <Route path='/trademanagement' component={Acc1012} />
+                <Route path='/companyreg' component={Acc1013} />
+                <Route path='/regcar' component={Acd1010} />
+                <Route path='/cardrivelogmanagement' component={Acd1011} />
+                <Route path='/relcoststate' component={Acd1012} />
+                <Route path='/cardriveexcelupload' component={Ace1010} />
+                <Route path='/cardrivelogpersonal' component={Ace1011} />
 
               </Switch>
 
