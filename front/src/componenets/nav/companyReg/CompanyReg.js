@@ -1,71 +1,57 @@
-import { Component } from "react";
-import {
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import React from "react";
+
+
 
 class CompanyReg extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      companyName:"",
+      companyNick:"",
+    };
+  }
+
+  //TEST companyName, companyNick  두개 만 먼저 데이터 확인
+
+  //저장 버튼 눌렀을 때 작동하는 것을 핸들하는 코드
+  handleSaved = (event) => {
+    event.preventDefault();
+    // console.log(this.state.username + ' && ' + this.state.password)
+
+    post('/emp/companyreg', {
+      companyName: this.state.companyName,
+      companyNick: this.state.companyNick,
+    })
+      .then(response => {
+
+        this.setState({ usernameError: false });
+        console.log(response.data)
+        console.log('회사등록 데이터 전송');
+        sessionStorage.setItem('companyName', JSON.stringify(response.data));
+        sessionStorage.setItem('companyName', JSON.stringify(response.data));
+        this.props.history.push("/mainpage");
+
+      }).catch(error => {
+        if (error.response.status === 404) {          
+          this.setState({ usernameError: true });
+          this.setState({ passwordError: true });
+          this.setState({ errorMessage: '아이디 혹은 비밀번호가 잘못되었습니다.' })
+        }
+        console.log('로그인 요청 에러 ', error);
+      });
+
+  };
+
+
   render() {
+
+
+
+
     return (
-      <form>
-        <div style={{ padding: "0px" }}>
-          <h2 style={{ margin: "0px" }}>
-            회사등록<br></br>
-          </h2>
-          <hr
-            style={{
-              borderColor: "lightgray",
-              float: "left",
-              width: "100%",
-              padding: "0px",
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", float: "left" }}>
-          <div>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">카드 제목</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    카드 설명
-                  </Typography>
-                  <TextField fullWidth variant="outlined" label="입력 필드" />
-                  <Button variant="contained" color="primary" fullWidth>
-                    버튼
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          </div>
+      <div>
 
-          <div>
-            <div style={{ display: "flex" }}>
-              <p>상세정보</p>
-              <div style={{ float: "right" }}>
-                <button>저장</button>
-                <button>삭제</button>
-              </div>
-            </div>
-            <Grid container spacing={6}>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">회사 이름</Typography>
-                <TextField fullWidth variant="outlined" />
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">회사 주소</Typography>
-                <TextField fullWidth variant="outlined" />
-              </Grid>
-            </Grid>
-
-            <div></div>
-          </div>
-        </div>
-      </form>
+      </div>
     );
   }
 }

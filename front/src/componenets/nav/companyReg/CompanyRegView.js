@@ -3,15 +3,23 @@ import { styled, } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 import {
   Button,
   Card,
   CardContent,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
   Typography,
   
@@ -53,20 +61,20 @@ backgroundColor: '#FAFAFA',
 "outlined" inputProps={{ style: { height: '12px' } }} 
 style={{ marginLeft: "10px", width:"100%" }} />*/
 const MyTextField = styled(TextField)(({theme}) => ({
-marginLeft: "10px",
+marginLeft: "8px",
 width:"100%",
 padding: theme.spacing(0.5),
 '& input': {
-    height: '12px',   
+    height: '8px',   
 }, 
 '& .MuiOutlinedInput-root': { // TextField의 루트 요소에 스타일 적용
     borderRadius: 0, // 모서리를 완전히 직사각형으로 만듭니다.    
 },
 }));
-
+// Typography을 사용자정의함수로 만듦
 const FieldName = styled(Typography)(({theme}) => ({
 fontWeight: 'bold',
-fontSize: '14px'
+fontSize: '8px'
 }));
 
 
@@ -74,6 +82,19 @@ fontSize: '14px'
 
 
 class CompanyRegTest extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          companyCode: "", //회사 코드
+          defaultLanguage: "", // 기본 언어
+          selectedDate: null, //데이트피커
+        };
+      }
+
+    handleDateChange = (date) => {
+    this.setState({ selectedDate: date });
+    };
+
     //저장버튼
     handleSave = () => {        
         // Save related logic
@@ -136,7 +157,7 @@ class CompanyRegTest extends React.Component {
               <hr style={{height:'3px', color:'black'}}/>
             </div>
             <div>
-                
+            <Box sx={{ overflowY: "auto", maxHeight: "600px" }}>   
             <Grid container>
                 {/* 1번째 */}
                 
@@ -146,7 +167,7 @@ class CompanyRegTest extends React.Component {
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <MyTextField variant="outlined" />
+                        <MyTextField variant="outlined" value={this.state.companyCode} readOnly />
                     </Grid>
                     <GridItem3 item xs={2} >
                         <FieldName variant="subtitle1" >사용여부</FieldName>
@@ -166,7 +187,8 @@ class CompanyRegTest extends React.Component {
                                 <FormControlLabel value="unused" control={<Radio />} label="미사용" />
                             </RadioGroup>
                         </FormControl>
-                    </Grid>                         
+                    </Grid>         
+                    <Divider sx={{ width: '65vw' }} />                
                 </Grid>
                 
               {/* 2번째 */}
@@ -176,7 +198,7 @@ class CompanyRegTest extends React.Component {
                     </GridItem1>
                     <Grid
                         item xs={10} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <MyTextField variant="outlined" />
+                        <MyTextField variant="outlined" onChange={e => this.setState({ companyCode: e.target.value })} />
                         <button>▼</button> 
                     </Grid>          
                          
@@ -184,7 +206,7 @@ class CompanyRegTest extends React.Component {
                 {/* 3번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
-                        <FieldName variant="subtitle1">회사약정</FieldName>
+                        <FieldName variant="subtitle1">회사약칭</FieldName>
                     </GridItem1>
                     <Grid
                         item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
@@ -195,8 +217,16 @@ class CompanyRegTest extends React.Component {
                     </GridItem3>
                     <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField variant="outlined" />
-                        <button>▼</button>
+                        <Select
+                            value={this.state.defaultLanguage}
+                            onChange={e => this.setState({ defaultLanguage: e.target.value })}
+                            variant="outlined"
+                            style={{ width: "100%" }}
+                            >
+                            <MenuItem value="한국어">한국어</MenuItem>
+                            <MenuItem value="영어">영어</MenuItem>
+                            <MenuItem value="일본어">일본어</MenuItem>
+                        </Select>
                     </Grid>
                 </Grid>
                 {/* 4번째 */}
@@ -229,7 +259,9 @@ class CompanyRegTest extends React.Component {
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
                         <MyTextField variant="outlined" />
                     </Grid>
+                    
                 </Grid>
+                
                 {/* 6번째 */}
                 <Grid container>
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
@@ -277,16 +309,25 @@ class CompanyRegTest extends React.Component {
                     <GridItem1 item xs={2} style={{display: "flex", flexDirection: "row", alignItems: "center", }}>
                         <FieldName variant="subtitle1">설립일</FieldName>
                     </GridItem1>
-                    <Grid
-                        item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center",}} >
-                        <MyTextField variant="outlined" />
+                    <Grid 
+                        item xs={4} style={{display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "15px"}} >
+                        <LocalizationProvider dateAdapter={AdapterDayjs} style={{width: "100%" }}>
+                            <DatePicker variant="outlined" style={{ width: "100%" }}/>
+                        </LocalizationProvider>
                     </Grid>
                     <GridItem3 item xs={2} >
                         <FieldName variant="subtitle1">개/폐업일</FieldName>
                     </GridItem3>
                     <Grid
                         item xs={0.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField variant="outlined" />
+                        <LocalizationProvider dateAdapter={AdapterDayjs} style>
+                            <DatePicker variant="outlined"/>
+                        </LocalizationProvider>
+                    </Grid>
+                    <Grid
+                        item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
+                        <FieldName variant="subtitle1" fontSize={30}>/</FieldName>
+
                     </Grid>
                     <Grid
                         item xs={0.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -304,7 +345,7 @@ class CompanyRegTest extends React.Component {
                     </Grid>
                     <GridItem3 item xs={2} >
                         <FieldName variant="subtitle1">주민등록번호</FieldName>
-                    </GridItem3>
+                    </GridItem3> 
                     <Grid
                         item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
                         <MyTextField variant="outlined"  />
@@ -365,7 +406,9 @@ class CompanyRegTest extends React.Component {
                     </Grid>
                     <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField variant="outlined" />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker />
+                        </LocalizationProvider>
                     </Grid>
                     <button>회계기수 등록</button>
                 </Grid>
@@ -397,7 +440,8 @@ class CompanyRegTest extends React.Component {
                     </Grid>
                 </Grid>
                   
-            </Grid>     
+            </Grid>  
+            </Box>   
             <div>
               <div
                 style={{

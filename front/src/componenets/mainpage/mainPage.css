@@ -1,10 +1,12 @@
 .mainPage-container {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 .nav-container {
   height: 87.1vh;
   width: 245px;
+  min-width: 17%;
 }
 
 .navhide {
