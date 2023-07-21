@@ -12,3 +12,12 @@
   width: 0px;
   height: 87.1vh;
 }
+
+.section-container{
+  width: 99.9%;
+  height: 100%;
+  padding-left: 15px;
+  margin-top: 5px;
+  
+    
+}
