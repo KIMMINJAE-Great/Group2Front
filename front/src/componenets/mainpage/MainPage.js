@@ -17,6 +17,7 @@ import Ace1010 from './../../pages/carDriveLogPersonal/Ace1010';
 import Ace1011 from './../../pages/carDriveExcelUpload/Ace1011';
 import Acc1013 from './../../pages/companyReg/Acc1013';
 
+import CompanyRegView from "../nav/companyReg/CompanyRegView";
 import { Redirect } from "react-router-dom/cjs/react-router-dom";
 
 class MainPage extends Component {
