@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-class TradeManagement extends Component {
+class Acc1012 extends Component {
     render() {
         return (
             <List component="div" disablePadding>
@@ -17,4 +17,4 @@ class TradeManagement extends Component {
 
 }
 
-export default TradeManagement;
+export default Acc1012;
