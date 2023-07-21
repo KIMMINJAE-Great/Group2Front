@@ -16,16 +16,9 @@ import { Component } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { Box } from "@mui/system";
 
-<<<<<<< Updated upstream:front/src/componenets/nav/depManagement/DepManagement.js
-class DepManagement extends Component {
-    render() {
-        return (
-           <h1>부서관리</h1>
-=======
 class Acc1011 extends Component {
   render() {
-    const employeeCards = Array.from({ length: 10 }); // 10개의 빈 카드 배열 생성
->>>>>>> Stashed changes:front/src/pages/depManagement/Acc1011.js
+
 
     return (
       <form>
@@ -477,8 +470,8 @@ class Acc1011 extends Component {
                   <RadioGroup
                     aria-label="usageStatus"
                     style={{ flexDirection: "row" }}
-                    // value={usageStatus}
-                    // onChange={handleUsageStatusChange}
+                  // value={usageStatus}
+                  // onChange={handleUsageStatusChange}
                   >
                     <FormControlLabel
                       value="사용"
@@ -503,8 +496,8 @@ class Acc1011 extends Component {
                   <RadioGroup
                     aria-label="usageStatus"
                     style={{ flexDirection: "row" }}
-                    // value={usageStatus}
-                    // onChange={handleUsageStatusChange}
+                  // value={usageStatus}
+                  // onChange={handleUsageStatusChange}
                   >
                     <FormControlLabel
                       value="설정"
@@ -527,8 +520,5 @@ class Acc1011 extends Component {
   }
 }
 
-<<<<<<< Updated upstream:front/src/componenets/nav/depManagement/DepManagement.js
-export default DepManagement;
-=======
 export default Acc1011;
->>>>>>> Stashed changes:front/src/pages/depManagement/Acc1011.js
+
