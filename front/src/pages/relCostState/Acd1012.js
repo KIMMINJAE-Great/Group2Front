@@ -2,14 +2,17 @@ import { Component } from "react";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-class CarDriveLogPersonal extends Component {
+class Acd1012 extends Component {
   render() {
     return (
 
-      <h1>운행기록부 개인화</h1>
+      <ListItemButton sx={{ pl: 10 }}>
+
+        <ListItemText primary="관련비용명세서" />
+      </ListItemButton>
 
     )
   }
 }
 
-export default CarDriveLogPersonal;
+export default Acd1012;
