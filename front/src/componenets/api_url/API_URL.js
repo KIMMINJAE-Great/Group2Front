@@ -2,10 +2,33 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8080';
 
-export function get(path) {
-  return axios.get(`${API_URL}${path}`);
+export async function get(path) {
+  try {
+    const response = await axios.get(`${API_URL}${path}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
-export function post(path, data) {
-  return axios.post(`${API_URL}${path}`, data);
+export async function post(path, data) {
+  try {
+    const response = await axios.post(`${API_URL}${path}`, data);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function del(path, data) {
+  try {
+    const response = await axios.delete(`${API_URL}${path}`, data)
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+
 }
