@@ -20,33 +20,33 @@ class Login extends Component {
   }
 
   // 로그인 요청
-  handleLogin = (event) => {
+  handleLogin = async (event) => {
     event.preventDefault();
     console.log(this.state.username + ' && ' + this.state.password)
 
-    post('/emp/login', {
-      emp_id: this.state.username,
-      password: this.state.password,
-    })
-      .then(response => {
-
-        this.setState({ usernameError: false });
-        console.log(response.data)
-        console.log('로그인 성공');
-        sessionStorage.setItem('user', JSON.stringify(response.data));
-        this.props.history.push("/mainpage");
-
-      }).catch(error => {
-        if (error.response.status === 404) {          
-          this.setState({ usernameError: true });
-          this.setState({ passwordError: true });
-          this.setState({ errorMessage: '아이디 혹은 비밀번호가 잘못되었습니다.' })
-        }
-        console.log('로그인 요청 에러 ', error);
+    try {
+      const response = await post('/emp/login', {
+        emp_id: this.state.username,
+        password: this.state.password,
       });
 
-  };
+      this.setState({ usernameError: false });
+      console.log(response.data);
+      console.log('로그인 성공');
+      sessionStorage.setItem('user', JSON.stringify(response.data));
+      this.props.history.push("/mainpage");
 
+    } catch (error) {
+      console.log('로그인 요청 에러 ', error);
+      if (error.response && error.response.status === 404) {
+        this.setState({
+          usernameError: true,
+          passwordError: true,
+          errorMessage: '아이디 혹은 비밀번호가 잘못되었습니다.'
+        });
+      }
+    }
+  };
   setUsername = (username) => {
     this.setState({ username });
   };

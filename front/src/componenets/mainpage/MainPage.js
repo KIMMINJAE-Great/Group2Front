@@ -18,6 +18,8 @@ import Ace1011 from './../../pages/carDriveExcelUpload/Ace1011';
 import Acc1013 from './../../pages/companyReg/Acc1013';
 
 import { Redirect } from "react-router-dom/cjs/react-router-dom";
+import Acc1013Con from "../../pages/companyReg/Acc1013Con";
+import Acc1012Con from './../../pages/tradeManagement/Acc1012Con';
 
 class MainPage extends Component {
 
@@ -71,8 +73,8 @@ class MainPage extends Component {
 
                 <Route path='/empmanagement' component={Acc1010} />
                 <Route path='/depmanagement' component={Acc1011} />
-                <Route path='/trademanagement' component={Acc1012} />
-                <Route path='/companyreg' component={Acc1013} />
+                <Route path='/trademanagement' component={Acc1012Con} />
+                <Route path='/companyreg' component={Acc1013Con} />
                 <Route path='/regcar' component={Acd1010} />
                 <Route path='/cardrivelogmanagement' component={Acd1011} />
                 <Route path='/relcoststate' component={Acd1012} />

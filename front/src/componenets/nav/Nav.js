@@ -38,6 +38,7 @@ class Nav extends Component {
     sections: MenuCollection(),
   };
 
+  // 메뉴 열기
   handleMainClick = (index) => {
     this.setState(prevState => ({
       openSections: {
@@ -45,8 +46,12 @@ class Nav extends Component {
         [index]: !prevState.openSections[index]
       }
     }));
+    console.log('메뉴열기')
   };
+
+  // 메뉴 컴포넌트 호출
   handleButtonClick = (value, url, menucd) => {
+    console.log('메뉴 컴포넌트 호출')
     this.props.history.push(`/${url}`);
     this.props.onButtonClick(value, url, menucd);
   };
