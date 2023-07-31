@@ -25,25 +25,47 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { withRouter } from "react-router-dom/cjs/react-router-dom";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
-import Postcode from "../../componenets/commons/Postcode";
+import Postcode from "../../components/commons/Postcode";
 class Acc1010Basic extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = {
+    mobileError: false,
+  }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.selectedCard !== this.props.selectedCard) {
+      this.setState({ mobileError: false });
     }
   }
+
+  validateMobile = (phoneNumber) => {
+    const regex = /^\d{3}-\d{3,4}-\d{4}$/;
+    return regex.test(phoneNumber);
+  }
+
+  handleMobileChange = (e) => {
+    const value = e.target.value;
+    this.props.empMobileChange(value);
+  }
+
+  handleMobileBlur = (e) => {
+    const value = e.target.value;
+    const isValidMobile = this.validateMobile(value);
+    this.setState({ mobileError: !isValidMobile });
+  }
+
   render() {
     const { selectedCard } = this.props;
+    const { mobileError } = this.state;
+    var readonly = selectedCard.newEmp === 'N';
     // { selectedCard } = this.props;
     //const email = selectedCard.emp_email ? selectedCard.emp_email.split('@') : ['', ''];
     //const semail = selectedCard.emp_semail ? selectedCard.emp_semail.split('@') : ['', ''];
-    const lang = selectedCard.emp_lang ? selectedCard.emp_lang : ''; //안나와서 극약처방
+    //const lang = selectedCard.emp_lang ? selectedCard.emp_lang : ''; //안나와서 극약처방
 
     return (
 
 
-      <div className="" style={{ width: '100%' }}>
+      <div className="" style={{}}>
         {/* Form Container < */}
 
 
@@ -81,17 +103,17 @@ class Acc1010Basic extends Component {
               </Grid>
               <Grid item xs={10.9} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
                 <TextField
-                  readOnly
-                  name="emp_nm"
+
+
                   value={selectedCard.emp_nm ? selectedCard.emp_nm : ''}
-                  sx={{ backgroundColor: '#FEF4F4' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   required
                   variant="outlined"
                   size="small"
                   //={selectedCard.emp_nm ? selectedCard.emp_nm : ''}
-                  onChange={this.props.empInfoChange}
-                  inputProps={{ style: { height: "12px" }, readOnly: true }}
+                  onChange={(e) => this.props.empNmChange(e.target.value)}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                 />
               </Grid>
             </Grid>
@@ -106,13 +128,13 @@ class Acc1010Basic extends Component {
                   placeholder="미입력시 회사코드를 기준으로 자동 채번됩니다."
                   name="emp_cd"
                   value={selectedCard.emp_cd ? selectedCard.emp_cd : ''}
-                  sx={{ backgroundColor: '#FEF4F4' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
                   size="small"
                   //={selectedCard.emp_nm ? selectedCard.emp_nm : ''}
-                  onChange={this.props.empInfoChange}
-                  inputProps={{ style: { height: "12px" } }}
+                  onChange={(e) => this.props.empEmpCdChange(e.target.value)}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                 />
               </Grid>
             </Grid>
@@ -124,15 +146,16 @@ class Acc1010Basic extends Component {
               </Grid>
               <Grid item xs={4.9} sx={{ backgroundColor: 'white', paddingLeft: '5px' }}>
                 <TextField
+                  placeholder="ex) 1000, 2000, 3000 ...."
                   name="co_cd"
-                  sx={{ backgroundColor: '#F2F2F2' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   required
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empCoCdChange(e.target.value)}
                   value={selectedCard.co_cd ? selectedCard.co_cd : ''}
-                  inputProps={{ style: { height: "12px" } }}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -145,13 +168,13 @@ class Acc1010Basic extends Component {
                 <TextField
                   name="dept_cd"
                   required
-                  sx={{ backgroundColor: '#F2F2F2' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
                   value={selectedCard.dept_cd ? selectedCard.dept_cd : ''}
                   size="small"
-                  inputProps={{ style: { height: "12px" } }}
-                  onChange={this.props.empInfoChange}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
+                  onChange={(e) => this.props.empDeptChange(e.target.value)}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -169,13 +192,13 @@ class Acc1010Basic extends Component {
                 <TextField
                   name="emp_id"
                   required
-                  sx={{ backgroundColor: '#F2F2F2' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empIdChange(e.target.value)}
                   value={selectedCard.emp_id ? selectedCard.emp_id : ''}
-                  inputProps={{ style: { height: "12px" } }}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -186,12 +209,12 @@ class Acc1010Basic extends Component {
               </Grid>
               <Grid item xs={4.9} sx={{ backgroundColor: 'white', paddingLeft: '5px' }}>
                 <TextField
-                  sx={{ backgroundColor: '#F2F2F2' }}
+                  //sx={{ backgroundColor: '#F2F2F2' }}
                   fullWidth
                   variant="outlined"
                   size="small"
                   inputProps={{ style: { height: "12px" } }}
-                  onChange={this.props.empInfoChange}
+                  //onChange={this.props.empEmpCdChange}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -208,13 +231,13 @@ class Acc1010Basic extends Component {
                 <TextField
                   required
                   name="password"
-                  sx={{ backgroundColor: '#FEF4F4' }}
+                  sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
                   size="small"
                   value={selectedCard.password ? selectedCard.password : ''}
-                  onChange={this.props.empInfoChange}
-                  inputProps={{ style: { height: "12px" } }}
+                  onChange={(e) => this.props.empPwChange(e.target.value)}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -225,15 +248,15 @@ class Acc1010Basic extends Component {
               </Grid>
               <Grid item xs={4.9} sx={{ backgroundColor: 'white', paddingLeft: '5px' }}>
                 <TextField
-                  required
+                  //required
                   name="app_password"
-                  sx={{ backgroundColor: '#FEF4F4' }}
+                  sx={{ backgroundColor: '' }}
                   fullWidth
                   variant="outlined"
                   value={selectedCard.app_password ? selectedCard.app_password : ''}
                   size="small"
-                  onChange={this.props.empInfoChange}
-                  inputProps={{ style: { height: "12px" } }}
+                  onChange={(e) => this.props.empAppPwChange(e.target.value)}
+                  inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -254,7 +277,7 @@ class Acc1010Basic extends Component {
                     row
                     value={selectedCard.gender === 'M' ? 'M' : 'F'}
                     aria-labelledby="demo-row-radio-buttons-group-label"
-                    onChange={this.props.empInfoChange}
+                    onChange={(e) => this.props.empGenderChange(e.target.value)}
                   >
                     <FormControlLabel value="F" control={<Radio />} label="여성" />
                     <FormControlLabel value="M" control={<Radio />} label="남성" />
@@ -269,13 +292,13 @@ class Acc1010Basic extends Component {
               <Grid item xs={4.9} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
                 <Box display="flex" alignItems="center" >
                   <Select
-
                     name="emp_lang"
-                    value={lang}
+                    value={selectedCard.emp_lang || ''}
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
-                    onChange={this.props.empInfoChange}
-                    sx={{ width: '100%', height: '30px', marginTop: '5px', backgroundColor: '#FEF4F4' }}
+                    required
+                    onChange={(e) => this.props.empLangChange(e.target.value)}
+                    sx={{ width: '100%', height: '30px', marginTop: '5px', backgroundColor: readonly ? 'white' : '#FEF4F4' }}
                   >
                     <MenuItem value={'KOR'}>한국어</MenuItem>
                     <MenuItem value={'ENG'}>English</MenuItem>
@@ -299,7 +322,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empEmail1Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -312,7 +335,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empEmail2Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -328,7 +351,7 @@ class Acc1010Basic extends Component {
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     //value={age}
-                    onChange={this.props.empInfoChange}
+                    onChange={(e) => this.props.empEmail2Change(e.target.value)}
                     sx={{ width: '100%', height: '30px', }}
 
                   >
@@ -358,7 +381,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empSEmail1Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -371,7 +394,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empSEmail2Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -384,7 +407,7 @@ class Acc1010Basic extends Component {
                     name="emp_semail2"
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
-                    onChange={this.props.empInfoChange}
+                    onChange={(e) => this.props.empSEmail2Change(e.target.value)}
                     sx={{ width: '100%', height: '30px', }}
 
                   >
@@ -413,9 +436,12 @@ class Acc1010Basic extends Component {
                   name="emp_mobile"
                   value={selectedCard.emp_mobile ? selectedCard.emp_mobile : ''}
                   fullWidth
-                  onChange={this.props.empInfoChange}
+                  onChange={this.handleMobileChange}
+                  onBlur={this.handleMobileBlur}
                   variant="outlined"
                   size="small"
+                  error={mobileError}
+                  helperText={mobileError ? "올바른 휴대전화 형식을 입력하세요" : ""}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -432,7 +458,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={this.props.empInfoChange}
+                  onChange={(e) => this.props.empHPhoneChange(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -454,7 +480,7 @@ class Acc1010Basic extends Component {
                   <TextField
                     name="emp_post"
                     value={selectedCard.emp_post ? selectedCard.emp_post : ''}
-                    onChange={this.props.empInfoChange}
+                    //onChange={(e) => this.props.empPostChange(e.target.value)}
                     fullWidth
                     variant="outlined"
                     size="small"
@@ -465,7 +491,7 @@ class Acc1010Basic extends Component {
                 </Grid>
 
                 <Grid item xs={1} sx={{ backgroundColor: 'white', paddingLeft: '5px', }}>
-                  <Postcode onComplete={this.props.onComplete} />
+                  <Postcode onComplete={this.props.handlePostComplete} />
 
                 </Grid>
                 <Grid container>
@@ -477,7 +503,7 @@ class Acc1010Basic extends Component {
                     <TextField
                       name="emp_add"
                       value={selectedCard.emp_add ? selectedCard.emp_add : ''}
-                      onChange={this.props.empInfoChange}
+                      // onChange={(e) => this.props.empAddChange(e.target.value)}
                       fullWidth
                       variant="outlined"
                       size="small"
@@ -503,13 +529,8 @@ class Acc1010Basic extends Component {
                   <DatePicker variant="outlined" slotProps={{ textField: { size: 'small' } }}
                     value={dayjs(selectedCard.emp_hrd ? selectedCard.emp_hrd : '')}
                     name="emp_hrd"
-                    onChange={(newValue) => {
-                      this.props.empInfoChange({
-                        target: {
-                          name: "emp_hrd",
-                          value: newValue,
-                        },
-                      });
+                    onChange={(value) => {
+                      this.props.empHrdChange(value);
                     }} />
                 </LocalizationProvider>
               </Grid>
@@ -526,6 +547,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
+                  onChange={(e) => this.props.empResiChange(e.target.value)}
                   inputProps={{ style: { height: "20px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />

@@ -21,17 +21,20 @@ import { ThemeProvider } from '@emotion/react';
 import acc1010 from "./acc1010.css";
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-//import PrivateRoute from './componenets/routes/PrivateRoute';
+//import PrivateRoute from './components/routes/PrivateRoute';
 
 import { Switch } from 'react-router-dom';
 
 import Acc1010Basic from "./Acc1010Basic";
-import Acc1010Dept from "./Acc1010Dept";
+
 import { Link, NavLink, Redirect } from "react-router-dom/cjs/react-router-dom";
-import { get, post } from "../../componenets/api_url/API_URL";
+import { get, post, update, del } from "../../components/api_url/API_URL";
+import DeleteDialog from '../../components/commons/DeleteDialog'
 
-
-
+import Acc1010Mauth from "./Acc1010Mauth";
+import CardList from "../../components/commons/CardList";
+import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
+import Acc1010Search from "./Acc1010Search";
 const acc1010theme = createTheme({
     components: {
         MuiListItemText: {
@@ -47,7 +50,6 @@ const acc1010theme = createTheme({
         MuiButton: {
             styleOverrides: {
                 root: {
-                    marginRight: "8px",
                     height: "30px",
                     backgroundColor: "#FBFBFB",
                     color: "black",
@@ -96,6 +98,8 @@ const acc1010theme = createTheme({
     },
 });
 class Acc1010 extends Component {
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -106,12 +110,24 @@ class Acc1010 extends Component {
             //모든 사원 정보
             employeeCards: [],
 
+            //모달
+            showModal: false,
+
+            //완료 확인
+            complete: '',
+
+            title: '사원관리'
+
         };
-        this.empInfoChange.bind(this);
+        //this.empInfoChange.bind(this);
     }
 
     //  Acc1010이 렌더링 되기전에 CardList에 담을 사원들의 정보를 가져옴
     componentDidMount() {
+        this.forRender();
+    }
+
+    forRender = () => {
         (async () => {
             try {
                 const response = await get('/emp/cardlist');
@@ -128,69 +144,14 @@ class Acc1010 extends Component {
                 console.log(error);
             }
         })();
-        this.readCard('');
+        this.firstEmpCard('');
+    }
+    // Acc1010Basic의 내용을 다 비움
+    addCard = () => {
+        this.firstEmpCard()
+        this.setState({ complete: '' })
     }
 
-    //자식컴포넌트의 입력값 onchange 함수
-    empInfoChange = (e) => {
-        this.setState(prevState => ({
-            selectedCard: {
-                ...prevState.selectedCard,
-                [e.target.name]: e.target.value,
-            }
-        }));
-
-    }
-
-
-    // 카드 클릭시 정보를 Acc1010Baisc으로 보내기
-    readCard = (emp_cd) => {
-        // 추가 버튼 클릭시 필드를 비워 보냄
-        if (emp_cd === '') {
-            this.setState({
-                selectedCard: {
-                    emp_cd: '',
-                    emp_nm: '',
-                    emp_id: '',
-                    gender: 'F',
-                    app_password: '',
-                    emp_lang: '',
-                    emp_email1: '',
-                    emp_email2: '',
-                    emp_semail1: '',
-                    emp_semail2: '',
-                    emp_mobile: '',
-                    emp_hphone: '',
-                    emp_add: '',
-                    emp_hrd: '',
-                    emp_post: '',
-                    emp_resi: '',
-                    newEmp: 'Y',
-                }
-            })
-        }
-        //  emp_cd에 맞는 사원 정보를 자식컴포넌트로 보낼 준비
-        else {
-            const empcard = this.state.employeeCards.find(item => item.emp_cd === emp_cd);
-
-            if (empcard.newEmp) { // newEmp 필드가 있는 경우
-                this.setState({
-                    selectedCard: {
-                        ...empcard,
-                        newEmp: 'N'
-                    }
-                });
-            } else { // newEmp 필드가 없는 경우
-                this.setState({
-                    selectedCard: {
-                        ...empcard,
-                        newEmp: 'N'
-                    }
-                });
-            }
-
-        }
-    }
     //  주소 찾기
     handlePostComplete = (data) => {
         console.log(data)
@@ -205,13 +166,8 @@ class Acc1010 extends Component {
 
     }
 
-
-    // Acc1010Basic의 내용을 다 비움
-    addCard = () => {
-        this.readCard('')
-    }
-
     // 사원정보 add & update 기능
+
     addOrUpdate = async (e) => {
         e.preventDefault();
         const { selectedCard } = this.state;
@@ -222,7 +178,7 @@ class Acc1010 extends Component {
             try {
                 const response = await post('/emp/register', selectedCard);
                 this.setState({ employeeCards: [...this.state.employeeCards, response.data] });
-
+                this.setState({ complete: '완료되었습니다.' })
 
             } catch (error) {
                 console.log('사원 등록 에러 : ' + error)
@@ -231,10 +187,10 @@ class Acc1010 extends Component {
             // 기존 사원 수정
         } else {
             try {
-                const response = await post('/emp/update', {
-                    emp: selectedCard,
-                });
-                this.componentDidMount();
+                const response = await update('/emp/update', selectedCard);
+                console.log(response.data);
+                //this.setState({ complete: '' })
+                this.setState({ complete: '완료되었습니다.' })
             } catch (error) {
                 console.log('사원 수정 에러 : ' + error)
             }
@@ -246,128 +202,364 @@ class Acc1010 extends Component {
 
     }
 
+
+    deleteEmp = async (e) => {
+        e.preventDefault();
+        const { selectedCard, employeeCards } = this.state;
+        try {
+            const response = await del(`/emp/delete/${selectedCard.emp_cd}`);
+            console.log("서버 응답 : ", response.data);
+            const newCardList = employeeCards.filter(
+                (item) => item.emp_cd !== selectedCard.emp_cd
+            );
+
+            this.setState({
+                employeeCards: newCardList,
+            })
+            this.firstEmpCard();
+        } catch (error) {
+            console.log('사원 등록 에러 : ' + error)
+        }
+
+        this.handleCloseModal();
+    }
+    // 
+    handleCardClick = async (emp_cd) => {
+        try {
+            const response = await post(`/emp/getEmpCard`, {
+                emp_cd: emp_cd,
+
+            });
+            this.setState({
+                selectedCard: {
+                    ...response.data,
+                    newEmp: 'N'
+                },
+                complete: '',
+
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    // 조회 조건으로 받은 사원 카드리스트
+    handleEmployeeCards = (employeeCards) => {
+        this.setState({ employeeCards });
+    };
+
+    // 빈 사원정보 보내기
+    firstEmpCard = () => {
+        // 추가 버튼 클릭시 필드를 비워 보냄
+
+        this.setState({
+            selectedCard: {
+                emp_cd: '',
+                emp_nm: '',
+                emp_id: '',
+                dept_cd: '',
+                gender: 'F',
+                app_password: '',
+                emp_lang: '',
+                emp_email1: '',
+                emp_email2: '',
+                emp_semail1: '',
+                emp_semail2: '',
+                emp_mobile: '',
+                emp_hphone: '',
+                emp_add: '',
+                emp_hrd: '',
+                emp_post: '',
+                emp_resi: '',
+                newEmp: 'Y',
+            }
+        })
+    }
+
+
+    // 모달 열기
+    handleOpenModal = () => {
+        this.setState({ showModal: true });
+    }
+    // 모달 닫기
+    handleCloseModal = () => {
+        this.setState({ showModal: false });
+    }
+
+
+
+    empNmChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_nm: value,
+            },
+        }));
+    }
+    empEmpCdChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_cd: value,
+            },
+        }));
+    }
+    empCoCdChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                co_cd: value,
+            },
+        }));
+    }
+    empIdChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_id: value,
+            },
+        }));
+    }
+    empDeptChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                dept_cd: value,
+            },
+        }));
+    }
+    empPwChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                password: value,
+            },
+        }));
+    }
+    empAppPwChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                app_password: value,
+            },
+        }));
+    }
+    empGenderChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                gender: value,
+            },
+        }));
+    }
+    empLangChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_lang: value,
+            },
+        }));
+    }
+    empEmail1Change = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_email1: value,
+            },
+        }));
+    }
+    empEmail2Change = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_email2: value,
+            },
+        }));
+    }
+    empSEmail1Change = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_semail1: value,
+            },
+        }));
+    }
+    empSEmail2Change = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_semail2: value,
+            },
+        }));
+    }
+    empMobileChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_mobile: value,
+            },
+        }));
+    }
+
+
+
+    empHPhoneChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_hphone: value,
+            },
+        }));
+    }
+
+    empHrdChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_hrd: value,
+            },
+        }));
+    }
+    empResiChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_resi: value,
+            },
+        }));
+    }
+    empNmChange = (value) => {
+        this.setState((prevState) => ({
+            selectedCard: {
+                ...prevState.selectedCard,
+                emp_nm: value,
+            },
+        }));
+    }
+
+
     //  ?
     dateChange = (date) => {
         this.setState({ selectedDate: date });
     };
 
     render() {
-        const { employeeCards } = this.state;
+        const user = JSON.parse(sessionStorage.getItem('user'));
 
+        // 'authorities' 키가 존재하고 그 값이 배열이라면 첫 번째 요소의 'authority' 키의 값을 가져옵니다.
+        // const authority = user.authorities && user.authorities.length > 0 ? user.authorities[0].authority : null;
+        const authority = user.authorities[0].authority
+
+        console.log(authority);
+
+        const { employeeCards, title } = this.state;
 
         return (
             <Router>
                 <ThemeProvider theme={acc1010theme}>
-                    <div class="acc1010-container" style={{ display: 'flex', width: '99%' }}>
-                        {/* 카드리스트 > */}
-                        <div class="cardlist-container" style={{ width: '280px', maxWidth: '280px', minWidth: '280px', marginLeft: '10px', marginRight: '10px', borderTop: '3px solid black' }}>
-                            <div>
-                                <Grid item xs={12} sm={6} md={4} lg={3}>
-                                    <Card style={{ backgroundColor: "#ECECEC", marginBottom: '5px' }} class="noHoverEffect">
-                                        <CardContent>
-                                            <Typography variant="caption">사용자: {employeeCards.length}    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                                                최초입사일</Typography>
-                                        </CardContent>
-                                    </Card>
-                                    <Box sx={{ overflowY: "auto", maxHeight: "700px" }}>
-                                        {/* 스크롤바 영역 설정 */}
-                                        <Grid container spacing={2}>
-                                            {employeeCards.map((employee, index) => (
-                                                <Grid item xs={12} sm={12} md={12} lg={12} key={index} >
-                                                    <Card sx={{ borderRadius: '5px', border: '0.5px solid lightgrey', marginRight: '2px', display: 'flex', }} onClick={() => this.readCard(employee.emp_cd)}>
-                                                        {/* 프로필 이미지 */}
-                                                        <img src={profile} style={{ width: '50px', height: '50px', marginLeft: '10px', marginTop: '10px', borderRadius: '3px' }}></img>
-                                                        <CardContent sx={{ paddingLeft: '3px', paddingRight: '1px' }}>
-                                                            {/* 아이디, 이름 */}
-                                                            <Typography variant="body2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '90px', maxWidth: '90px' }}>
-                                                                {employee.emp_id}
-                                                            </Typography>
-                                                            <Typography variant="body2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '90px', maxWidth: '90px' }}>
-                                                                {employee.emp_nm}
-                                                            </Typography>
-                                                            <div> </div>
+                    <DouzoneContainer title={this.state.title} delete={this.handleOpenModal}>
 
-                                                        </CardContent>
-                                                        <CardContent style={{ marginLeft: '30px', paddingLeft: '0', paddingRight: '0', minWidth: '100px' }}>
-                                                            {/* 입사일 */}
-                                                            <Typography variant="body2" >
-                                                                {employee.emp_hrd}
-                                                            </Typography>
+                        <Acc1010Search empSearch={this.handleEmployeeCards}
+
+                        ></Acc1010Search>
+
+                        <div class="acc1010-container" style={{ display: 'flex' }}>
+                            <CardList
+                                content={employeeCards}
+                                handleCardClick={this.handleCardClick}
+                                handleNewButtonClick={this.addCard}
+                            ></CardList>
 
 
-                                                        </CardContent>
-                                                    </Card>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Box>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        fullWidth
-                                        style={{ backgroundColor: "#FFFFFF", color: "#7A7A7A" }}
-                                        onClick={() => this.addCard()}
-                                    >
-                                        추가
-                                    </Button>
-                                </Grid>
-                            </div>
-                        </div >
 
-                        {/* 카드리스트 < */}
-                        <form onSubmit={this.addOrUpdate} class="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
-                            {/* Header < */}
-                            <div class="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-                                <span style={{ fontWeight: 'bold' }} >ㆍ상세정보</span>
-                                <div style={{ display: 'flex' }}>
-                                    <Button type="submit">저장</Button>
-                                    <Button>삭제</Button>
+
+                            {/* 카드리스트 pp< */}
+                            <form onSubmit={this.addOrUpdate} class="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
+                                {/* Header < */}
+                                <div class="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
+                                    <span style={{ fontWeight: 'bold' }} >ㆍ상세정보 </span>
+                                    <span style={{ fontWeight: 'bold', color: 'red' }}> {this.state.complete}</span>
+                                    <div style={{ display: 'flex' }}>
+
+                                        <Button type="submit">저장</Button>
+                                        {/* //<Button onClick={this.handleOpenModal}>삭제</Button> */}
+                                        {/* 삭제 확인 */}
+                                        < DeleteDialog
+                                            open={this.state.showModal}
+                                            handleClose={this.handleCloseModal}
+                                            handleConfirm={this.deleteEmp}
+                                            title="사원 삭제 확인"
+                                            message="정말로 사원 정보를 삭제하시겠습니까?"
+                                        />
+                                    </div>
+
 
                                 </div>
 
+                                {/* submenu < */}
+                                <div class="acc1010-submenu-name-container">
+                                    | <NavLink to="/basic" activeStyle={{
+                                        color: 'rgb(82, 82, 244)',
+                                        textDecoration: 'none'
+                                    }}
+                                        style={{ textDecoration: 'none' }}>
+                                        <span>기본정보</span>
+                                    </NavLink>|
 
-                            </div>
-                            {/* Header > */}
-                            {/* submenu < */}
-                            <div class="acc1010-submenu-name-container">
-                                | <NavLink to="/basic" activeStyle={{
-                                    color: 'rgb(82, 82, 244)',
-                                    textDecoration: 'none'
-                                }}
-                                    style={{ textDecoration: 'none' }}>
-                                    <span>기본정보</span>
-                                </NavLink>|
-                                <NavLink to="/dept" activeStyle={{
-                                    color: 'rgb(82, 82, 244)',
-                                    textDecoration: 'none'
-                                }}
-                                    style={{ textDecoration: 'none' }}>
-                                    <span>조직정보</span>
-                                </NavLink>
+                                    {authority === 'ROLE_ADMIN' &&
 
-                            </div>
-
-                            {/* submenu > */}
+                                        <NavLink
+                                            to="/mauth"
+                                            activeStyle={{
+                                                color: 'rgb(82, 82, 244)',
+                                                textDecoration: 'none'
+                                            }}
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            <span>메뉴권한 부여</span>
+                                        </NavLink>
+                                    }
+                                </div>
 
 
-                            {/* 기초정보, 조직정보 Switch */}
-                            <Switch>
-                                <Route exact path="/basic">
-                                    <Acc1010Basic
-                                        selectedCard={this.state.selectedCard}
-                                        empInfoChange={this.empInfoChange}
-                                        {...this.state} onComplete={this.handlePostComplete}
-                                    />
-                                </Route>
-                                <Route path="/dept">
-                                    <Acc1010Dept />
-                                </Route>
-                                <Redirect from="/" to="/basic" />
-                            </Switch>
+                                {/* 기초정보, 조직정보 Switch */}
+                                <Switch>
+                                    <Route exact path="/basic">
+                                        <Acc1010Basic
+                                            selectedCard={this.state.selectedCard}
 
-                            {/* Form Container > */}
-                        </form>
-                    </div >
+                                            empEmpCdChange={this.empEmpCdChange}
+                                            empCoCdChange={this.empCoCdChange}
+                                            empIdChange={this.empIdChange}
+                                            empPwChange={this.empPwChange}
+                                            empGenderChange={this.empGenderChange}
+                                            empLangChange={this.empLangChange}
+                                            empEmail1Change={this.empEmail1Change}
+                                            empEmail2Change={this.empEmail2Change}
+                                            empSEmail1Change={this.empSEmail1Change}
+                                            empSEmail2Change={this.empSEmail2Change}
+                                            empMobileChange={this.empMobileChange}
+                                            empHPhoneChange={this.empHPhoneChange}
+                                            handlePostComplete={this.handlePostComplete}
+                                            empHrdChange={this.empHrdChange}
+                                            empDeptChange={this.empDeptChange}
+                                            empAppPwChange={this.empAppPwChange}
+                                            empResiChange={this.empResiChange}
+                                            empNmChange={this.empNmChange}
+
+                                        //{...this.state} onComplete={this.handlePostComplete}
+                                        />
+
+                                    </Route>
+                                    <Route path="/mauth">
+                                        <Acc1010Mauth selectedCard={this.state.selectedCard} />
+                                    </Route>
+                                    <Redirect from="/" to="/basic" />
+                                </Switch>
+
+                                {/* Form Container > */}
+                            </form>
+                        </div >
+                    </DouzoneContainer>
                 </ThemeProvider >
             </Router>
         );

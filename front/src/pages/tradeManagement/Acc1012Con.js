@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Acc1012 from './Acc1012';
-import { get, post, del } from '../../componenets/api_url/API_URL';
+import { get, post, del } from '../../components/api_url/API_URL';
 
 class Acc1012Con extends Component {
     constructor(props) {
