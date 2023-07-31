@@ -1,5 +1,5 @@
 import React from "react";
-import { get, post } from "../../componenets/api_url/API_URL";
+import { get, post } from "../../components/api_url/API_URL";
 import { styled, } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -7,7 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Postcode from "../../componenets/commons/Postcode";
+import Postcode from "../../components/commons/Postcode";
 
 import profile from '../../images/logo.png'
 import {

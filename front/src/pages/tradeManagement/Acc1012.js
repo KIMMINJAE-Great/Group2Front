@@ -18,9 +18,9 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { color } from "@mui/system";
-import { post, get, del } from '../../componenets/api_url/API_URL';
+import { post, get, del } from '../../components/api_url/API_URL';
 import profile from '../../images/logo.png'
-import Postcode from "../../componenets/commons/Postcode";
+import Postcode from "../../components/commons/Postcode";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 /* 아이콘 버튼 테마 css */

@@ -11,6 +11,16 @@ export async function get(path) {
     throw error;
   }
 }
+export async function getMany(path) {
+  try {
+    const response = await axios.get(`${API_URL}${path}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 
 export async function post(path, data) {
   try {
@@ -30,5 +40,20 @@ export async function del(path, data) {
     console.error(error);
     throw error;
   }
+
+
+
+}
+
+export async function update(path, data) {
+  try {
+    const response = await axios.put(`${API_URL}${path}`, data)
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+
+
 
 }

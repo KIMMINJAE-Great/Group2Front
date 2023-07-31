@@ -84,7 +84,7 @@ class Nav extends Component {
                       backgroundColor: 'white',
                       marginBottom: '-7px'
                     }}
-                    onClick={() => this.handleButtonClick(subItem, section.url[subIndex], section.menucd[subIndex])}
+                    onClick={() => this.handleButtonClick(section.title, section.url[subIndex], section.menucd[subIndex])}
                     data-menucd={section.menucd[subIndex]}
                     key={subItem}
                   >

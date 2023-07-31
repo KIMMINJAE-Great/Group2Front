@@ -5,7 +5,7 @@ import Nav from "../nav/Nav.js";
 import LoginImage from '../../images/mainPage.png'
 import './mainPage.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-//import PrivateRoute from '../componenets/routes/PrivateRoute';
+//import PrivateRoute from '../components/routes/PrivateRoute';
 import { Switch } from 'react-router-dom';
 import Acc1010 from './../../pages/empManagement/Acc1010';
 import Acc1011 from './../../pages/depManagement/Acc1011';

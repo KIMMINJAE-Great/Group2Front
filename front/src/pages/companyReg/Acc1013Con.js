@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import { get, post } from "../../componenets/api_url/API_URL";
+import { get, post } from "../../components/api_url/API_URL";
 import Acc1013 from "./Acc1013";
 
 
