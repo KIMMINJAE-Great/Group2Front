@@ -5,34 +5,35 @@ class CardList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content:[],
+      content: [],
     };
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.content !== this.props.content) {
-      this.setState({content:this.props.content})
-      
+      this.setState({ content: this.props.content })
+
 
 
     }
   }
 
 
-  
 
- 
+
+
 
   render() {
-    const { onCardItemDraw} = this.props;  
+    const { onCardItemDraw } = this.props;
     const template = onCardItemDraw(this.state.content);
-    
-   
-    
+
+
+
+
 
     return (
 
-      
+
       <div
         className="cardlist-container"
         style={{
@@ -46,7 +47,7 @@ class CardList extends Component {
       >
         <div>
           <Grid item xs={12} sm={6} md={4} lg={3}>
-          {template}
+            {template}
             <Button
               variant="contained"
               color="primary"

@@ -6,6 +6,7 @@ import PrivateRoute from './components/routes/PrivateRoute';
 import { Component } from 'react';
 
 
+
 class App extends Component {
   constructor(props) {
     super(props);
