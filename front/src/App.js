@@ -4,7 +4,6 @@ import MainPage from './components/mainpage/MainPage';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import PrivateRoute from './components/routes/PrivateRoute';
 import { Component } from 'react';
-import Acc1010 from './pages/empManagement/Acc1010';
 
 
 class App extends Component {

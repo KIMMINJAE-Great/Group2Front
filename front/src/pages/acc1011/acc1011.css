@@ -1,3 +1,10 @@
 .acc1011-input-container {
   background-color: #fafafa;
 }
+
+.acc1011search_container {
+  border: 1px solid lightgrey;
+  margin: 13px;
+  display: flex;
+}
+

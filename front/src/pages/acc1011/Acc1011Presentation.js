@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import Postcode from "../../components/commons/Postcode";
 import "./acc1011.css";
-// import DeleteDialog from "../../components/commons/DeleteDialog";
 
 class Acc1011Presentation extends Component {
 
@@ -26,6 +25,7 @@ class Acc1011Presentation extends Component {
       <div style={{ width: "90%", marginRight: "40px", marginLeft: "30px" }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <p>ㆍ상세정보</p>
+          <span style={{ fontWeight: 'bold', color: 'red' }}> {this.props.complete}</span>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Button
               type="submit"
@@ -45,27 +45,7 @@ class Acc1011Presentation extends Component {
 
 
 
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              style={{
-                height: "30px",
-                backgroundColor: "#FBFBFB",
-                color: "black",
-              }}
-              onClick={this.props.handleOpenModal}
-            >
-              삭제
-            </Button>
-            {/* 삭제 확인 */}
-            {/* <DeleteDialog
-              open={open}
-              handleClose={this.props.handleCloseModal}
-              handleConfirm={this.props.handleDeleteClick}
-              title="사원 삭제 확인"
-              message="정말로 사원 정보를 삭제하시겠습니까?"
-            /> */}
+           
           </div>
         </div>
         <div className="acc1011-input-container">
@@ -96,8 +76,8 @@ class Acc1011Presentation extends Component {
               </Grid>
               <Grid item xs={11}>
                 <TextField
-                  sx={{ width: "100%", backgroundColor: "white" }}
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
+                  sx={{ width: "100%", backgroundColor: readonly ? '#F2F2F2' : 'white' }}
                   variant="outlined"
                   size="small"
                   value={selectedDept?.co_cd || ""}
@@ -122,10 +102,9 @@ class Acc1011Presentation extends Component {
                 <TextField
                   fullWidth
                   variant="outlined"
-                  size="small"
-                  sx={{ width: "100%", backgroundColor: "white" }}
-                  style={{ background: "#FEF4F4" }}
+                  size="small"         
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
+                  sx={{ width: "100%", backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                   value={selectedDept?.dept_cd || ""}
                   onChange={(e) =>
@@ -152,10 +131,10 @@ class Acc1011Presentation extends Component {
                 <Select
                   size="small"
                   style={{ width: "20%" }}
-                  sx={{ width: "100%", backgroundColor: "white" }}
-
+                  label="부서"
                   value={selectedDept?.dept_st || ""}
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
+                  sx={{ width: "100%", backgroundColor: readonly ? '#F2F2F2' : 'white' }}
                   onChange={(e) =>
                     this.props.handleDeptStChange(e.target.value)
                   }
@@ -185,8 +164,8 @@ class Acc1011Presentation extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  style={{ background: "#FEF4F4" }}
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
+                  sx={{ width: "100%", backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                   value={selectedDept?.dept_nm || ""}
                   onChange={(e) =>
@@ -289,6 +268,7 @@ class Acc1011Presentation extends Component {
               item
               xs={12}
               sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}
+              required
             >
               <Grid item xs={1} style={{ textAlign: "right" }}>
                 <Typography>
