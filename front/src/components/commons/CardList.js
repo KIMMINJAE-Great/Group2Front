@@ -29,6 +29,16 @@ class CardList extends Component {
 
         });
         label = "부서 수"
+      } else if (item.hasOwnProperty("tr_cd")) {
+        contentArray.push({
+          item1: item.tr_cd,
+          item2: item.reg_nb,
+          item3: item.tr_nm,
+          item4: item.tr_fg,
+          itemcode: item.tr_cd,
+          
+        });
+        label = "거래처"
       }
     });
 
