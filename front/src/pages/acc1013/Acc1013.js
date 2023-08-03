@@ -4,7 +4,7 @@ import { Component } from "react";
 
 import CardList from "../../components/commons/CardList";
 
-import { createTheme } from "@mui/material";
+import { createTheme, Card, CardContent, Typography, Box, Grid } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -124,9 +124,11 @@ class Acc1013 extends Component {
       title: "회사등록",
       //모달d
       showModal: false,
-
+      // 카드리스트에 보내줄 content 배열
+      content: [],
       mauth: [],
     };
+    this.DouzoneContainer = React.createRef();
   }
 
   //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
@@ -199,6 +201,7 @@ class Acc1013 extends Component {
       const response = await get("/company/cardlist");
       this.setState({
         companyCards: response.data,
+        content: response.data,
       });
     } catch (error) {
       console.log(error);
@@ -297,12 +300,13 @@ class Acc1013 extends Component {
       } else {
         await post("/company/save", data);
       }
-
+      this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
       this.fetchCompanyCards(); //카드리스트 새로고침됨!
       console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
     } catch (error) {
       console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
       console.error(error);
+      this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
       console.log("회사등록(DB) 중에 오류발생");
     }
   };
@@ -320,11 +324,14 @@ class Acc1013 extends Component {
       console.log(response);
       console.log("회사정보(DB) 삭제가 정상 실행");
       //this.setState({ showModal: false });
+      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
       this.fetchCompanyCards();
     } catch (error) {
       console.error(error);
+      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
       console.log("회사정보(DB) 삭제중에 오류발생");
     }
+    this.handleCloseModal();
   };
 
   //우편주소 코드
@@ -352,6 +359,91 @@ class Acc1013 extends Component {
     this.setState({ co_cd: value });
   }
 
+  // 회사 카드리스트를 그려줄 함수
+  onCardItemDraw = () => {
+
+    return (
+      <div>
+        <Card
+          style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
+          class="noHoverEffect"
+        >
+          <CardContent>
+            <Typography variant="caption">
+              회사 수 : {this.state.content.length}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            </Typography>
+          </CardContent>
+        </Card>
+        <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
+          {/* 스크롤바 영역 설정 */}
+          <Grid container spacing={2}>
+            {this.state.content.map((item, index) => (
+              <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    border: "0.5px solid lightgrey",
+                    marginRight: "2px",
+                    display: "flex",
+                  }}
+                  onClick={() =>
+                    this.handleCardClick(this.state.content[index].co_cd)
+                  }
+                >
+
+                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                    {/* item1,item2 */}
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.dept_st}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.co_nm}
+                    </Typography>
+                    <div> </div>
+                  </CardContent>
+                  <CardContent
+                    style={{
+                      marginLeft: "30px",
+                      paddingLeft: "0",
+                      paddingRight: "0",
+                      minWidth: "100px",
+                    }}
+                  >
+                    {/* item3 */}
+                    <Typography variant="body2">
+                      {item.co_nk}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </div>
+    )
+  }
+
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
 
@@ -362,16 +454,17 @@ class Acc1013 extends Component {
     this.handleCoCdChange = this.handleCoCdChange.bind(this);
     return (
       <Router>
-         <ThemeProvider theme={acc1013theme}>
-        <DouzoneContainer
-          title={this.state.title}
-          delete={this.handleOpenModal}
-          openDeleteModal={this.state.showModal}
-          handleClose={this.handleCloseModal}
-          handleConfirm={this.handleDeleteButton}
-          message="정말로 회사 정보를 삭제하시겠습니까?"
-        >
-         
+        <ThemeProvider theme={acc1013theme}>
+          <DouzoneContainer
+            ref={this.DouzoneContainer}
+            title={this.state.title}
+            delete={this.handleOpenModal}
+            openDeleteModal={this.state.showModal}
+            handleClose={this.handleCloseModal}
+            handleConfirm={this.handleDeleteButton}
+            message="정말로 회사 정보를 삭제하시겠습니까?"
+          >
+
             <div>
               <Acc1013Search
                 defaultUse={defaultUse}
@@ -381,12 +474,18 @@ class Acc1013 extends Component {
               ></Acc1013Search>
 
               <div style={{ display: "flex" }}>
-                <div style={{marginTop:"30px"}}>
-                <CardList
+                <div style={{ marginTop: "30px" }}>
+                  {/* <CardList
                   content={companyCards}
                   handleCardClick={this.handleCardClick}
                   handleNewButtonClick={this.handleNewButtonClick}
-                />
+                /> */}
+                  <CardList
+                    handleCardClick={this.handleCardClick}
+                    handleNewButtonClick={this.handleNewButtonClick}
+                    onCardItemDraw={this.onCardItemDraw}
+                    content={this.state.content}
+                  ></CardList>
                 </div>
 
                 <Acc1013BasicInfo
@@ -403,11 +502,11 @@ class Acc1013 extends Component {
                   // addOrUpdate={this.addOrUpdate} 사용X
                   onCoCdChange={this.handleCoCdChange}
                 />
-                
+
               </div>
             </div>
-        </DouzoneContainer>
-          </ThemeProvider>
+          </DouzoneContainer>
+        </ThemeProvider>
       </Router>
     );
   }

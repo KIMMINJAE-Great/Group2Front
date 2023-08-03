@@ -4,7 +4,7 @@ import CardList from "../../components/commons/CardList"; // CardList 컴포넌�
 import Acc1011Presentation from "./Acc1011Presentation"; // Acc1011Presentation 컴포넌트 임포트
 import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
-import Acc1011Search from "./Acc1011Search"; 
+import Acc1011Search from "./Acc1011Search";
 import { Box } from "@mui/system";
 
 const acc1011theme = createTheme({
@@ -44,17 +44,17 @@ const acc1011theme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
-          root: {
-              '&:hover $notchedOutline': {
-                  borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-              },
-              '&.Mui-focused $notchedOutline': {
-                  borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-              },
-              borderRadius: 0,
+        root: {
+          '&:hover $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
           },
+          '&.Mui-focused $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
+          },
+          borderRadius: 0,
+        },
       },
-  },
+    },
     MuiCard: {
       styleOverrides: {
         root: {
@@ -78,7 +78,7 @@ class Acc1011 extends Component {
       departmentCards: [], // 카드리스트 저장할 빈 배열
       selectedDept: null, // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
-      content:[],
+      content: [],
 
       postcode: "", //우편번호 찾기 저장할 상태 변수
       roadAddress: "",
@@ -86,14 +86,14 @@ class Acc1011 extends Component {
 
       showModal: false,
 
-       //완료 확인
-       complete: '',
+      //완료 확인
+      complete: '',
 
       title: '부서관리',
 
-      
-      
-      
+
+
+
 
 
     };
@@ -103,7 +103,7 @@ class Acc1011 extends Component {
   componentDidMount() {
     get(`/depmanagement`)
       .then((response) => {
-        this.setState({ departmentCards: response.data, selectedRead: "Y", content:response.data });
+        this.setState({ departmentCards: response.data, selectedRead: "Y", content: response.data });
       })
       .catch((error) => {
         console.log(error);
@@ -137,63 +137,63 @@ class Acc1011 extends Component {
     });
   };
 
- //저장버튼
- handleSaveClick = async (e) => {
-  e.preventDefault();
-  const { selectedDept, selectedRead } = this.state;
+  //저장버튼
+  handleSaveClick = async (e) => {
+    e.preventDefault();
+    const { selectedDept, selectedRead } = this.state;
 
 
-  // 부서코드가 비어있는지 확인합니다.
-  if (!selectedDept.dept_cd) {
-    console.log("부서코드를 입력해주세요.");
-    return;
-  }
-  // 부서명이 비엉있는지 확인합니다.
-  if (!selectedDept.dept_nm) {
-    console.log("부서명을 입력해주세요.");
-    return;
-  }
-
-  
-  //삽입 기능
-  // 선택한 부서가 있는지 확인하기 위해 selectedDept가 null이 아닌지 확인합니다.
-  if (selectedRead === "Y") {
-    
-    try {
-      
-      const response = await post(`/depmanagement/adddept`, selectedDept);
-      console.log("서버 응답:", response.data);
-
-      this.setState((prevState) => ({
-        // 추가된 부서 정보를 departmentCards에 추가.
-        departmentCards: [...prevState.departmentCards, response.data],
-        content: [...prevState.departmentCards, response.data],
-        // 선택한 부서 정보를 초기화합니다.
-        selectedDept: null,
-        postcode: "",
-        roadAddress: "",
-        jibunAddress: "",
-      }));
-      this.DouzoneContainer.current.handleSnackbarOpen('부서 등록이 완료됐습니다', 'success');
-    } catch (error) {
-      console.log(error);
-      this.DouzoneContainer.current.handleSnackbarOpen('부서 등록 에러', 'error');
+    // 부서코드가 비어있는지 확인합니다.
+    if (!selectedDept.dept_cd) {
+      console.log("부서코드를 입력해주세요.");
+      return;
     }
-  } else {
-
-    try {
-      console.log(selectedDept);
-      const response = await update(`/depmanagement/updatedept`, selectedDept);
-      console.log("서버 응답:", response.data);
-      this.DouzoneContainer.current.handleSnackbarOpen('부서 수정이 완료됐습니다', 'success');
-      
-
-      
-    } catch (error) {
-      console.log(error);
+    // 부서명이 비엉있는지 확인합니다.
+    if (!selectedDept.dept_nm) {
+      console.log("부서명을 입력해주세요.");
+      return;
     }
-  }
-};
+
+
+    //삽입 기능
+    // 선택한 부서가 있는지 확인하기 위해 selectedDept가 null이 아닌지 확인합니다.
+    if (selectedRead === "Y") {
+
+      try {
+
+        const response = await post(`/depmanagement/adddept`, selectedDept);
+        console.log("서버 응답:", response.data);
+
+        this.setState((prevState) => ({
+          // 추가된 부서 정보를 departmentCards에 추가.
+          departmentCards: [...prevState.departmentCards, response.data],
+          content: [...prevState.departmentCards, response.data],
+          // 선택한 부서 정보를 초기화합니다.
+          selectedDept: null,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+        }));
+        this.DouzoneContainer.current.handleSnackbarOpen('부서 등록이 완료됐습니다', 'success');
+      } catch (error) {
+        console.log(error);
+        this.DouzoneContainer.current.handleSnackbarOpen('부서 등록 에러', 'error');
+      }
+    } else {
+
+      try {
+        console.log(selectedDept);
+        const response = await update(`/depmanagement/updatedept`, selectedDept);
+        console.log("서버 응답:", response.data);
+        this.DouzoneContainer.current.handleSnackbarOpen('부서 수정이 완료됐습니다', 'success');
+
+
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   // 삭제 버튼 눌렀을 때
   handleDeleteClick = async (e) => {
@@ -214,13 +214,13 @@ class Acc1011 extends Component {
 
       this.setState({
         departmentCards: newCardList,
-        content : newCardList,
+        content: newCardList,
         selectedDept: null,
         postcode: "",
         roadAddress: "",
         jibunAddress: "",
       });
-      this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'error');
+      this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
     } catch (error) {
       console.log(error);
     }
@@ -310,14 +310,14 @@ class Acc1011 extends Component {
 
   // 조회 조건으로 받은 부서 카드리스트
   handleDepartmentCards = (departmentCards) => {
-    this.setState({ departmentCards,content:departmentCards });
+    this.setState({ departmentCards, content: departmentCards });
   };
 
 
   // 부서 카드리스트를 그려줄 함수
-  onCardItemDraw=()=>{
-   
-    return(
+  onCardItemDraw = () => {
+
+    return (
       <div>
         <Card
           style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
@@ -348,7 +348,7 @@ class Acc1011 extends Component {
                     this.handleCardClick(this.state.content[index].dept_cd)
                   }
                 >
-                 
+
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
                     <Typography
@@ -400,60 +400,60 @@ class Acc1011 extends Component {
   }
 
   render() {
-    const { departmentCards, selectedDept, selectedRead, showModal,complete} = this.state;
+    const { departmentCards, selectedDept, selectedRead, showModal, complete } = this.state;
 
     return (
       <ThemeProvider theme={acc1011theme}>
-        <DouzoneContainer   ref={this.DouzoneContainer}
-                        title={this.state.title} 
-                        delete={this.handleOpenModal}
-                        openDeleteModal={this.state.showModal}
-                        handleClose={this.handleCloseModal}
-                        handleConfirm={this.handleDeleteClick}
-                        showDelete={''}
-                        message="정말로 부서 정보를 삭제하시겠습니까?">
-        <Acc1011Search deptSearch={this.handleDepartmentCards}></Acc1011Search>
-        <form onSubmit={this.handleSaveClick}>
-          <div>
-            <div style={{ padding: "0px" }}>
-              <div>
-                <h5 style={{ margin: "10px" }}>
-                  회사별 조직도(부서)를 등록할 수 있으며,'부서/팀/임시'유형을
-                  선택하여 등록할 수 있습니다.
-                </h5>
+        <DouzoneContainer ref={this.DouzoneContainer}
+          title={this.state.title}
+          delete={this.handleOpenModal}
+          openDeleteModal={this.state.showModal}
+          handleClose={this.handleCloseModal}
+          handleConfirm={this.handleDeleteClick}
+          showDelete={''}
+          message="정말로 부서 정보를 삭제하시겠습니까?">
+          <Acc1011Search deptSearch={this.handleDepartmentCards}></Acc1011Search>
+          <form onSubmit={this.handleSaveClick}>
+            <div>
+              <div style={{ padding: "0px" }}>
+                <div>
+                  <h5 style={{ margin: "10px" }}>
+                    회사별 조직도(부서)를 등록할 수 있으며,'부서/팀/임시'유형을
+                    선택하여 등록할 수 있습니다.
+                  </h5>
+                </div>
+
               </div>
-              
+              <div style={{ display: "flex" }}>
+                <CardList
+                  handleCardClick={this.handleCardClick}
+                  handleNewButtonClick={this.handleNewButtonClick}
+                  onCardItemDraw={this.onCardItemDraw}
+                  content={this.state.content}
+                ></CardList>
+
+                <Acc1011Presentation
+                  selectedDept={selectedDept}
+                  selectedRead={selectedRead}
+                  open={showModal}
+                  complete={complete}
+                  handleCloseModal={this.handleCloseModal}
+                  handleOpenModal={this.handleOpenModal}
+
+
+
+                  handleCoCdChange={this.handleCoCdChange}
+                  handleDeptCdChange={this.handleDeptCdChange}
+                  handleDeptStChange={this.handleDeptStChange}
+                  handleDeptNmChange={this.handleDeptNmChange}
+                  handleDeptTrChange={this.handleDeptTrChange}
+                  handleDeptFgChange={this.handleDeptFgChange}
+                  handleDeleteClick={this.handleDeleteClick}
+                  handlePostComplete={this.handlePostComplete}
+                ></Acc1011Presentation>
+              </div>
             </div>
-            <div style={{ display: "flex" }}>
-              <CardList
-                handleCardClick={this.handleCardClick}
-                handleNewButtonClick={this.handleNewButtonClick}
-                onCardItemDraw={this.onCardItemDraw}
-                content={this.state.content}
-              ></CardList>
-
-              <Acc1011Presentation
-                selectedDept={selectedDept}
-                selectedRead={selectedRead}
-                open={showModal}
-                complete={complete}
-                handleCloseModal={this.handleCloseModal}
-                handleOpenModal={this.handleOpenModal}
-
-
-
-                handleCoCdChange={this.handleCoCdChange}
-                handleDeptCdChange={this.handleDeptCdChange}
-                handleDeptStChange={this.handleDeptStChange}
-                handleDeptNmChange={this.handleDeptNmChange}
-                handleDeptTrChange={this.handleDeptTrChange}
-                handleDeptFgChange={this.handleDeptFgChange}
-                handleDeleteClick={this.handleDeleteClick}
-                handlePostComplete={this.handlePostComplete}
-              ></Acc1011Presentation>
-            </div>
-          </div>
-        </form>
+          </form>
         </DouzoneContainer>
       </ThemeProvider>
     );
