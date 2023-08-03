@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { get, post, del } from "../../components/api_url/API_URL";
+import { get, post, del, update } from "../../components/api_url/API_URL";
 import CardList from "../../components/commons/CardList"; // CardList 컴포넌트 임포트
 import Acc1011Presentation from "./Acc1011Presentation"; // Acc1011Presentation 컴포넌트 임포트
-import { ThemeProvider, createTheme } from "@mui/material";
+import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
+import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
+import Acc1011Search from "./Acc1011Search"; 
+import { Box } from "@mui/system";
 
 const acc1011theme = createTheme({
   components: {
@@ -41,16 +44,17 @@ const acc1011theme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        root: {
-          "&:hover $notchedOutline": {
-            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          root: {
+              '&:hover $notchedOutline': {
+                  borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
+              },
+              '&.Mui-focused $notchedOutline': {
+                  borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
+              },
+              borderRadius: 0,
           },
-          "&.Mui-focused $notchedOutline": {
-            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
-          },
-        },
       },
-    },
+  },
     MuiCard: {
       styleOverrides: {
         root: {
@@ -74,6 +78,7 @@ class Acc1011 extends Component {
       departmentCards: [], // 카드리스트 저장할 빈 배열
       selectedDept: null, // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
+      content:[],
 
       postcode: "", //우편번호 찾기 저장할 상태 변수
       roadAddress: "",
@@ -81,14 +86,24 @@ class Acc1011 extends Component {
 
       showModal: false,
 
+       //완료 확인
+       complete: '',
+
+      title: '부서관리',
+
+      
+      
+      
+
 
     };
+    this.DouzoneContainer = React.createRef();
   }
 
   componentDidMount() {
     get(`/depmanagement`)
       .then((response) => {
-        this.setState({ departmentCards: response.data, selectedRead: "Y" });
+        this.setState({ departmentCards: response.data, selectedRead: "Y", content:response.data });
       })
       .catch((error) => {
         console.log(error);
@@ -105,6 +120,7 @@ class Acc1011 extends Component {
       this.setState({
         selectedDept: response.data,
         selectedRead: "N",
+        complete: '',
       });
     } catch (error) {
       console.log(error);
@@ -117,47 +133,67 @@ class Acc1011 extends Component {
     this.setState({
       selectedDept: null,
       selectedRead: "Y",
+      complete: '',
     });
   };
 
-  //저장버튼에 일단 삽입만 구현(업데이트 아직)
-  handleSaveClick = async (e) => {
-    e.preventDefault();
-    const { selectedDept } = this.state;
+ //저장버튼
+ handleSaveClick = async (e) => {
+  e.preventDefault();
+  const { selectedDept, selectedRead } = this.state;
 
-    // 선택한 부서가 있는지 확인하기 위해 selectedDept가 null이 아닌지 확인합니다.
-    if (selectedDept) {
-      // 부서코드가 비어있는지 확인합니다.
-      if (!selectedDept.dept_cd) {
-        console.log("부서코드를 입력해주세요.");
-        return;
-      }
-      // 부서명이 비엉있는지 확인합니다.
-      if (!selectedDept.dept_nm) {
-        console.log("부서명을 입력해주세요.");
-        return;
-      }
 
-      try {
-        const response = await post(`/depmanagement/adddept`, selectedDept);
-        console.log("서버 응답:", response.data);
+  // 부서코드가 비어있는지 확인합니다.
+  if (!selectedDept.dept_cd) {
+    console.log("부서코드를 입력해주세요.");
+    return;
+  }
+  // 부서명이 비엉있는지 확인합니다.
+  if (!selectedDept.dept_nm) {
+    console.log("부서명을 입력해주세요.");
+    return;
+  }
 
-        this.setState((prevState) => ({
-          // 추가된 부서 정보를 departmentCards에 추가.
-          departmentCards: [...prevState.departmentCards, response.data],
-          // 선택한 부서 정보를 초기화합니다.
-          selectedDept: null,
-          postcode: "",
-          roadAddress: "",
-          jibunAddress: "",
-        }));
-      } catch (error) {
-        console.log(error);
-      }
+  
+  //삽입 기능
+  // 선택한 부서가 있는지 확인하기 위해 selectedDept가 null이 아닌지 확인합니다.
+  if (selectedRead === "Y") {
+    
+    try {
+      
+      const response = await post(`/depmanagement/adddept`, selectedDept);
+      console.log("서버 응답:", response.data);
+
+      this.setState((prevState) => ({
+        // 추가된 부서 정보를 departmentCards에 추가.
+        departmentCards: [...prevState.departmentCards, response.data],
+        content: [...prevState.departmentCards, response.data],
+        // 선택한 부서 정보를 초기화합니다.
+        selectedDept: null,
+        postcode: "",
+        roadAddress: "",
+        jibunAddress: "",
+      }));
+      this.DouzoneContainer.current.handleSnackbarOpen('부서 등록이 완료됐습니다', 'success');
+    } catch (error) {
+      console.log(error);
+      this.DouzoneContainer.current.handleSnackbarOpen('부서 등록 에러', 'error');
     }
-  };
+  } else {
 
-  //const newCardList = departmentcards.filter(item => item != dept_cd)
+    try {
+      console.log(selectedDept);
+      const response = await update(`/depmanagement/updatedept`, selectedDept);
+      console.log("서버 응답:", response.data);
+      this.DouzoneContainer.current.handleSnackbarOpen('부서 수정이 완료됐습니다', 'success');
+      
+
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
 
   // 삭제 버튼 눌렀을 때
   handleDeleteClick = async (e) => {
@@ -178,11 +214,13 @@ class Acc1011 extends Component {
 
       this.setState({
         departmentCards: newCardList,
+        content : newCardList,
         selectedDept: null,
         postcode: "",
         roadAddress: "",
         jibunAddress: "",
       });
+      this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'error');
     } catch (error) {
       console.log(error);
     }
@@ -269,11 +307,112 @@ class Acc1011 extends Component {
   handleCloseModal = () => {
     this.setState({ showModal: false });
   };
+
+  // 조회 조건으로 받은 부서 카드리스트
+  handleDepartmentCards = (departmentCards) => {
+    this.setState({ departmentCards,content:departmentCards });
+  };
+
+
+  // 부서 카드리스트를 그려줄 함수
+  onCardItemDraw=()=>{
+   
+    return(
+      <div>
+        <Card
+          style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
+          class="noHoverEffect"
+        >
+          <CardContent>
+            <Typography variant="caption">
+              부서 수 : {this.state.content.length}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            </Typography>
+          </CardContent>
+        </Card>
+        <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
+          {/* 스크롤바 영역 설정 */}
+          <Grid container spacing={2}>
+            {this.state.content.map((item, index) => (
+              <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    border: "0.5px solid lightgrey",
+                    marginRight: "2px",
+                    display: "flex",
+                  }}
+                  onClick={() =>
+                    this.handleCardClick(this.state.content[index].dept_cd)
+                  }
+                >
+                 
+                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                    {/* item1,item2 */}
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.dept_st}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.dept_nm}
+                    </Typography>
+                    <div> </div>
+                  </CardContent>
+                  <CardContent
+                    style={{
+                      marginLeft: "30px",
+                      paddingLeft: "0",
+                      paddingRight: "0",
+                      minWidth: "100px",
+                    }}
+                  >
+                    {/* item3 */}
+                    <Typography variant="body2">
+                      {item.dept_cd}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </div>
+    )
+  }
+
   render() {
-    const { departmentCards, selectedDept, selectedRead, showModal } = this.state;
+    const { departmentCards, selectedDept, selectedRead, showModal,complete} = this.state;
 
     return (
       <ThemeProvider theme={acc1011theme}>
+        <DouzoneContainer   ref={this.DouzoneContainer}
+                        title={this.state.title} 
+                        delete={this.handleOpenModal}
+                        openDeleteModal={this.state.showModal}
+                        handleClose={this.handleCloseModal}
+                        handleConfirm={this.handleDeleteClick}
+                        showDelete={''}
+                        message="정말로 부서 정보를 삭제하시겠습니까?">
+        <Acc1011Search deptSearch={this.handleDepartmentCards}></Acc1011Search>
         <form onSubmit={this.handleSaveClick}>
           <div>
             <div style={{ padding: "0px" }}>
@@ -283,18 +422,21 @@ class Acc1011 extends Component {
                   선택하여 등록할 수 있습니다.
                 </h5>
               </div>
+              
             </div>
             <div style={{ display: "flex" }}>
               <CardList
-                content={departmentCards}
                 handleCardClick={this.handleCardClick}
                 handleNewButtonClick={this.handleNewButtonClick}
+                onCardItemDraw={this.onCardItemDraw}
+                content={this.state.content}
               ></CardList>
 
               <Acc1011Presentation
                 selectedDept={selectedDept}
                 selectedRead={selectedRead}
                 open={showModal}
+                complete={complete}
                 handleCloseModal={this.handleCloseModal}
                 handleOpenModal={this.handleOpenModal}
 
@@ -312,6 +454,7 @@ class Acc1011 extends Component {
             </div>
           </div>
         </form>
+        </DouzoneContainer>
       </ThemeProvider>
     );
   }
