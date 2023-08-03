@@ -1,12 +1,10 @@
 import { Component } from "react";
 import Header from "../header/Header";
-import { Link } from 'react-router-dom';
 import Nav from "../nav/Nav.js";
 import LoginImage from '../../images/mainPage.png'
 import './mainPage.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 //import PrivateRoute from '../components/routes/PrivateRoute';
-import { Switch } from 'react-router-dom';
 import Acc1010 from './../../pages/empManagement/Acc1010';
 import Acc1011 from './../../pages/depManagement/Acc1011';
 import Acc1012 from './../../pages/tradeManagement/Acc1012';
@@ -20,6 +18,8 @@ import Acc1013 from './../../pages/companyReg/Acc1013';
 import { Redirect } from "react-router-dom/cjs/react-router-dom";
 import Acc1013Con from "../../pages/companyReg/Acc1013Con";
 import Acc1012Con from './../../pages/tradeManagement/Acc1012Con';
+import MainPageHome from "../../pages/MainPageHome";
+import PrivateRoute from "../routes/PrivateRoute";
 
 class MainPage extends Component {
 
@@ -53,34 +53,28 @@ class MainPage extends Component {
 
     return (
       <Router>
-        <div class="mainPage-container">
+        <div className="mainPage-container">
           <Header selectedButton={selectedButton} changeNav={this.changeNav.bind(this)}></Header>
 
           <div style={{ display: 'flex' }}>
 
-            <div class={drawer === true ? "nav-container" : "navhide"}>
+            <div className={drawer === true ? "nav-container" : "navhide"}>
 
               <Nav onButtonClick={this.handleButtonClick} ></Nav>
             </div>
-            <div class="section-container" style={{ paddingLeft: 2 }} >
-              {!isButtonClicked && (
-                <img src={LoginImage}
-                  alt=""
-                  style={{ marginLeft: '300px', marginTop: '20px', width: '85%', height: 'auto', maxHeight: '100%', objectFit: 'cover' }}
-                />
-              )}
+            <div className="section-container" style={{ paddingLeft: 2 }} >
+
               <Switch>
-
-                <Route path='/empmanagement' component={Acc1010} />
-                <Route path='/depmanagement' component={Acc1011} />
-                <Route path='/trademanagement' component={Acc1012Con} />
-                <Route path='/companyreg' component={Acc1013Con} />
-                <Route path='/regcar' component={Acd1010} />
-                <Route path='/cardrivelogmanagement' component={Acd1011} />
-                <Route path='/relcoststate' component={Acd1012} />
-                <Route path='/cardriveexcelupload' component={Ace1010} />
-                <Route path='/cardrivelogpersonal' component={Ace1011} />
-
+                <Route path='/mainpage' exact component={MainPageHome} />
+                <Route path='/mainpage/empmanagement' component={Acc1010} />
+                <Route path='/mainpage/depmanagement' component={Acc1011} />
+                <Route path='/mainpage/trademanagement' component={Acc1012Con} />
+                <Route path='/mainpage/companyreg' component={Acc1013Con} />
+                <Route path='/mainpage/regcar' component={Acd1010} />
+                <Route path='/mainpage/cardrivelogmanagement' component={Acd1011} />
+                <Route path='/mainpage/relcoststate' component={Acd1012} />
+                <Route path='/mainpage/cardriveexcelupload' component={Ace1010} />
+                <Route path='/mainpage/cardrivelogpersonal' component={Ace1011} />
               </Switch>
 
 

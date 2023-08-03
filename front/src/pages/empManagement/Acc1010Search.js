@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { blue } from "@mui/material/colors";
-import { getMany } from "../../components/api_url/API_URL";
+import { getByQueryString } from "../../components/api_url/API_URL";
 import { Component } from "react";
 
 class Acc1010Search extends Component {
@@ -28,7 +28,7 @@ class Acc1010Search extends Component {
       nameIdEmail: ""
     };
   }
-  clearFields = () => {
+  handleclearFields = () => {
     this.setState({
       company: "",
       status: "",
@@ -36,16 +36,17 @@ class Acc1010Search extends Component {
     });
   };
 
+
   empSearch = async () => {
     const { company, status, nameIdEmail } = this.state;
 
     try {
       const queryString = `?company=${company || ""}&status=${status || ""}&nameIdEmail=${nameIdEmail || ""}`;
-      const response = await getMany(`/emp/empsearch${queryString}`);
+      const response = await getByQueryString(`/emp/empsearch${queryString}`);
       const employeeCards = response.data;
       console.log(employeeCards)
       this.props.empSearch(employeeCards);
-      this.clearFields();
+      // this.handleclearFields();
     } catch (error) {
       console.log(error);
     }
@@ -110,7 +111,7 @@ class Acc1010Search extends Component {
         <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
           <SearchIcon onClick={this.empSearch} />
         </IconButton>
-        <button onClick={this.clearFields}>Clear Fields</button>
+        <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
 
       </div>
     )

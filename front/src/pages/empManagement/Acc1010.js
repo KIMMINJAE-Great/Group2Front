@@ -11,9 +11,12 @@ import {
     Select,
     TextField,
     Typography,
+    Snackbar,
+    Alert,
+    Slide,
 } from "@mui/material";
 import profile from "../../images/profile.png";
-import { Component } from "react";
+import React, { Component } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { Box, height } from "@mui/system";
 import { createTheme } from '@mui/material';
@@ -29,12 +32,13 @@ import Acc1010Basic from "./Acc1010Basic";
 
 import { Link, NavLink, Redirect } from "react-router-dom/cjs/react-router-dom";
 import { get, post, update, del } from "../../components/api_url/API_URL";
-import DeleteDialog from '../../components/commons/DeleteDialog'
 
 import Acc1010Mauth from "./Acc1010Mauth";
 import CardList from "../../components/commons/CardList";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acc1010Search from "./Acc1010Search";
+import { queryByAttribute } from "@testing-library/react";
+import { getByQueryString } from "../../components/api_url/API_URL";
 const acc1010theme = createTheme({
     components: {
         MuiListItemText: {
@@ -77,6 +81,7 @@ const acc1010theme = createTheme({
                     '&.Mui-focused $notchedOutline': {
                         borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
                     },
+                    borderRadius: 0,
                 },
             },
         },
@@ -116,17 +121,20 @@ class Acc1010 extends Component {
             //완료 확인
             complete: '',
 
-            title: '사원관리'
+            title: '사원관리',
+            mauth: [],
+
+            errorMessage: '',
 
         };
-        //this.empInfoChange.bind(this);
+        this.DouzoneContainer = React.createRef();
     }
 
     //  Acc1010이 렌더링 되기전에 CardList에 담을 사원들의 정보를 가져옴
     componentDidMount() {
         this.forRender();
     }
-
+    // 재사용 하기위해 componenetDidMount에서 함수로 분리
     forRender = () => {
         (async () => {
             try {
@@ -149,7 +157,7 @@ class Acc1010 extends Component {
     // Acc1010Basic의 내용을 다 비움
     addCard = () => {
         this.firstEmpCard()
-        this.setState({ complete: '' })
+        this.setState({ complete: '', errorMessage: '' })
     }
 
     //  주소 찾기
@@ -178,10 +186,12 @@ class Acc1010 extends Component {
             try {
                 const response = await post('/emp/register', selectedCard);
                 this.setState({ employeeCards: [...this.state.employeeCards, response.data] });
-                this.setState({ complete: '완료되었습니다.' })
-
+                //this.setState({ complete: '완료되었습니다.' })
+                this.DouzoneContainer.current.handleSnackbarOpen('사원 등록이 완료되었습니다.', 'success');
             } catch (error) {
                 console.log('사원 등록 에러 : ' + error)
+                this.setState({ errorMessage: error.response.data })
+                this.DouzoneContainer.current.handleSnackbarOpen('사원 등록 에러', 'error');
             }
 
             // 기존 사원 수정
@@ -190,9 +200,10 @@ class Acc1010 extends Component {
                 const response = await update('/emp/update', selectedCard);
                 console.log(response.data);
                 //this.setState({ complete: '' })
-                this.setState({ complete: '완료되었습니다.' })
+                //this.setState({ complete: '수정되었습니다.' })
+                this.DouzoneContainer.current.handleSnackbarOpen('사원수정이 완료되었습니다.', 'success');
             } catch (error) {
-                console.log('사원 수정 에러 : ' + error)
+                this.DouzoneContainer.current.handleSnackbarOpen('사원 수정 에러', 'error');
             }
 
             console.log('기존 회원 수정')
@@ -216,8 +227,10 @@ class Acc1010 extends Component {
             this.setState({
                 employeeCards: newCardList,
             })
+            this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제가 완료되었습니다.', 'success');
             this.firstEmpCard();
         } catch (error) {
+            this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제 실패하였습니다.', 'error');
             console.log('사원 등록 에러 : ' + error)
         }
 
@@ -236,12 +249,31 @@ class Acc1010 extends Component {
                     newEmp: 'N'
                 },
                 complete: '',
+                errorMessage: '',
+                //mauth: Array.isArray(response.data) ? response.data : [],
 
             });
+
+            // 카드 클릭시 해당 사원의 메뉴권한 가져오기
+            this.getmauth(emp_cd);
         } catch (error) {
             console.log(error);
         }
     };
+
+
+    getmauth = async (emp_cd) => {
+        try {
+            // const queryString = `?emp_cd=${emp_cd}`;
+            const response = await getByQueryString(`/emp/getmauth/${emp_cd}`);
+            const getmauth = response.data;
+            console.log(getmauth);
+            this.setState({ mauth: Array.isArray(getmauth) ? getmauth : [] }); //some을 쓰기 위해 항상 배열로 만듬
+        } catch (error) {
+            console.log(error + "메뉴권한 가져오기 실패");
+        }
+    }
+
     // 조회 조건으로 받은 사원 카드리스트
     handleEmployeeCards = (employeeCards) => {
         this.setState({ employeeCards });
@@ -287,7 +319,7 @@ class Acc1010 extends Component {
 
 
 
-    empNmChange = (value) => {
+    handleEmpNmChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -295,7 +327,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empEmpCdChange = (value) => {
+    handleEmpEmpCdChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -303,7 +335,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empCoCdChange = (value) => {
+    handleEmpCoCdChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -311,7 +343,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empIdChange = (value) => {
+    handleEmpIdChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -319,7 +351,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empDeptChange = (value) => {
+    handleEmpDeptChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -327,7 +359,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empPwChange = (value) => {
+    handleEmpPwChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -335,7 +367,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empAppPwChange = (value) => {
+    handleEmpAppPwChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -343,7 +375,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empGenderChange = (value) => {
+    handleEmpGenderChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -351,7 +383,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empLangChange = (value) => {
+    handleEmpLangChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -359,7 +391,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empEmail1Change = (value) => {
+    handleEmpEmail1Change = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -367,7 +399,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empEmail2Change = (value) => {
+    handleEmpEmail2Change = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -375,7 +407,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empSEmail1Change = (value) => {
+    handleEmpSEmail1Change = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -383,7 +415,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empSEmail2Change = (value) => {
+    handleEmpSEmail2Change = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -391,7 +423,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empMobileChange = (value) => {
+    handleEmpMobileChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -402,7 +434,7 @@ class Acc1010 extends Component {
 
 
 
-    empHPhoneChange = (value) => {
+    handleEmpHPhoneChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -411,7 +443,7 @@ class Acc1010 extends Component {
         }));
     }
 
-    empHrdChange = (value) => {
+    handleEmpHrdChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -419,7 +451,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empResiChange = (value) => {
+    handleEmpResiChange = (value) => {
         this.setState((prevState) => ({
             selectedCard: {
                 ...prevState.selectedCard,
@@ -427,14 +459,7 @@ class Acc1010 extends Component {
             },
         }));
     }
-    empNmChange = (value) => {
-        this.setState((prevState) => ({
-            selectedCard: {
-                ...prevState.selectedCard,
-                emp_nm: value,
-            },
-        }));
-    }
+
 
 
     //  ?
@@ -442,7 +467,11 @@ class Acc1010 extends Component {
         this.setState({ selectedDate: date });
     };
 
+    aaa = () => {
+
+    }
     render() {
+
         const user = JSON.parse(sessionStorage.getItem('user'));
 
         // 'authorities' 키가 존재하고 그 값이 배열이라면 첫 번째 요소의 'authority' 키의 값을 가져옵니다.
@@ -456,13 +485,23 @@ class Acc1010 extends Component {
         return (
             <Router>
                 <ThemeProvider theme={acc1010theme}>
-                    <DouzoneContainer title={this.state.title} delete={this.handleOpenModal}>
+                    <DouzoneContainer
+                        ref={this.DouzoneContainer}
+                        title={this.state.title} delete={this.handleOpenModal}
+                        functionArea={[{ title: '즐겨찾기', id: 'aaa', onClick: this.aaa.bind(this) }]}
+                        openDeleteModal={this.state.showModal}
+                        handleClose={this.handleCloseModal}
+                        handleConfirm={this.deleteEmp}
+                        showDelete={''}
+                        //title="사원 삭제 확인"
+                        message="정말로 사원 정보를 삭제하시겠습니까?"
+                    >
 
                         <Acc1010Search empSearch={this.handleEmployeeCards}
 
                         ></Acc1010Search>
 
-                        <div class="acc1010-container" style={{ display: 'flex' }}>
+                        <div className="acc1010-container" style={{ display: 'flex' }}>
                             <CardList
                                 content={employeeCards}
                                 handleCardClick={this.handleCardClick}
@@ -473,9 +512,9 @@ class Acc1010 extends Component {
 
 
                             {/* 카드리스트 pp< */}
-                            <form onSubmit={this.addOrUpdate} class="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
+                            <form onSubmit={this.addOrUpdate} className="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
                                 {/* Header < */}
-                                <div class="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
+                                <div className="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
                                     <span style={{ fontWeight: 'bold' }} >ㆍ상세정보 </span>
                                     <span style={{ fontWeight: 'bold', color: 'red' }}> {this.state.complete}</span>
                                     <div style={{ display: 'flex' }}>
@@ -483,21 +522,15 @@ class Acc1010 extends Component {
                                         <Button type="submit">저장</Button>
                                         {/* //<Button onClick={this.handleOpenModal}>삭제</Button> */}
                                         {/* 삭제 확인 */}
-                                        < DeleteDialog
-                                            open={this.state.showModal}
-                                            handleClose={this.handleCloseModal}
-                                            handleConfirm={this.deleteEmp}
-                                            title="사원 삭제 확인"
-                                            message="정말로 사원 정보를 삭제하시겠습니까?"
-                                        />
+
                                     </div>
 
 
                                 </div>
 
                                 {/* submenu < */}
-                                <div class="acc1010-submenu-name-container">
-                                    | <NavLink to="/basic" activeStyle={{
+                                <div className="acc1010-submenu-name-container">
+                                    | <NavLink to="/mainpage/empmanagement/basic" activeStyle={{
                                         color: 'rgb(82, 82, 244)',
                                         textDecoration: 'none'
                                     }}
@@ -508,7 +541,7 @@ class Acc1010 extends Component {
                                     {authority === 'ROLE_ADMIN' &&
 
                                         <NavLink
-                                            to="/mauth"
+                                            to="/mainpage/empmanagement/mauth"
                                             activeStyle={{
                                                 color: 'rgb(82, 82, 244)',
                                                 textDecoration: 'none'
@@ -523,37 +556,40 @@ class Acc1010 extends Component {
 
                                 {/* 기초정보, 조직정보 Switch */}
                                 <Switch>
-                                    <Route exact path="/basic">
+                                    <Route exact path="/mainpage/empmanagement/basic">
                                         <Acc1010Basic
                                             selectedCard={this.state.selectedCard}
-
-                                            empEmpCdChange={this.empEmpCdChange}
-                                            empCoCdChange={this.empCoCdChange}
-                                            empIdChange={this.empIdChange}
-                                            empPwChange={this.empPwChange}
-                                            empGenderChange={this.empGenderChange}
-                                            empLangChange={this.empLangChange}
-                                            empEmail1Change={this.empEmail1Change}
-                                            empEmail2Change={this.empEmail2Change}
-                                            empSEmail1Change={this.empSEmail1Change}
-                                            empSEmail2Change={this.empSEmail2Change}
-                                            empMobileChange={this.empMobileChange}
-                                            empHPhoneChange={this.empHPhoneChange}
+                                            errorMessage={this.state.errorMessage}
+                                            handleEmpEmpCdChange={this.handleEmpEmpCdChange}
+                                            handleEmpCoCdChange={this.handleEmpCoCdChange}
+                                            handleEmpIdChange={this.handleEmpIdChange}
+                                            handleEmpPwChange={this.handleEmpPwChange}
+                                            handleEmpGenderChange={this.handleEmpGenderChange}
+                                            handleEmpLangChange={this.handleEmpLangChange}
+                                            handleEmpEmail1Change={this.handleEmpEmail1Change}
+                                            handleEmpEmail2Change={this.handleEmpEmail2Change}
+                                            handleEmpSEmail1Change={this.handleEmpSEmail1Change}
+                                            handleEmpSEmail2Change={this.handleEmpSEmail2Change}
+                                            handleEmpMobileChange={this.handleEmpMobileChange}
+                                            handleEmpHPhoneChange={this.handleEmpHPhoneChange}
                                             handlePostComplete={this.handlePostComplete}
-                                            empHrdChange={this.empHrdChange}
-                                            empDeptChange={this.empDeptChange}
-                                            empAppPwChange={this.empAppPwChange}
-                                            empResiChange={this.empResiChange}
-                                            empNmChange={this.empNmChange}
+                                            handleEmpHrdChange={this.handleEmpHrdChange}
+                                            handleEmpDeptChange={this.handleEmpDeptChange}
+                                            handleEmpAppPwChange={this.handleEmpAppPwChange}
+                                            handleEmpResiChange={this.handleEmpResiChange}
+                                            handleEmpNmChange={this.handleEmpNmChange}
 
                                         //{...this.state} onComplete={this.handlePostComplete}
                                         />
 
                                     </Route>
-                                    <Route path="/mauth">
-                                        <Acc1010Mauth selectedCard={this.state.selectedCard} />
+                                    <Route path="/mainpage/empmanagement/mauth">
+                                        <Acc1010Mauth selectedCard={this.state.selectedCard}
+                                            mauth={this.state.mauth}
+                                            handleCardClick={this.handleCardClick}
+                                        />
                                     </Route>
-                                    <Redirect from="/" to="/basic" />
+                                    <Redirect from="/mainpage/empmanagement" to="/mainpage/empmanagement/basic" />
                                 </Switch>
 
                                 {/* Form Container > */}

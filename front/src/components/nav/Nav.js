@@ -52,7 +52,7 @@ class Nav extends Component {
   // 메뉴 컴포넌트 호출
   handleButtonClick = (value, url, menucd) => {
     console.log('메뉴 컴포넌트 호출')
-    this.props.history.push(`/${url}`);
+    this.props.history.push(`/mainpage/${url}`);
     this.props.onButtonClick(value, url, menucd);
   };
 
@@ -64,7 +64,7 @@ class Nav extends Component {
           sx={{
             width: '100%',
             bgcolor: '#f5f5f5',
-            height: '100%',
+            height: '99.9%',
             borderRight: 'solid 0.1px black',
             overflowY: 'auto'
           }}

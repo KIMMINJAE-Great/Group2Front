@@ -17,9 +17,10 @@ class Header extends Component {
   }
   logout = async () => {
     try {
-      const response = await post('/emp/logout');
+      const response = await post('/auth/logout');
       if (response.status === 200) {
         sessionStorage.removeItem('user');
+        localStorage.removeItem('user');
         window.location.href = "/";
       }
     } catch (error) {
@@ -52,7 +53,7 @@ class Header extends Component {
             &nbsp;&nbsp;
             <p>{user ? name : '로그인 안된 상태'}<br />아마란스10 개발팀</p>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Select variant="outlined" class="header-select" sx={{
+            <Select variant="outlined" className="header-select" sx={{
               '& .MuiOutlinedInput-notchedOutline': {
                 border: 'none'
               },
@@ -70,7 +71,7 @@ class Header extends Component {
 
 
         </Box>
-        <div class="bar">
+        <div className="bar">
           <MenuIcon sx={{ color: 'white', fontSize: 45, background: '#0f8bff', borderRadius: 1 }} onClick={this.props.changeNav}></MenuIcon>
           &nbsp;&nbsp;&nbsp;
           <Typography style={{ color: 'white', fontSize: '21px', fontWeight: 'bold' }}>

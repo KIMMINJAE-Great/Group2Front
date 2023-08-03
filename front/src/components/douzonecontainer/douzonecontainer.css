@@ -1,3 +1,7 @@
+.douzone-container {
+  overflow-y: auto;
+  width: 100%;
+}
 .container-header {
   display: flex;
   justify-content: space-between;
@@ -21,7 +25,7 @@
 }
 
 .deleteIcon {
-  font-size: 100px;
+  /* font-size: 30px; */
   color: rgb(135, 132, 132);
   margin-right: 10px;
   margin-left: 10px;
