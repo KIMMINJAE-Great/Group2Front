@@ -36,28 +36,28 @@ class CardList extends Component {
           item3: item.co_nk,
           item4: item.adm_cd,
           itemcode: item.co_cd,
-          
+
         });
         label = "회사 "
-      }else if (item.hasOwnProperty("car_cd")) {
+      } else if (item.hasOwnProperty("car_cd")) {
         contentArray.push({
           item1: item.car_nm, //차량이름 코드
           item2: item.car_nb,  //차량번호 코드
-          
+
           itme4: item.car_cd, //차량이름 코드
           item5: item.dept_cd, //부서코드
           item6: item.emp_cd, //사원 코드
-          itme7: item.acct_cd , //
+          itme7: item.acct_cd, //
           item8: item.asset_cd, //자산코드
-          
-          
+
+
           itemcode: item.car_cd,
-          
+
         });
         label = "차량등록 "
       }
     });
-  
+
 
     return (
       <div

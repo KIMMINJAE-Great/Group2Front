@@ -1,632 +1,622 @@
 import React, { Component } from "react";
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 
-/* 아래는 수정한 부분 */
-import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import { Button, Card, CardContent, IconButton, FormControlLabel, FormControl, FormLabel, Radio, RadioGroup } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { styled } from "@mui/material/styles";
-import MonitorIcon from '@mui/icons-material/Monitor';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { color } from "@mui/system";
-import { post, get, del } from '../../components/api_url/API_URL';
-import profile from '../../images/logo.png'
-import Postcode from "../../components/commons/Postcode";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Acc1012Con from "./Acc1012Con";
+import Acc1012Header from "./Acc1012Header";
+import Acc1012Trade from "./Acc1012Trade";
+import Acc1012TdManage from "./Acc1012TdManage";
 
-/* 아이콘 버튼 테마 css */
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: '#F0F0F0', /* 밝은 회색 배경색 */
-  width: theme.spacing(3), /* 버튼의 크기를 줄이기 위해 사용 */
-  height: theme.spacing(3),
-  borderRadius: '50%',
-  marginLeft: 10,
-  marginTop: -7,
-  pointerEvents: 'none'
-}));
+import { get, post, del, update, getByQueryString } from "../../components/api_url/API_URL";
+import CardList from "../../components/commons/CardList.js";
+import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer.js";
+import { createTheme } from '@mui/material';
+import { ThemeProvider } from '@emotion/react';
+// import DeleteDialog from "../../components/commons/DeleteDialog";
 
+
+const Acc1012theme = createTheme({
+  components: {
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          fontSize: '15px',
+          fontWeight: 'bold',
+          height: '15px',
+          lineHeight: '15px'
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          backgroundColor: "#FBFBFB",
+          color: "black",
+        }
+      },
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+        fullWidth: true,
+      }
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&:hover $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+          },
+          '&.Mui-focused $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          '&:hover ': {
+            cursor: 'pointer',
+            border: '1px solid #0f8bff',
+          }, '&.noHoverEffect:hover': {
+            cursor: 'auto',
+            border: 'none',
+          },
+        },
+      },
+    }
+
+  },
+});
 class Acc1012 extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
+      stradeCards: [], /* 카드리스트 저장할 빈 배열 */
+      selectedSt: null,    /* 거래처 단일 행 정보 */
+      searchSt: null, /* 거래처 검색 행 정보 */
+
+      postcode: "", /* 우편번호 찾기 저장할 상태 변수 */
+      roadAddress: "",
+      jibunAddress: "",
+      title: '일반거래처 등록',
+      showModal: false,
+
+      tr_cd: '',
+      tr_nm: '',
+      tr_fg: '',
+      searchResults: [],
+      showAcc1012Con: true,
+      showAcc1012Trade: false,
+      showAcc1012TdManage: false,
 
     };
   }
-  /* 돋보기 버튼 클릭시 조회조건에 따라 검색, card List 불러오기 */
-  handleSearchClick = async () => {
-    const requestData = {
-      /* 예시: tradeManagementDTO 데이터를 사용 예정 */
-    };
+
+  handleMoveBasic = () => {
+    this.setState({
+      showAcc1012Con: true,
+      showAcc1012Trade: false,
+      showAcc1012TdManage: false,
+    });
+    console.log("handleMoveBasic 실행됨 !!!");
+  };
+
+  handleMoveTrade = () => {
+    this.setState({
+      showAcc1012Con: false,
+      showAcc1012Trade: true,
+      showAcc1012TdManage: false,
+    });
+    console.log("handleMoveTrade 실행됨 !!!")
+  }
+
+  handleMoveTdManage = () => {
+    this.setState({
+      showAcc1012Con: false,
+      showAcc1012Trade: false,
+      showAcc1012TdManage: true,
+    });
+    console.log("handleMoveTdManage 실행됨 !!!")
+  }
+
+  // 모달 열기
+  handleOpenModal = () => {
+    this.setState({ showModal: true });
+  }
+  // 모달 닫기
+  handleCloseModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  componentDidMount() {
+    this.forRender();
+  }
+  forRender = () => {
+    (async () => {
+      try {
+        const response = await get('/tradeManagement');
+
+        const stradeCards = response.data.map(card => ({
+          ...card,
+          newTrade: 'Y',
+        }));
+
+        this.setState({ stradeCards });
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+    this.firstTradeCard();
+  }
+
+  /* 카드를 클릭했을때 */
+  handleCardClick = async (tr_cd) => {
+    console.log(tr_cd);
 
     try {
-      const response = post('/tradeManagement/getSearchData', requestData);
-      console.log(response.data);
+      const response = await post(`/tradeManagement/getst`, {
+        tr_cd: tr_cd,
+
+      });
+      this.setState({
+        selectedSt: {
+          ...response.data,
+          newTrade: 'N'
+        }
+
+      });
     } catch (error) {
-      console.error('Error:', error);
+      console.log(error);
     }
   };
 
+  firstTradeCard = () => {
+    // 기존 selectedSt의 모든 필드 값을 null로 초기화하고 newEmp를 'Y'로 설정
+
+    this.setState({
+      selectedSt: {
+        tr_fg: '',
+        tr_nm: '',
+        tr_cd: '',
+        tr_al: '',
+        reg_nb: '',
+
+        tr_na: '',
+        re_id: '',
+        tr_ceo_nm: '',
+        tr_bt: '',
+        tr_bc: '',
+
+        tr_ps_cd: '',
+        tr_ad1: '',
+        tr_ad2: '',
+        tr_pn: '',
+        tr_fn: '',
+
+        tr_hp: '',
+        tr_email: '',
+        tr_mn_cd: '',
+        tr_ct_cd: '',
+        newTrade: 'Y'
+
+      }
+    });
+  }
+
+  /* 추가 버튼 */
+  addCard = () => {
+    /* selectedSt 상태를 빈 값으로 업데이트 */
+
+    this.firstTradeCard()
+    this.setState({ complete: '', errorMessage: '' })
+
+  };
+
+  handleSaveClick = async (e) => {
+    e.preventDefault();
+    const { selectedSt } = this.state;
+    console.log("handleSaveClick   실행")
+    /* 필수값 유효성 검사 */
+    if (!selectedSt.tr_fg) {
+      alert("거래처구분을 선택해 주세요.");
+      return;
+    }
+    if (!selectedSt.tr_nm) {
+      alert("거래처명을 입력해 주세요.");
+      return;
+    }
+    // 거래처약칭이 비어있는지 확인합니다.
+    if (!selectedSt.tr_al) {
+      alert("거래처약칭을 입력해 주세요.");
+      return;
+    }
+    console.log('.............' + selectedSt.newTrade)
+    if (selectedSt.newTrade === 'Y') {
+      try {
+        const response = await post(`/tradeManagement/insertSt`, selectedSt);
+
+        alert("저장 되었습니다!")
+
+        this.setState((prevState) => ({
+          /* 추가된 거래처 정보를 stradeCards에 추가 */
+          stradeCards: [...prevState.stradeCards, response.data],
+          /* 선택한 거래처 정보를 초기화 합니다 */
+          selectedSt: null,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await update('/tradeManagement/updateSt', selectedSt);
+        console.log(response.data);
+        this.setState({ complete: '수정되었습니다.' })
+        alert("수정 되었습니다!");
+      } catch (error) {
+        console.log('사원 수정 에러 : ' + error)
+      }
+
+    }
+  };
+
+  /* 거래처 관리 DELETE , 삭제 버튼 */
+  handleDeleteClick = async () => {
+    const { selectedSt, stradeCards } = this.state;
+
+    try {
+      /* 서버에 DELETE 요청 보내기 */
+      const response = await del(
+        `/tradeManagement/deleteSt/${selectedSt.tr_cd}`
+      );
+      console.log("서버 응답", response.data);
+
+      const newCardList = stradeCards.filter(
+        (item) => item.tr_cd !== selectedSt.tr_cd
+      );
+
+      this.setState({
+        stradeCards: newCardList,
+        selectedSt: null,
+        postcode: "",
+        roadAddress: "",
+        jibunAddress: "",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    this.handleCloseModal();
+  };
+
+  /* 변경된 값 필드에 저장 => 거래처구분 */
+  handleTr_fgChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_fg: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 거래처명 */
+  handleTr_nmChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_nm: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 거래처코드 */
+  handleTr_cdChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_cd: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 거래처약칭 */
+  handleTr_alChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_al: value,
+      },
+    }));
+  }
+  /* 변경된 값 필드에 저장 => 사업자등록번호 */
+  handleReg_nbChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        reg_nb: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 주민등록번호(국적) */
+  handleTr_naChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_na: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 주민등록번호(숫자) */
+  handleRe_idChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        re_id: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 대표자명 */
+  handleTr_ceo_nmChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_ceo_nm: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 업태 */
+  handleTr_btChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_bt: value,
+      },
+    }));
+  };/* 변경된 값 필드에 저장 => 업종 */
+  handleTr_bcChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_bc: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 우편번호 (우편번호 + 기본주소)  */
+  handlePostComplete = (data) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_ps_cd: data.zonecode,
+        tr_ad1: data.address,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 우편번호 (상세주소)  */
+  handleTr_ad2Change = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_ad2: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 전화번호 */
+  handleTr_pnChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_pn: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 팩스번호 */
+  handleTr_fnChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_fn: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 홈페이지 */
+  handleTr_hpChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_hp: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 메일주소 */
+  handleTr_emailChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_email: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 주류코드 */
+  handleTr_mn_cdChange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_mn_cd: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 국가코드 */
+  handleTr_ct_cdchange = (value) => {
+    this.setState((inputState) => ({
+      selectedSt: {
+        ...inputState.selectedSt,
+        tr_ct_cd: value,
+      },
+    }));
+  };
+  /* 아래는 SEARCH 에 필요한 값들 this.setState */
+  /* 변경된 값 필드에 저장 => 거래처 구분 */
+  handleSc_Tr_fgChange = (value) => {
+    this.setState((inputState) => ({
+      searchSt: {
+        ...inputState.searchSt,
+        tr_fg: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 거래처 코드 */
+  handleSc_Tr_cdChange = (value) => {
+    this.setState((inputState) => ({
+      searchSt: {
+        ...inputState.searchSt,
+        tr_cd: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 거래처명 */
+  handleSc_Tr_nmChange = (value) => {
+    this.setState((inputState) => ({
+      searchSt: {
+        ...inputState.searchSt,
+        tr_nm: value,
+      },
+    }));
+  };
+  /* 변경된 값 필드에 저장 => 사용여부 */
+  handleUwChange = (value) => {
+    this.setState((inputState) => ({
+      searchSt: {
+        ...inputState.searchSt,
+        useYN: value,
+      },
+    }));
+  };
+
+  /* 조회 했을 때 기능 */
+  handleSearch = async () => {
+    const { searchSt } = this.state;
+
+    console.log("handleSearch 기능 실행!!");
+    try {
+      const queryString = `?tr_cd=${searchSt.tr_cd || ""}&tr_nm=${searchSt.tr_nm || ""}&tr_fg=${searchSt.tr_fg || ""}`;
+      const response = await getByQueryString(`/tradeManagement/getSearchData${queryString}`);
+      console.log(response.data);
+      this.setState({
+        stradeCards: response.data,
+
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   render() {
-    /* Acc1012Con.js 에서 데이터 값 받아오기 */
-    const {
-      select_bp_classification,
-      select_nationality,
-    } = this.props;
-
-    /* const employeeCards = Array.from({ length: 10 }); 10개의 빈 카드 배열 생성 */
-    const departmentCards = [
-      { dept_st: '부서유형1', dept_nm: '부서명1', dept_cd: '부서코드1' },
-      { dept_st: '부서유형2', dept_nm: '부서명2', dept_cd: '부서코드2' },
-      /* 추가적인 항목들... */
-    ];
+    const { stradeCards, selectedSt, searchSt, showAcc1012Con, showAcc1012Trade, showAcc1012TdManage } = this.state;
 
     return (
-      <form>
-        <div>
-          <div style={{ marginBottom: 7 }}>
-            <Grid item xs={12} display="flex" alignItems="center">
-              <Typography variant="h2" sx={{ paddingLeft: '10px', textAlign: 'left', fontSize: '16px', fontWeight: 'bold', mb: 1, mt: 0 }}>
-                일반거래처 등록
-              </Typography>
-              {/* 모니터, 재생모양 button */}
-              <StyledIconButton color="gray">
-                <MonitorIcon />
-              </StyledIconButton>
-              <StyledIconButton color="gray">
-                <PlayArrowIcon />
-              </StyledIconButton>
-            </Grid>
-          </div>
-          <Divider sx={{ width: '99vw' }} />
-          <Box sx={{ maxWidth: '100%', maxHeight: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px', mt: 3, ml: 2 }}>
-            <Grid container spacing={1}>
 
-              <Grid item xs={12} display="flex" alignItems="center">
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}>거래처구분</Typography>
+      <ThemeProvider theme={Acc1012theme} >
+        <div style={{ display: "flex", flexDirection: "column" }}>
 
-                <Select
-                  sx={{ width: '10%', ml: 1, height: '75%' }}
-                  variant="outlined"
-                  size="small"
-                  name="search_bp_classification"
-                  value={this.props.search_bp_classification}
-                  onChange={this.props.onInputChange}
-                  displayEmpty>
-                  <MenuItem value="전체" style={{ color: this.props.search_bp_classification === '전체' ? 'gray' : 'black' }}>전체</MenuItem>
-                  <MenuItem value="일반" style={{ color: this.props.search_bp_classification === '일반' ? 'gray' : 'black' }}>일반</MenuItem>
-                  <MenuItem value="무역" style={{ color: this.props.search_bp_classification === '무역' ? 'gray' : 'black' }}>무역</MenuItem>
-                  <MenuItem value="주민" style={{ color: this.props.search_bp_classification === '주민' ? 'gray' : 'black' }}>주민</MenuItem>
-                  <MenuItem value="기타" style={{ color: this.props.search_bp_classification === '기타' ? 'gray' : 'black' }}>기타</MenuItem>
-                </Select>
+          <DouzoneContainer
 
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_code" >거래처코드</Typography>
-                <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} />
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_name">거래처명</Typography>
-                <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} />
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} >사업자등록번호</Typography>
-                <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} />
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}  >주민등록번호</Typography>
-                <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} />
-                <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px' }}>
-                  <SearchIcon />
-                </IconButton>
-                <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 1, width: '30px', height: '30px' }}>
-                  <ExpandMoreIcon />
-                </IconButton>
 
-              </Grid>
+            title={this.state.title}
+            delete={this.handleOpenModal}
+            openDeleteModal={this.state.showModal}
+            handleClose={this.handleCloseModal}
+            handleConfirm={this.handleDeleteClick}
+            showDelete={''}
+            message="정말로 거래처 정보를 삭제하시겠습니까?"
+          >
 
-              <Grid item xs={12} display="flex" alignItems="center">
-                <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}  >거래처분류</Typography>
-                <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" placeholder="거래처그룹 코드도움" inputProps={{ style: { height: '12px' } }} />
-                <Typography variant="subtitle1" sx={{ marginLeft: 8.5, fontSize: '13px', fontWeight: 'bold' }} >사용여부</Typography>
-                <Select
-                  sx={{ width: '10%', ml: 1, height: '75%' }}
-                  variant="outlined"
-                  size="small"
-                  name="search_useWhether"
-                  value={this.props.search_useWhether}
-                  onChange={this.props.onInputChange}
-                  displayEmpty
-                >
-                  <MenuItem value="전체" style={{ color: this.props.search_useWhether === '전체' ? 'gray' : 'black' }}>전체</MenuItem>
-                  <MenuItem value="사용" style={{ color: this.props.search_useWhether === '사용' ? 'gray' : 'black' }}>사용</MenuItem>
-                  <MenuItem value="미사용" style={{ color: this.props.search_useWhether === '미사용' ? 'gray' : 'black' }}>미사용</MenuItem>
+            <Acc1012Header
+              searchSt={searchSt}
+              handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
+              handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
+              handleSc_Tr_nmChange={this.handleSc_Tr_nmChange}
+              handleUwChange={this.handleUwChange}
 
-                </Select>
-                {/* <TextField sx={{ width: '10%', ml: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} /> */}
-              </Grid>
-            </Grid>
-          </Box>
+              handleSearch={this.handleSearch}
+            >
 
-          {/* <div style={{ display: "flex", float: "left"}}> */}
+            </Acc1012Header>
+            <form onSubmit={this.handleSaveClick}>
 
-          {/* 카드리스트 Start > */}
+              <div style={{ display: "flex" }}>
 
-          <div style={{ display: "flex", float: "left" }}>
-            <div style={{ flex: 0.7 }}>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                {/* 카드리스트 > */}
-                <div
-                  class="cardlist-container"
-                  style={{
-                    maxWidth: "280px",
-                    marginLeft: "5px",
-                    marginTop: "1px",
-                    marginRight: "5px",
-                    borderTop: "2px solid black",
-                  }}
-                >
-                  <div>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                      <Card
-                        style={{
-                          backgroundColor: "#ECECEC",
-                          marginBottom: "5px",
-                        }}
-                      >
-                        <CardContent>
-                          <Typography variant="caption">
-                            회사: Count(*)개
+                <CardList
+                  content={stradeCards}
+                  handleCardClick={this.handleCardClick}
+                  handleNewButtonClick={this.addCard}
+                ></CardList>
 
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                      <Box sx={{ overflowY: "auto", maxHeight: "600px" }}>
-                        {/* 스크롤바 영역 설정 */}
-                        <Grid container spacing={2} >
-                          {this.props.companyCards?.map((sco, index) => (
-                            <Grid
-                              item
-                              xs={12}
-                              sm={12}
-                              md={12}
-                              lg={12}
-                              key={index}
-                            ><Button onClick={(e) => {
-                              this.props.handleCardClick(sco);
-                            }} // 카드 클릭 시 이벤트 처리
-                              sx={{
-                                padding: 0, // 기본 패딩 제거
-                                display: 'block', // 버튼은 블록 요소로 표시되도록 설정
-                                textAlign: 'left', // 좌측 정렬
-                                width: '100%', // 버튼을 100% 너비로 설정하여 전체 영역에 클릭 영역을 만듦
-                              }}>
-                                <Card
-                                  sx={{
-                                    borderRadius: "5px",
-                                    border: "0.5px solid lightgrey",
-                                    marginRight: "2px",
-                                    display: "flex",
-                                  }}
-                                >
-                                  <CardContent
-                                    sx={{
-                                      paddingLeft: "5px",
-                                      paddingRight: "100px", //오른쪽으로가게끔
-                                    }}
-                                  >
-                                    <Typography
-                                      variant="body2"
-                                      style={{
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        width: "90px",
-                                        maxWidth: "90px",
-                                      }}
-                                    >
-                                      {sco.bp_code} {/* 부서코드 */}
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      style={{
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        width: "90px",
-                                        maxWidth: "90px",
-                                      }}
-                                    >
-                                      {sco.bp_name} {/* 부서명 */}
-                                    </Typography>
-                                    <div> </div>
-                                  </CardContent>
-                                  <CardContent
-                                    style={{
-                                      marginRight: "10px",
-                                      paddingLeft: "0",
-                                      paddingRight: "0",
-                                    }}
-                                  >
-                                    {sco.bp_name}
-                                    <Typography
-                                      variant="body2"
-                                      style={{
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        width: "90px",
-                                        maxWidth: "90px",
-                                      }}
-                                    >
-                                      {sco.bp_abbreviation} {/* 부서 닉네임 */}
-                                    </Typography>
-                                  </CardContent>
-                                </Card>
-                              </Button>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Box>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        style={{ backgroundColor: "#FFFFFF", color: "#7A7A7A" }}
-                      >
-                        추가
-                      </Button>
-                    </Grid>
-                  </div>
-                </div>
-              </Grid>
-            </div>
-            {/* 카드리스트 End > */}
-            <div style={{ flex: 2.5 }}>
-              <div>
+                {showAcc1012Con && <Acc1012Con
+                  selectedSt={selectedSt}
+                  showAcc1012Con={showAcc1012Con}
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
 
-                  <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Button variant="subtitle1" onClick={this.Basic_registrationClick} sx={{ ml: 5, fontSize: '14px', fontWeight: '1000', color: '#00bfff' }}>
-                      기본등록사항
-                    </Button>
-                    <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}>|</Typography>
-                    <Typography variant="subtitle1" sx={{ ml: 2, fontSize: '13px', fontWeight: '540', color: 'black' }}>거래등록사항</Typography>
-                    <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}>|</Typography>
-                    <Typography variant="subtitle1" sx={{ ml: 2, fontSize: '13px', fontWeight: '540' }}>거래처담당자관리</Typography>
-                  </Grid>
+                  handleTr_fgChange={this.handleTr_fgChange}
+                  handleTr_nmChange={this.handleTr_nmChange}
+                  handleTr_cdChange={this.handleTr_cdChange}
+                  handleTr_alChange={this.handleTr_alChange}
+                  handleReg_nbChange={this.handleReg_nbChange}
 
-                  <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <div>
-                      <button style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', fontWeight: 'bolder', fontSize: '12px', width: '2.5vw', height: '1.5vw', cursor: 'pointer' }}
-                        onClick={this.props.handleInsertClick} >저장</button>
-                    </div>
+                  handleTr_naChange={this.handleTr_naChange}
+                  handleRe_idChange={this.handleRe_idChange}
+                  handleTr_ceo_nmChange={this.handleTr_ceo_nmChange}
+                  handleTr_btChange={this.handleTr_btChange}
+                  handleTr_bcChange={this.handleTr_bcChange}
 
-                  </Grid>
-                </div>
+                  handlePostComplete={this.handlePostComplete}
+                  handleTr_ad2Change={this.handleTr_ad2Change}
+                  handleTr_hpChange={this.handleTr_hpChange}
+                  handleTr_pnChange={this.handleTr_pnChange}
+                  handleTr_fnChange={this.handleTr_fnChange}
 
-                <Divider sx={{ width: '76vw', borderBottom: '2px solid gray' }} />
 
-                <Grid
-                  item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                  <Typography variant="subtitle1" sx={{ ml: 3, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>기본정보</Typography>
-                </Grid>
+                  handleTr_emailChange={this.handleTr_emailChange}
+                  handleTr_mn_cdChange={this.handleTr_mn_cdChange}
+                  handleTr_ct_cdchange={this.handleTr_ct_cdchange}
 
-                <Divider sx={{ width: '76vw' }} />
+                  handleSearch={this.handleSearch}
+
+                  handleSaveClick={this.handleSaveClick}
+
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTrade={this.handleMoveTrade}
+                  handleMoveTdManage={this.handleMoveTdManage}
+
+                ></Acc1012Con>}
+                {showAcc1012Trade && <Acc1012Trade
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTdManage={this.handleMoveTdManage}
+                />}
+                {showAcc1012TdManage && <Acc1012TdManage
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTrade={this.handleMoveTrade}
+                  handleMoveTdManage={this.handleMoveTdManage} />}
+
+
+
+
+
+
+
               </div>
-              <div>
-
-                <Grid container>
-
-                  {/* 1번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처구분</Typography>
-                    <Select
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1, height: '28px', backgroundColor: '#FFF0F5' }}
-                      variant="outlined"
-                      size="small"
-                      name="select_bp_classification"
-                      value={this.props.select_bp_classification}
-                      onChange={this.props.onInputChange}
-
-                      displayEmpty>
-                      <MenuItem value="전체" style={{ color: this.props.select_bp_classification === '전체' ? 'gray' : 'black' }}>전체</MenuItem>
-                      <MenuItem value="1. 일반" style={{ color: this.props.select_bp_classification === '1. 일반' ? 'gray' : 'black' }}>1. 일반</MenuItem>
-                      <MenuItem value="2. 무역" style={{ color: this.props.select_bp_classification === '2. 무역' ? 'gray' : 'black' }}>2. 무역</MenuItem>
-                      <MenuItem value="3. 주민" style={{ color: this.props.select_bp_classification === '3. 주민' ? 'gray' : 'black' }}>3. 주민</MenuItem>
-                      <MenuItem value="4. 기타" style={{ color: this.props.select_bp_classification === '4. 기타' ? 'gray' : 'black' }}>4. 기타</MenuItem>
-
-                    </Select>
-                    {/* 2번 째 */}
-                  </Grid>
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처명</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1, backgroundColor: '#FFF0F5' }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='bp_name'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 3번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처코드</Typography>
-                    {/* <TextField sx={{ width: '60%', ml: 1, mt: 1, mb:1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} /> */}
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='bp_code'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 4번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 21.5, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처약칭</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1, backgroundColor: '#FFF0F5' }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='bp_abbreviation'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 5번 째 */}
-                  <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 19.7, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>사업자등록번호</Typography>
-                    <TextField
-                      sx={{ width: '29.8%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='com_reg_num'
-                      onChange={this.props.onInputChange} />
-                    <button style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '60%', width: '6%', marginLeft: 15, fontSize: '11px', fontWeight: 'bold' }}>휴폐업조회</button>
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 6번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 21.3, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>주민등록번호</Typography>
-                    <Select
-                      sx={{ width: '20%', ml: 1, mt: 1, mb: 1, height: '28px' }}
-                      variant="outlined"
-                      size="small"
-                      name="select_nationality"
-                      value={this.props.select_nationality}
-                      onChange={this.props.onInputChange}
-                      // onChange={(e) => this.props.handleSelectChange("select_nationality", e.target.value)}
-                      displayEmpty>
-
-                      <MenuItem value="내국인" style={{ color: this.props.select_nationality === '내국인' ? 'gray' : 'black' }}>내국인</MenuItem>
-                      <MenuItem value="외국인" style={{ color: this.props.select_nationality === '외국인' ? 'gray' : 'black' }}>외국인</MenuItem>
-
-                    </Select>
-                    <TextField
-                      sx={{ width: '38.8%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      placeholder="______-_______"
-                      name='res_reg_num'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 7번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>대표자명</Typography>
-                    {/* <TextField sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} /> */}
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='rep_name'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-                  {/* 8번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 27.8, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>업태</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='bus_conditions'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 9번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 26.4, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>업종</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='sectors'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 10번 째 */}
-                  <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>사업장주소</Typography>
-
-                    <TextField
-                      sx={{ width: '8%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      placeholder="우편번호"
-                      name='postcode'
-                      value={this.props.postcode}
-                      onChange={this.props.onInputChange} />
-                    <Postcode style={{ marginLeft: "10px", height: '40px', marginTop: '5px' }} onComplete={this.props.onComplete} />
-
-                    <TextField
-                      sx={{ width: '64.5%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      placeholder="기본주소"
-                      name='primary_address'
-                      value={this.props.jibunAddress}
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  <Grid item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <TextField
-                      sx={{ width: '79.3%', ml: 32, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      placeholder="상세주소"
-                      name='detailed_address'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 11번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 24.5, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>전화번호</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='phone_num'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 12번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 22.8, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>팩스번호</Typography>
-                    {/* <TextField sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} /> */}
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='fax_num'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 13번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 24.5, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>홈페이지</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='home_page'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 14번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 22.8, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>메일주소</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='mail_address'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 15번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 24.5, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>주류코드</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      name='main_code'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-                  {/* 16번 째 */}
-                  <Grid
-                    item xs={6} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <Typography variant="subtitle1" sx={{ ml: 22.8, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>국가코드</Typography>
-                    <TextField
-                      sx={{ width: '60%', ml: 1, mt: 1, mb: 1 }}
-                      variant="outlined"
-                      size="small"
-                      inputProps={{ style: { height: '12px' } }}
-                      type="text"
-                      placeholder="국가코드"
-                      name='country_code'
-                      onChange={this.props.onInputChange} />
-                  </Grid>
-
-                  <Divider sx={{ width: '76vw' }} />
-
-                  {/* 여기 까지 기본등록사항 테이블 */}
-                  <Divider sx={{ width: '77vw', mt: 2, borderBottom: '1px solid gray' }} />
-                </Grid>
-              </div>
-            </div>
-          </div>
+            </form>
+          </DouzoneContainer>
         </div>
-      </form>
-    )
+      </ThemeProvider>
+    );
   }
-}
 
+}
 export default Acc1012;
