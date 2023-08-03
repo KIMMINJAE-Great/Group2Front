@@ -115,6 +115,8 @@ class Acc1010 extends Component {
             //모든 사원 정보
             employeeCards: [],
 
+            content: [],
+
             //모달
             showModal: false,
 
@@ -146,7 +148,7 @@ class Acc1010 extends Component {
                     newEmp: 'Y',
                 }));
 
-                this.setState({ employeeCards });
+                this.setState({ employeeCards, content: response.data });
                 console.log(response);
             } catch (error) {
                 console.log(error);
@@ -185,7 +187,10 @@ class Acc1010 extends Component {
             console.log("....................empregiser : " + selectedCard)
             try {
                 const response = await post('/emp/register', selectedCard);
-                this.setState({ employeeCards: [...this.state.employeeCards, response.data] });
+                this.setState({
+                    employeeCards: [...this.state.employeeCards, response.data],
+                    content: [...this.state.employeeCards, response.data]
+                });
                 //this.setState({ complete: '완료되었습니다.' })
                 this.DouzoneContainer.current.handleSnackbarOpen('사원 등록이 완료되었습니다.', 'success');
             } catch (error) {
@@ -226,6 +231,7 @@ class Acc1010 extends Component {
 
             this.setState({
                 employeeCards: newCardList,
+                content: newCardList
             })
             this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제가 완료되었습니다.', 'success');
             this.firstEmpCard();
@@ -276,7 +282,7 @@ class Acc1010 extends Component {
 
     // 조회 조건으로 받은 사원 카드리스트
     handleEmployeeCards = (employeeCards) => {
-        this.setState({ employeeCards });
+        this.setState({ employeeCards, content: employeeCards });
     };
 
     // 빈 사원정보 보내기
@@ -467,8 +473,101 @@ class Acc1010 extends Component {
         this.setState({ selectedDate: date });
     };
 
-    aaa = () => {
+    // 부서 카드리스트를 그려줄 함수
+    onCardItemDraw = () => {
 
+        return (
+            <div>
+                <Card
+                    style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
+                    class="noHoverEffect"
+                >
+                    <CardContent>
+                        <Typography variant="caption">
+                            사원 수 : {this.state.content.length}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                        </Typography>
+                    </CardContent>
+                </Card>
+                <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
+                    {/* 스크롤바 영역 설정 */}
+                    <Grid container spacing={2}>
+                        {this.state.content.map((item, index) => (
+                            <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                                <Card
+                                    sx={{
+                                        borderRadius: "5px",
+                                        border: "0.5px solid lightgrey",
+                                        marginRight: "2px",
+                                        display: "flex",
+                                    }}
+                                    onClick={() =>
+                                        this.handleCardClick(this.state.content[index].emp_cd)
+                                    }
+                                >
+                                    {/* 프로필 이미지 */}
+                                    <img
+                                        src={profile}
+                                        style={{
+                                            width: "50px",
+                                            height: "50px",
+                                            marginLeft: "10px",
+                                            marginTop: "10px",
+                                            borderRadius: "3px",
+                                        }}
+                                    ></img>
+
+
+                                    <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                                        {/* item1,item2 */}
+                                        <Typography
+                                            variant="body2"
+                                            style={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                                width: "90px",
+                                                maxWidth: "90px",
+                                            }}
+                                        >
+                                            {item.emp_id}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            style={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                                width: "90px",
+                                                maxWidth: "90px",
+                                            }}
+                                        >
+                                            {item.emp_nm}
+                                        </Typography>
+                                        <div> </div>
+                                    </CardContent>
+                                    <CardContent
+                                        style={{
+                                            marginLeft: "30px",
+                                            paddingLeft: "0",
+                                            paddingRight: "0",
+                                            minWidth: "100px",
+                                        }}
+                                    >
+                                        {/* item3 */}
+                                        <Typography variant="body2">
+                                            {item.emp_hrd}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            </div>
+        )
     }
     render() {
 
@@ -488,7 +587,6 @@ class Acc1010 extends Component {
                     <DouzoneContainer
                         ref={this.DouzoneContainer}
                         title={this.state.title} delete={this.handleOpenModal}
-                        functionArea={[{ title: '즐겨찾기', id: 'aaa', onClick: this.aaa.bind(this) }]}
                         openDeleteModal={this.state.showModal}
                         handleClose={this.handleCloseModal}
                         handleConfirm={this.deleteEmp}
@@ -503,7 +601,7 @@ class Acc1010 extends Component {
 
                         <div className="acc1010-container" style={{ display: 'flex' }}>
                             <CardList
-                                content={employeeCards}
+                                onCardItemDraw={this.onCardItemDraw}
                                 handleCardClick={this.handleCardClick}
                                 handleNewButtonClick={this.addCard}
                             ></CardList>
