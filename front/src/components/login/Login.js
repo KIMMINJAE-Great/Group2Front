@@ -25,7 +25,7 @@ class Login extends Component {
     console.log(this.state.username + ' && ' + this.state.password)
 
     try {
-      const response = await post('/emp/login', {
+      const response = await post('/auth/login', {
         emp_id: this.state.username,
         password: this.state.password,
       });
@@ -34,6 +34,7 @@ class Login extends Component {
       console.log(response.data);
       console.log('로그인 성공');
       sessionStorage.setItem('user', JSON.stringify(response.data));
+      // localStorage.setItem('user', JSON.stringify(response.data))
       this.props.history.push("/mainpage");
 
     } catch (error) {
@@ -88,4 +89,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);

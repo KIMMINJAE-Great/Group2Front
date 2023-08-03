@@ -13,6 +13,7 @@ import {
   Select,
   TextField,
   Typography,
+
 } from "@mui/material";
 import profile from "../../images/profile.png";
 import SearchIcon from "@mui/icons-material/Search";
@@ -29,6 +30,7 @@ import Postcode from "../../components/commons/Postcode";
 class Acc1010Basic extends Component {
   state = {
     mobileError: false,
+
   }
 
   componentDidUpdate(prevProps) {
@@ -37,6 +39,7 @@ class Acc1010Basic extends Component {
     }
   }
 
+
   validateMobile = (phoneNumber) => {
     const regex = /^\d{3}-\d{3,4}-\d{4}$/;
     return regex.test(phoneNumber);
@@ -44,7 +47,7 @@ class Acc1010Basic extends Component {
 
   handleMobileChange = (e) => {
     const value = e.target.value;
-    this.props.empMobileChange(value);
+    this.props.handleEmpMobileChange(value);
   }
 
   handleMobileBlur = (e) => {
@@ -54,8 +57,9 @@ class Acc1010Basic extends Component {
   }
 
   render() {
-    const { selectedCard } = this.props;
+    const { selectedCard, errorMessage } = this.props;
     const { mobileError } = this.state;
+
     var readonly = selectedCard.newEmp === 'N';
     // { selectedCard } = this.props;
     //const email = selectedCard.emp_email ? selectedCard.emp_email.split('@') : ['', ''];
@@ -72,7 +76,7 @@ class Acc1010Basic extends Component {
         {/* submenu > */}
 
         {/* input container < */}
-        <div class="acc1010-input-container" >
+        <div className="acc1010-input-container" >
           <Grid
             container
             spacing={0.4}
@@ -112,7 +116,7 @@ class Acc1010Basic extends Component {
                   variant="outlined"
                   size="small"
                   //={selectedCard.emp_nm ? selectedCard.emp_nm : ''}
-                  onChange={(e) => this.props.empNmChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpNmChange(e.target.value)}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                 />
               </Grid>
@@ -133,7 +137,7 @@ class Acc1010Basic extends Component {
                   variant="outlined"
                   size="small"
                   //={selectedCard.emp_nm ? selectedCard.emp_nm : ''}
-                  onChange={(e) => this.props.empEmpCdChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpEmpCdChange(e.target.value)}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                 />
               </Grid>
@@ -153,7 +157,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empCoCdChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpCoCdChange(e.target.value)}
                   value={selectedCard.co_cd ? selectedCard.co_cd : ''}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
@@ -174,7 +178,7 @@ class Acc1010Basic extends Component {
                   value={selectedCard.dept_cd ? selectedCard.dept_cd : ''}
                   size="small"
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
-                  onChange={(e) => this.props.empDeptChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpDeptChange(e.target.value)}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -192,11 +196,12 @@ class Acc1010Basic extends Component {
                 <TextField
                   name="emp_id"
                   required
+                  helperText={errorMessage == '' ? '' : errorMessage}
                   sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empIdChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpIdChange(e.target.value)}
                   value={selectedCard.emp_id ? selectedCard.emp_id : ''}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
@@ -214,7 +219,6 @@ class Acc1010Basic extends Component {
                   variant="outlined"
                   size="small"
                   inputProps={{ style: { height: "12px" } }}
-                  //onChange={this.props.empEmpCdChange}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
               </Grid>
@@ -236,7 +240,7 @@ class Acc1010Basic extends Component {
                   variant="outlined"
                   size="small"
                   value={selectedCard.password ? selectedCard.password : ''}
-                  onChange={(e) => this.props.empPwChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpPwChange(e.target.value)}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -255,7 +259,7 @@ class Acc1010Basic extends Component {
                   variant="outlined"
                   value={selectedCard.app_password ? selectedCard.app_password : ''}
                   size="small"
-                  onChange={(e) => this.props.empAppPwChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpAppPwChange(e.target.value)}
                   inputProps={{ style: { height: "12px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -277,7 +281,7 @@ class Acc1010Basic extends Component {
                     row
                     value={selectedCard.gender === 'M' ? 'M' : 'F'}
                     aria-labelledby="demo-row-radio-buttons-group-label"
-                    onChange={(e) => this.props.empGenderChange(e.target.value)}
+                    onChange={(e) => this.props.handleEmpGenderChange(e.target.value)}
                   >
                     <FormControlLabel value="F" control={<Radio />} label="여성" />
                     <FormControlLabel value="M" control={<Radio />} label="남성" />
@@ -297,7 +301,7 @@ class Acc1010Basic extends Component {
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     required
-                    onChange={(e) => this.props.empLangChange(e.target.value)}
+                    onChange={(e) => this.props.handleEmpLangChange(e.target.value)}
                     sx={{ width: '100%', height: '30px', marginTop: '5px', backgroundColor: readonly ? 'white' : '#FEF4F4' }}
                   >
                     <MenuItem value={'KOR'}>한국어</MenuItem>
@@ -322,7 +326,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empEmail1Change(e.target.value)}
+                  onChange={(e) => this.props.handleEmpEmail1Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -335,7 +339,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empEmail2Change(e.target.value)}
+                  onChange={(e) => this.props.handleEmpEmail2Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -351,7 +355,7 @@ class Acc1010Basic extends Component {
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     //value={age}
-                    onChange={(e) => this.props.empEmail2Change(e.target.value)}
+                    onChange={(e) => this.props.handleEmpEmail2Change(e.target.value)}
                     sx={{ width: '100%', height: '30px', }}
 
                   >
@@ -381,7 +385,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empSEmail1Change(e.target.value)}
+                  onChange={(e) => this.props.handleEmpSEmail1Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -394,7 +398,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empSEmail2Change(e.target.value)}
+                  onChange={(e) => this.props.handleEmpSEmail2Change(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -407,7 +411,7 @@ class Acc1010Basic extends Component {
                     name="emp_semail2"
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
-                    onChange={(e) => this.props.empSEmail2Change(e.target.value)}
+                    onChange={(e) => this.props.handleEmpSEmail2Change(e.target.value)}
                     sx={{ width: '100%', height: '30px', }}
 
                   >
@@ -458,7 +462,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empHPhoneChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpHPhoneChange(e.target.value)}
                   inputProps={{ style: { height: "12px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />
@@ -530,7 +534,7 @@ class Acc1010Basic extends Component {
                     value={dayjs(selectedCard.emp_hrd ? selectedCard.emp_hrd : '')}
                     name="emp_hrd"
                     onChange={(value) => {
-                      this.props.empHrdChange(value);
+                      this.props.handleEmpHrdChange(value);
                     }} />
                 </LocalizationProvider>
               </Grid>
@@ -547,7 +551,7 @@ class Acc1010Basic extends Component {
                   fullWidth
                   variant="outlined"
                   size="small"
-                  onChange={(e) => this.props.empResiChange(e.target.value)}
+                  onChange={(e) => this.props.handleEmpResiChange(e.target.value)}
                   inputProps={{ style: { height: "20px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                 />

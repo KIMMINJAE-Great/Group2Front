@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Postcode from "../../components/commons/Postcode";
 import "./acc1011.css";
-import DeleteDialog from "../../components/commons/DeleteDialog";
+// import DeleteDialog from "../../components/commons/DeleteDialog";
 
 class Acc1011Presentation extends Component {
 
@@ -59,13 +59,13 @@ class Acc1011Presentation extends Component {
               삭제
             </Button>
             {/* 삭제 확인 */}
-            <DeleteDialog
+            {/* <DeleteDialog
               open={open}
               handleClose={this.props.handleCloseModal}
               handleConfirm={this.props.handleDeleteClick}
               title="사원 삭제 확인"
               message="정말로 사원 정보를 삭제하시겠습니까?"
-            />
+            /> */}
           </div>
         </div>
         <div className="acc1011-input-container">
@@ -153,7 +153,7 @@ class Acc1011Presentation extends Component {
                   size="small"
                   style={{ width: "20%" }}
                   sx={{ width: "100%", backgroundColor: "white" }}
-                  label="부서"
+
                   value={selectedDept?.dept_st || ""}
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
                   onChange={(e) =>

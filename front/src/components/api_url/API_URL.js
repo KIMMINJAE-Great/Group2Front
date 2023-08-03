@@ -11,7 +11,7 @@ export async function get(path) {
     throw error;
   }
 }
-export async function getMany(path) {
+export async function getByQueryString(path) {
   try {
     const response = await axios.get(`${API_URL}${path}`);
     return response;
