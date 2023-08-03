@@ -1,0 +1,24 @@
+.acc1010-submenu-name-container {
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.acc1010-submenu-name-container span {
+  margin-right: 10px;
+  margin-left: 10px;
+  /* border-left: 1px solid black;
+  border-right: 1px solid black; */
+}
+.acc1010-submenu-name-container span:first-child {
+  /* color: rgb(82, 82, 244);  */
+}
+.acc1010-input-container {
+  background-color: #fafafa;
+}
+
+.acc1010search_container {
+  border: 1px solid lightgrey;
+  margin: 13px;
+  display: flex;
+}

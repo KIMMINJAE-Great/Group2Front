@@ -1,0 +1,36 @@
+.douzone-container {
+  overflow-y: auto;
+  width: 100%;
+}
+.container-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid black;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+}
+.container-header-right {
+  display: flex;
+  margin-right: 15px;
+}
+.container-header-left {
+  display: flex;
+  margin-left: 15px;
+}
+
+.functionButton {
+  margin-right: 10px;
+}
+
+.deleteIcon {
+  /* font-size: 30px; */
+  color: rgb(135, 132, 132);
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.deleteIcon:hover {
+  color: blue; /* replace #yourColor with the color you want when hovering */
+  cursor: pointer;
+}
