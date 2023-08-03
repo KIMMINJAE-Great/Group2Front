@@ -5,7 +5,7 @@ import Acc1012Header from "./Acc1012Header";
 import Acc1012Trade from "./Acc1012Trade";
 import Acc1012TdManage from "./Acc1012TdManage";
 
-import { get, post, del, update, getByQueryString} from "../../components/api_url/API_URL";
+import { get, post, del, update, getByQueryString } from "../../components/api_url/API_URL";
 import CardList from "../../components/commons/CardList.js";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer.js";
 import { createTheme } from '@mui/material';
@@ -13,68 +13,68 @@ import { ThemeProvider } from '@emotion/react';
 // import DeleteDialog from "../../components/commons/DeleteDialog";
 
 
-  const Acc1012theme = createTheme({
-    components: {
-      MuiListItemText: {
-          styleOverrides: {
-              primary: {
-                  fontSize: '15px',
-                  fontWeight: 'bold',
-                  height: '15px',
-                  lineHeight: '15px'
-              },
-          },
+const Acc1012theme = createTheme({
+  components: {
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          fontSize: '15px',
+          fontWeight: 'bold',
+          height: '15px',
+          lineHeight: '15px'
+        },
       },
-      MuiButton: {
-          styleOverrides: {
-              root: {
-                  height: "30px",
-                  backgroundColor: "#FBFBFB",
-                  color: "black",
-              }
-          },
-          defaultProps: {
-              variant: "contained",
-              color: "primary",
-              fullWidth: true,
-          }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          backgroundColor: "#FBFBFB",
+          color: "black",
+        }
       },
-      MuiGrid: {
-          styleOverrides: {
-              root: {  
-                  
-              },
-          },
-      },
-      MuiOutlinedInput: {
-          styleOverrides: {
-              root: {
-                  '&:hover $notchedOutline': {
-                      borderColor: 'rgba(0, 0, 0, 0.23)', 
-                  },
-                  '&.Mui-focused $notchedOutline': {
-                      borderColor: 'rgba(0, 0, 0, 0.23)', 
-                  },
-              },
-          },
-      },
-      MuiCard: {
-          styleOverrides: {
-              root: {
-                  '&:hover ': {
-                      cursor: 'pointer',
-                      border: '1px solid #0f8bff',
-                  }, '&.noHoverEffect:hover': {
-                      cursor: 'auto',
-                      border: 'none',
-                  },
-              },
-          },
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+        fullWidth: true,
       }
-  
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&:hover $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+          },
+          '&.Mui-focused $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          '&:hover ': {
+            cursor: 'pointer',
+            border: '1px solid #0f8bff',
+          }, '&.noHoverEffect:hover': {
+            cursor: 'auto',
+            border: 'none',
+          },
+        },
+      },
+    }
+
   },
-  });
-  class Acc1012 extends Component {
+});
+class Acc1012 extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -85,8 +85,8 @@ import { ThemeProvider } from '@emotion/react';
       postcode: "", /* 우편번호 찾기 저장할 상태 변수 */
       roadAddress: "",
       jibunAddress: "",
-      title : '일반거래처 등록',
-      showModal : false,
+      title: '일반거래처 등록',
+      showModal: false,
 
       tr_cd: '',
       tr_nm: '',
@@ -100,11 +100,11 @@ import { ThemeProvider } from '@emotion/react';
   }
 
   handleMoveBasic = () => {
-    this.setState({ 
+    this.setState({
       showAcc1012Con: true,
-      showAcc1012Trade: false ,
+      showAcc1012Trade: false,
       showAcc1012TdManage: false,
-  });
+    });
     console.log("handleMoveBasic 실행됨 !!!");
   };
 
@@ -129,49 +129,49 @@ import { ThemeProvider } from '@emotion/react';
   // 모달 열기
   handleOpenModal = () => {
     this.setState({ showModal: true });
-}
-// 모달 닫기
-handleCloseModal = () => {
+  }
+  // 모달 닫기
+  handleCloseModal = () => {
     this.setState({ showModal: false });
-}
+  }
 
   componentDidMount() {
     this.forRender();
   }
   forRender = () => {
     (async () => {
-        try {
-            const response = await get('/tradeManagement');
+      try {
+        const response = await get('/tradeManagement');
 
-            const stradeCards = response.data.map(card => ({
-                ...card,
-                newTrade: 'Y',
-            }));
+        const stradeCards = response.data.map(card => ({
+          ...card,
+          newTrade: 'Y',
+        }));
 
-            this.setState({ stradeCards });
-            console.log(response);
-        } catch (error) {
-            console.log(error);
-        }
+        this.setState({ stradeCards });
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     })();
     this.firstTradeCard();
-}
+  }
 
-/* 카드를 클릭했을때 */
+  /* 카드를 클릭했을때 */
   handleCardClick = async (tr_cd) => {
     console.log(tr_cd);
 
     try {
       const response = await post(`/tradeManagement/getst`, {
         tr_cd: tr_cd,
-       
+
       });
       this.setState({
-        selectedSt:{
+        selectedSt: {
           ...response.data,
-          newTrade : 'N'
-        } 
-        
+          newTrade: 'N'
+        }
+
       });
     } catch (error) {
       console.log(error);
@@ -181,7 +181,7 @@ handleCloseModal = () => {
   firstTradeCard = () => {
     // 기존 selectedSt의 모든 필드 값을 null로 초기화하고 newEmp를 'Y'로 설정
 
-    this.setState ({
+    this.setState({
       selectedSt: {
         tr_fg: '',
         tr_nm: '',
@@ -207,39 +207,39 @@ handleCloseModal = () => {
         tr_ct_cd: '',
         newTrade: 'Y'
 
-    }
+      }
     });
   }
 
   /* 추가 버튼 */
   addCard = () => {
     /* selectedSt 상태를 빈 값으로 업데이트 */
-   
+
     this.firstTradeCard()
     this.setState({ complete: '', errorMessage: '' })
 
-    };
- 
+  };
+
   handleSaveClick = async (e) => {
     e.preventDefault();
     const { selectedSt } = this.state;
     console.log("handleSaveClick   실행")
     /* 필수값 유효성 검사 */
-      if (!selectedSt.tr_fg) {
-        alert("거래처구분을 선택해 주세요.");
-        return;
-      }
-      if (!selectedSt.tr_nm) {
-        alert("거래처명을 입력해 주세요.");
-        return;
-      }
-      // 거래처약칭이 비어있는지 확인합니다.
-      if (!selectedSt.tr_al) {
-        alert("거래처약칭을 입력해 주세요.");
-        return;
-      }
-      console.log('.............'+selectedSt.newTrade)
-      if (selectedSt.newTrade === 'Y') {
+    if (!selectedSt.tr_fg) {
+      alert("거래처구분을 선택해 주세요.");
+      return;
+    }
+    if (!selectedSt.tr_nm) {
+      alert("거래처명을 입력해 주세요.");
+      return;
+    }
+    // 거래처약칭이 비어있는지 확인합니다.
+    if (!selectedSt.tr_al) {
+      alert("거래처약칭을 입력해 주세요.");
+      return;
+    }
+    console.log('.............' + selectedSt.newTrade)
+    if (selectedSt.newTrade === 'Y') {
       try {
         const response = await post(`/tradeManagement/insertSt`, selectedSt);
 
@@ -263,9 +263,9 @@ handleCloseModal = () => {
         console.log(response.data);
         this.setState({ complete: '수정되었습니다.' })
         alert("수정 되었습니다!");
-    } catch (error) {
+      } catch (error) {
         console.log('사원 수정 에러 : ' + error)
-    }
+      }
 
     }
   };
@@ -497,10 +497,10 @@ handleCloseModal = () => {
       },
     }));
   };
-  
+
   /* 조회 했을 때 기능 */
   handleSearch = async () => {
-    const {searchSt} = this.state;
+    const { searchSt } = this.state;
 
     console.log("handleSearch 기능 실행!!");
     try {
@@ -508,107 +508,115 @@ handleCloseModal = () => {
       const response = await getByQueryString(`/tradeManagement/getSearchData${queryString}`);
       console.log(response.data);
       this.setState({
-        stradeCards:response.data,
-        
-        
+        stradeCards: response.data,
+
+
       });
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   render() {
     const { stradeCards, selectedSt, searchSt, showAcc1012Con, showAcc1012Trade, showAcc1012TdManage } = this.state;
 
     return (
 
-        <ThemeProvider theme={Acc1012theme} >
-           <div style={{ display: "flex", flexDirection: "column" }}>
+      <ThemeProvider theme={Acc1012theme} >
+        <div style={{ display: "flex", flexDirection: "column" }}>
 
-        <DouzoneContainer
+          <DouzoneContainer
 
-        
-         title={this.state.title} 
-         delete={this.handleOpenModal}
-         openDeleteModal={this.state.showModal}
-                        handleClose={this.handleCloseModal}
-                        handleConfirm={this.handleDeleteClick}
-                        showDelete={''}
-                        message="정말로 거래처 정보를 삭제하시겠습니까?"
-         >       
 
-      <Acc1012Header
-      searchSt={searchSt}
-      handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
-      handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
-      handleSc_Tr_nmChange={this.handleSc_Tr_nmChange}
-      handleUwChange={this.handleUwChange}
+            title={this.state.title}
+            delete={this.handleOpenModal}
+            openDeleteModal={this.state.showModal}
+            handleClose={this.handleCloseModal}
+            handleConfirm={this.handleDeleteClick}
+            showDelete={''}
+            message="정말로 거래처 정보를 삭제하시겠습니까?"
+          >
 
-      handleSearch={this.handleSearch}
-      >
-        
-      </Acc1012Header>
-      <form onSubmit={this.handleSaveClick}>
-
-      <div style={{ display: "flex" }}>
-           
-      <CardList
-              content={stradeCards}
-              handleCardClick={this.handleCardClick}
-              handleNewButtonClick={this.addCard}
-            ></CardList>
-            
-            {showAcc1012Con && <Acc1012Con
-              selectedSt={selectedSt}
-              showAcc1012Con={showAcc1012Con}
-              
-
-              handleTr_fgChange={this.handleTr_fgChange}
-              handleTr_nmChange={this.handleTr_nmChange}
-              handleTr_cdChange={this.handleTr_cdChange}
-              handleTr_alChange={this.handleTr_alChange}
-              handleReg_nbChange={this.handleReg_nbChange}
-
-              handleTr_naChange={this.handleTr_naChange}
-              handleRe_idChange={this.handleRe_idChange}
-              handleTr_ceo_nmChange={this.handleTr_ceo_nmChange}
-              handleTr_btChange={this.handleTr_btChange}
-              handleTr_bcChange={this.handleTr_bcChange}
-
-              handlePostComplete={this.handlePostComplete}
-              handleTr_ad2Change={this.handleTr_ad2Change}
-              handleTr_hpChange={this.handleTr_hpChange}
-              handleTr_pnChange={this.handleTr_pnChange}
-              handleTr_fnChange={this.handleTr_fnChange}
-
-              handleTr_emailChange={this.handleTr_emailChange}
-              handleTr_mn_cdChange={this.handleTr_mn_cdChange}
-              handleTr_ct_cdchange={this.handleTr_ct_cdchange}
+            <Acc1012Header
+              searchSt={searchSt}
+              handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
+              handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
+              handleSc_Tr_nmChange={this.handleSc_Tr_nmChange}
+              handleUwChange={this.handleUwChange}
 
               handleSearch={this.handleSearch}
+            >
 
-              handleSaveClick={this.handleSaveClick}
+            </Acc1012Header>
+            <form onSubmit={this.handleSaveClick}>
 
-              handleMoveBasic={this.handleMoveBasic}
-              handleMoveTrade={this.handleMoveTrade}
-              handleMoveTdManage={this.handleMoveTdManage}
+              <div style={{ display: "flex" }}>
 
-            ></Acc1012Con>}
-            {showAcc1012Trade && <Acc1012Trade 
-            handleMoveBasic={this.handleMoveBasic} 
-            handleMoveTdManage={this.handleMoveTdManage}
-            />}
-            {showAcc1012TdManage && <Acc1012TdManage 
-            handleMoveBasic={this.handleMoveBasic} 
-            handleMoveTrade={this.handleMoveTrade}
-            handleMoveTdManage={this.handleMoveTdManage}/>}
-            </div>
+                <CardList
+                  content={stradeCards}
+                  handleCardClick={this.handleCardClick}
+                  handleNewButtonClick={this.addCard}
+                ></CardList>
+
+                {showAcc1012Con && <Acc1012Con
+                  selectedSt={selectedSt}
+                  showAcc1012Con={showAcc1012Con}
+
+
+                  handleTr_fgChange={this.handleTr_fgChange}
+                  handleTr_nmChange={this.handleTr_nmChange}
+                  handleTr_cdChange={this.handleTr_cdChange}
+                  handleTr_alChange={this.handleTr_alChange}
+                  handleReg_nbChange={this.handleReg_nbChange}
+
+                  handleTr_naChange={this.handleTr_naChange}
+                  handleRe_idChange={this.handleRe_idChange}
+                  handleTr_ceo_nmChange={this.handleTr_ceo_nmChange}
+                  handleTr_btChange={this.handleTr_btChange}
+                  handleTr_bcChange={this.handleTr_bcChange}
+
+                  handlePostComplete={this.handlePostComplete}
+                  handleTr_ad2Change={this.handleTr_ad2Change}
+                  handleTr_hpChange={this.handleTr_hpChange}
+                  handleTr_pnChange={this.handleTr_pnChange}
+                  handleTr_fnChange={this.handleTr_fnChange}
+
+
+                  handleTr_emailChange={this.handleTr_emailChange}
+                  handleTr_mn_cdChange={this.handleTr_mn_cdChange}
+                  handleTr_ct_cdchange={this.handleTr_ct_cdchange}
+
+                  handleSearch={this.handleSearch}
+
+                  handleSaveClick={this.handleSaveClick}
+
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTrade={this.handleMoveTrade}
+                  handleMoveTdManage={this.handleMoveTdManage}
+
+                ></Acc1012Con>}
+                {showAcc1012Trade && <Acc1012Trade
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTdManage={this.handleMoveTdManage}
+                />}
+                {showAcc1012TdManage && <Acc1012TdManage
+                  handleMoveBasic={this.handleMoveBasic}
+                  handleMoveTrade={this.handleMoveTrade}
+                  handleMoveTdManage={this.handleMoveTdManage} />}
+
+
+
+
+
+
+
+              </div>
             </form>
-            </DouzoneContainer>
-            </div>
-            </ThemeProvider>
+          </DouzoneContainer>
+        </div>
+      </ThemeProvider>
     );
-}
-
   }
+
+}
 export default Acc1012;
