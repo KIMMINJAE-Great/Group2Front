@@ -11,8 +11,8 @@ import Acc1012 from './../../pages/acc1012/Acc1012';
 import Acd1010 from './../../pages/acd1010/Acd1010';
 import Acd1011 from './../../pages/acd1011/Acd1011';
 import Acd1012 from './../../pages/acd1012/Acd1012';
-import Ace1010 from './../../pages/acd1010/Ace1010';
-import Ace1011 from './../../pages/acd1011/Ace1011';
+import Ace1010 from './../../pages/ace1010/Ace1010';
+import Ace1011 from './../../pages/ace1011/Ace1011';
 import Acc1013 from './../../pages/acc1013/Acc1013';
 
 import { Redirect } from "react-router-dom/cjs/react-router-dom";

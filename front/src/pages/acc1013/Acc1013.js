@@ -1,674 +1,416 @@
 import React from "react";
-import { get, post } from "../../components/api_url/API_URL";
-import { styled, } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Postcode from "../../components/commons/Postcode";
-
-import profile from '../../images/logo.png'
-import {
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  IconButton,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  Typography,
-
-} from "@mui/material";
-import { color, height } from "@mui/system";
+import { Component } from "react";
 
 
-//사용자정의함수로 만듦
-const GridItem1 = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  backgroundColor: "#FAFAFA"
-}));
+import CardList from "../../components/commons/CardList";
 
-const GridItem3 = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  backgroundColor: '#FAFAFA',
-}));
+import { createTheme } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
+import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
-const MyTextField = styled(TextField)(({ theme }) => ({
-  marginLeft: "8px",
-  width: "100%",
-  padding: theme.spacing(0.5),
-  '& input': {
-    height: '8px',
-    fontSize: '10px',
-    height: '0px',
+import { get, post, update, del } from "../../components/api_url/API_URL";
+import Acc1013Search from "./Acc1013Search";
+import Acc1013BasicInfo from "./Acc1013BasicInfo";
+const acc1013theme = createTheme({
+  components: {
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          fontSize: "15px",
+          fontWeight: "bold",
+          height: "15px",
+          lineHeight: "15px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          backgroundColor: "#FBFBFB",
+          color: "black",
+        },
+      },
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+        fullWidth: true,
+      },
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          // 모든 Grid 태그에 적용하려면 root를 사용하세요.
+          // borderBottom: '1px solid black',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "&:hover $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          "&.Mui-focused $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          "&:hover ": {
+            cursor: "pointer",
+            border: "1px solid #0f8bff",
+          },
+          "&.noHoverEffect:hover": {
+            cursor: "auto",
+            border: "none",
+          },
+        },
+      },
+    },
   },
-  '& .MuiOutlinedInput-root': { // TextField의 루트 요소에 스타일 적용
-    borderRadius: 0, // 모서리를 완전히 직사각형으로 만듭니다.    
-  },
-}));
+});
 
-const FieldName = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  fontSize: '14px'
-}));
+//회사등록 로직코드 (컨테이너)
 
-class Acc1013 extends React.Component {
+class Acc1013 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      companyCards: [],
-      companyCardData: [],
-      cp_ct: '',
+      co_cd: "", //회사 코드
+      co_nm: "", //회사 이름
+      co_nk: "", //회사 약칭
+      use_yn: "",
+      lng: "",
+      adm_cd: "",
+      bz_type: "",
+      bz_item: "",
+      co_tel: "",
+      co_tel2: "",
+      co_fax: "",
+      reg_nb: "",
+      cp_ct: "",
+      cp_no: "",
+      adr_zp: "",
+      adr_inp: "",
+      adr_etc: "",
+      est_dt: "",
+      opn_dt: "",
+      cls_dt: "",
+      ceo_nm: "",
+      res_nb: "",
+      domain: "",
+      ac_per: "",
+      ac_dt: "",
+      acc_tp: "",
+      url: "",
+      sort: "",
+      defaultLange: "",
+
+      postcode: "", //우편번호 5자리
+      roadAddress: "",
+      jibunAddress: "", //지번 주소
+      extraAddress: "", //나머지 주소
+
+      companyCards: [], //카드리스트
+      selectedCompanyCards: "", // 카드리스트 선택된것..?
+      companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
+      defaultUse: "use",
+      readonly: false,
+      title: "회사등록",
+      //모달d
+      showModal: false,
+
+      mauth: [],
     };
   }
 
+  //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
+  componentDidMount() {
+    this.fetchCompanyCards();
+  }
 
+  // 모달 열기
+  handleOpenModal = () => {
+    this.setState({ showModal: true });
+  };
+  // 모달 닫기
+  handleCloseModal = () => {
+    this.setState({ showModal: false });
+  };
+
+  //카드 클릭시 입력됨 (회사 코드로)
+  handleCardClick = async (co_cd) => {
+    const data = { co_cd };
+    try {
+      const response = await post("/company/selectCard", data);
+      console.log(response);
+      console.log("카드리스트 클릭됨!");
+      this.setState({
+        companyCardData: response.data,
+        co_cd: response.data.co_cd,
+        co_nm: response.data.co_nm,
+        co_nk: response.data.co_nk,
+        adm_cd: response.data.adm_cd,
+        use_yn: response.data.use_yn,
+        lng: response.data.lng,
+        bz_type: response.data.bz_type,
+        bz_item: response.data.bz_item,
+        co_tel: response.data.co_tel,
+        co_tel2: response.data.co_tel2,
+        co_fax: response.data.co_fax,
+        reg_nb: response.data.reg_nb,
+        cp_ct: response.data.cp_ct,
+        cp_no: response.data.cp_no,
+        adr_zp: response.data.adr_zp,
+        adr_inp: response.data.adr_inp,
+        adr_etc: response.data.adr_etc,
+        est_dt: response.data.est_dt,
+        opn_dt: response.data.opn_dt,
+        cls_dt: response.data.cls_dt,
+        ceo_nm: response.data.ceo_nm,
+        res_nb: response.data.res_nb,
+        domain: response.data.domain,
+        ac_per: response.data.ac_per,
+        ac_dt: response.data.ac_dt,
+        acc_tp: response.data.acc_tp,
+        url: response.data.url,
+        sort: response.data.sort,
+        defaultLange: response.data.defaultLange,
+
+        readonly: "true",
+      });
+      console.log("!!companyCardData!!" + this.state.companyCardData);
+
+      //this.fetchCompanyCards();
+    } catch (error) {
+      console.error(error);
+      console.log("카드리스트 클릭 중에 오류발생");
+    }
+  };
+
+  //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
+  fetchCompanyCards = async () => {
+    try {
+      const response = await get("/company/cardlist");
+      this.setState({
+        companyCards: response.data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //입력값의 변화를 저장함
+  handleInputChange = (e) => {
+    this.setState(
+      {
+        [e.target.name]: e.target.value,
+      },
+      () => {
+        console.log(this.state[e.target.name]); // 상태 업데이트 확인
+      }
+    );
+  };
+
+  //저장 버튼을 눌렀을 때 실행할 함수 (저장!!)
+  handleSaveButton = async (e, companyCardData) => {
+    e.preventDefault();
+
+    console.log("오 드뎌?" + JSON.stringify(companyCardData));
+
+    const {
+      co_cd,
+      co_nm,
+      co_nk,
+      use_yn,
+      lng,
+      adm_cd,
+      bz_type,
+      bz_item,
+      co_tel,
+      co_tel2,
+      co_fax,
+      reg_nb,
+      cp_ct,
+      cp_no,
+      adr_zp,
+      adr_inp,
+      adr_etc,
+      est_dt,
+      opn_dt,
+      cls_dt,
+      ceo_nm,
+      res_nb,
+      domain,
+      ac_per,
+      ac_dt,
+      acc_tp,
+      url,
+      sort,
+      companyCards,
+    } = this.state;
+    //필드데이터f
+    const data = {
+      co_cd,
+      co_nm,
+      co_nk,
+      use_yn,
+      lng,
+      adm_cd,
+      bz_type,
+      bz_item,
+      co_tel,
+      co_tel2,
+      co_fax,
+      reg_nb,
+      cp_ct,
+      cp_no,
+      adr_zp,
+      adr_inp,
+      adr_etc,
+      est_dt,
+      opn_dt,
+      cls_dt,
+      ceo_nm,
+      res_nb,
+      domain,
+      ac_per,
+      ac_dt,
+      acc_tp,
+      url,
+      sort,
+      companyCards,
+    };
+
+    try {
+      if (companyCardData) {
+        this.setState({
+          co_cd: companyCardData.co_cd,
+        });
+        await post("/company/save", data);
+        console.log("post이후" + JSON.stringify(companyCardData));
+      } else {
+        await post("/company/save", data);
+      }
+
+      this.fetchCompanyCards(); //카드리스트 새로고침됨!
+      console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
+    } catch (error) {
+      console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
+      console.error(error);
+      console.log("회사등록(DB) 중에 오류발생");
+    }
+  };
+
+  //삭제 버튼을 눌렀을 때 실행할 함수
+  handleDeleteButton = async (e) => {
+    e.preventDefault();
+    //필드데이터 // 회사 코드만 있으면 된다.
+    const data = {
+      co_cd: this.state.co_cd,
+    };
+    // Send data to server
+    try {
+      const response = await post("/company/delete", data);
+      console.log(response);
+      console.log("회사정보(DB) 삭제가 정상 실행");
+      //this.setState({ showModal: false });
+      this.fetchCompanyCards();
+    } catch (error) {
+      console.error(error);
+      console.log("회사정보(DB) 삭제중에 오류발생");
+    }
+  };
+
+  //우편주소 코드
+  handlePostComplete = (data) => {
+    let extraAddress = "";
+    if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+      extraAddress += data.bname;
+    }
+    if (data.buildingName !== "" && data.apartment === "Y") {
+      extraAddress +=
+        extraAddress !== "" ? ", " + data.buildingName : data.buildingName;
+    }
+    if (extraAddress !== "") {
+      extraAddress = " (" + extraAddress + ")";
+    }
+    this.setState({
+      postcode: data.zonecode,
+      roadAddress: data.roadAddress,
+      jibunAddress: data.jibunAddress,
+      extraAddress,
+    });
+  };
+
+  handleCoCdChange(value) {
+    this.setState({ co_cd: value });
+  }
 
   render() {
+    const { companyCards, companyCardData, defaultUse } = this.state;
 
-    console.log("gd", this.props.companyCardData[0]);
-
-
-
+    //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
+    //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
+    this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
+    this.handleSaveButton = this.handleSaveButton.bind(this);
+    this.handleCoCdChange = this.handleCoCdChange.bind(this);
     return (
-      <form>
-        <div>
-          <Grid container style={{ height: '40px' }}>
-            <GridItem1 item xs={0.3} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-              <FieldName variant="subtitle1">회사</FieldName>
-            </GridItem1>
-            <Grid
-              item xs={1.9} style={{ display: "flex", flexDirection: "row", alignItems: "center", height: '40px' }} >
-              <MyTextField variant="outlined" placeholder="회사코드/회사명을 입력하세요." InputProps={{ style: { height: "30px" } }} />
-            </Grid>
-            <GridItem3 item xs={0.6} >
-              <FieldName variant="subtitle1" style={{ marginRight: "5px" }}>사용여부</FieldName>
-            </GridItem3>
-            <Grid
-              item xs={1.3} style={{ display: "flex", flexDirection: "row", alignItems: "center", height: '40px' }} >
-              <Select
-                value={this.state.defaultUse}
-                onChange={e => this.setState({ defaultUse: e.target.value })}
-                variant="outlined"
-                style={{ width: "100%", height: '28px' }}
-              >
-                <MenuItem value="use">사용</MenuItem>
-                <MenuItem value="unused">미사용</MenuItem>
-              </Select>
-            </Grid>
-            <Grid item xs style={{ flexGrow: 1 }} />
-            <Grid
-              item xs={1.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", height: '40px' }} >
-              {/* <Grid container justify="flex-end">
-             <IconButton color="black" size="small" onClick={this.handleSearchClick} sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px' }}>
-                  <SearchIcon />
-              </IconButton>
-              <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 1, width: '30px', height: '30px' }}>
-                  <ExpandMoreIcon />
-              </IconButton>
-            </Grid> */}
-              <button>전송</button>
-            </Grid>
-          </Grid>
-          <hr />
-        </div>
-        {/* <div style={{ display: "flex", float: "left" }}>
-          <div style={{ flex:0.7, marginRight:30}}> */}
-        <div style={{ display: "flex", float: "left" }}>
-          <div style={{ flex: 0.7 }}>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              {/* 카드리스트 > */}
-              <div
-                class="cardlist-container"
-                style={{
-                  maxWidth: "280px",
-                  marginLeft: "5px",
-                  marginTop: "1px",
-                  marginRight: "5px",
-                  borderTop: "2px solid black",
-                }}
-              >
-                <div>
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <Card
-                      style={{
-                        backgroundColor: "#ECECEC",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <CardContent>
-                        <Typography variant="caption">
-                          회사: Count(*)개
-
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                    <Box sx={{ overflowY: "auto", maxHeight: "600px" }}>
-                      {/* 스크롤바 영역 설정 */}
-                      <Grid container spacing={2} >
-                        {this.props.companyCards.map((sco, index) => (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            key={index}
-                          ><Button onClick={(e) => {
-                            this.props.handleCardClick(sco);
-                          }} // 카드 클릭 시 이벤트 처리
-                            sx={{
-                              padding: 0, // 기본 패딩 제거
-                              display: 'block', // 버튼은 블록 요소로 표시되도록 설정
-                              textAlign: 'left', // 좌측 정렬
-                              width: '100%', // 버튼을 100% 너비로 설정하여 전체 영역에 클릭 영역을 만듦
-                            }}>
-                              <Card
-                                sx={{
-                                  borderRadius: "5px",
-                                  border: "0.5px solid lightgrey",
-                                  marginRight: "2px",
-                                  display: "flex",
-                                }}
-                              >
-                                <CardContent
-                                  sx={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "100px", //오른쪽으로가게끔
-                                  }}
-                                >
-                                  <Typography
-                                    variant="body2"
-                                    style={{
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                      width: "90px",
-                                      maxWidth: "90px",
-                                    }}
-                                  >
-                                    {sco.co_cd} {/* 부서코드 */}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    style={{
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                      width: "90px",
-                                      maxWidth: "90px",
-                                    }}
-                                  >
-                                    {sco.co_nm} {/* 부서명 */}
-                                  </Typography>
-                                  <div> </div>
-                                </CardContent>
-                                <CardContent
-                                  style={{
-                                    marginRight: "10px",
-                                    paddingLeft: "0",
-                                    paddingRight: "0",
-                                  }}
-                                >
-                                  {sco.ceo_nm}
-                                  <Typography
-                                    variant="body2"
-                                    style={{
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                      width: "90px",
-                                      maxWidth: "90px",
-                                    }}
-                                  >
-                                    {sco.co_nk} {/* 부서 닉네임 */}
-                                  </Typography>
-                                </CardContent>
-                              </Card>
-                            </Button>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      style={{ backgroundColor: "#FFFFFF", color: "#7A7A7A" }}
-                    >
-                      추가
-                    </Button>
-                  </Grid>
-                </div>
-              </div>
-            </Grid>
-          </div>
-          <div style={{ flex: 2.5, marginRight: "15px" }}>
+      <Router>
+         <ThemeProvider theme={acc1013theme}>
+        <DouzoneContainer
+          title={this.state.title}
+          delete={this.handleOpenModal}
+          openDeleteModal={this.state.showModal}
+          handleClose={this.handleCloseModal}
+          handleConfirm={this.handleDeleteButton}
+          message="정말로 회사 정보를 삭제하시겠습니까?"
+        >
+         
             <div>
-              <div
-                style={{
-                  marginLeft: "10px",
-                  display: "flex",
-                  height: '23px',
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ height: '3px', marginTop: '5px' }}>기본정보</p>
-                <div>
-                  <button onClick={this.props.handleSaveButton}>저장</button>
-                  <button onClick={this.props.handleDeleteButton}>삭제</button>
-                  <button onClick={this.handleErpActivation}>erp연동활성화</button>
+              <Acc1013Search
+                defaultUse={defaultUse}
+                companyCards={companyCards}
+                onInputChange={this.handleInputChange}
+                handleSaveButton={this.handleSaveButton}
+              ></Acc1013Search>
+
+              <div style={{ display: "flex" }}>
+                <div style={{marginTop:"30px"}}>
+                <CardList
+                  content={companyCards}
+                  handleCardClick={this.handleCardClick}
+                  handleNewButtonClick={this.handleNewButtonClick}
+                />
                 </div>
-              </div>
-              <hr style={{ height: '3px', color: 'black' }} />
-            </div>
-            <div>
-              <Box sx={{ overflowY: "auto", maxHeight: "1000px" }}>
-                <Grid container>
-                  {/* 1번째 */}
 
-                  <Grid container >
-                    <GridItem1 item xs={2}>
-                      <FieldName variant="body1">회사코드</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_cd" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_cd : this.props.co_cd} variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1" >사용여부</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-
-                      <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label"></FormLabel>
-                        <RadioGroup
-                          row
-                          aria-labelledby="demo-radio-buttons-group-label"
-                          defaultValue="use"
-                          value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].use_yn : this.props.use_yn}
-                          name="use_yn"
-                          onChange={this.props.onInputChange}
-                        >
-                          <FormControlLabel value="Y" control={<Radio />} label="사용" />
-                          <FormControlLabel value="N" control={<Radio />} label="미사용" />
-                        </RadioGroup>
-                      </FormControl>
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-
-                  {/* 2번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2}>
-                      <FieldName variant="subtitle1">회사명</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={10} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_nm" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_nm : this.props.co_nm}
-                        sx={{ width: '60%', ml: 1, mt: 1, mb: 1, padding: "-5px", backgroundColor: '#FFF0F5' }}
-                        variant="outlined" />
-                      <button style={{ height: '35px', marginTop: '2px' }}>▼</button>
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 3번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">회사약칭</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_nk" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_nk : this.props.co_nk}
-                        variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1" >기본언어</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <Select
-                        name="lng"
-
-                        onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].lng : this.props.lng}
-                        variant="outlined"
-                        style={{ width: "100%", height: "33px", marginLeft: "10px" }}
-                      >
-                        <MenuItem value="kor">한국어</MenuItem>
-                        <MenuItem value="eng">영어</MenuItem>
-                        <MenuItem value="jpn">일본어</MenuItem>
-                      </Select>
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 4번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">행정표준코드</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={8.3} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="adm_cd" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].adm_cd : this.props.adm_cd}
-                        variant="outlined" />
-                    </Grid>
-                    <Grid
-                      item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >
-                      <button style={{ height: '31px', width: "130px", marginTop: '5px' }}>타회사 코드참조</button>
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 5번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">업태</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="bz_type"
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].bz_type : this.props.bz_type}
-                        onChange={this.props.onInputChange} variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2}  >
-                      <FieldName variant="subtitle1">종목</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="bz_item"
-                        onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].bz_item : this.props.bz_item}
-                        variant="outlined" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-
-                  {/* 6번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">대표전화</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_tel" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_tel : this.props.co_tel}
-                        variant="outlined" />
-                    </Grid>
-                    <Grid
-                      item xs={3} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_tel2" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_tel2 : this.props.co_tel2}
-                        variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1">대표팩스</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="co_fax" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].co_fax : this.props.co_fax}
-                        variant="outlined" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 7번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">사업자번호</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="reg_nb" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].reg_nb : this.props.reg_nb}
-                        variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1">법인번호</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <Select
-                        name="cp_ct"
-                        onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].cp_ct : this.props.cp_ct}
-                        variant="outlined"
-                        style={{ width: "100%", height: "33px", marginLeft: "10px" }}
-                      >
-                        <MenuItem value="personal">개인</MenuItem>
-                        <MenuItem value="company">법인</MenuItem>
-                        <MenuItem value="etc">기타</MenuItem>
-                      </Select>
-                    </Grid>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="cp_no" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].cp_no : this.props.cp_no}
-                        variant="outlined" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 8번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">설립일</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={3.83} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "12px" }} >
-                      <LocalizationProvider dateAdapter={AdapterDayjs} style={{ width: "100%" }}>
-                        <DatePicker name="est_dt"
-                          onChange={(date) => this.props.onInputChange({ target: { name: 'est_dt', value: date } })} variant="outlined"
-                          InputProps={{ style: { height: 30, padding: '0 10px' } }}
-
-                          style={{ width: "100%" }}
-                          slotProps={{ textField: { size: 'small' } }} />
-                      </LocalizationProvider>
-                    </Grid>
-                    <GridItem3 item xs={2} style={{ marginRight: "5px" }} >
-                      <FieldName variant="subtitle1">개/폐업일</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={1.85} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "8px" }} >
-                      <LocalizationProvider dateAdapter={AdapterDayjs} style>
-                        <div style={{ padding: "5px 0" }}>
-                          <DatePicker
-                            name="opn_dt"
-
-                            onChange={(date) => this.props.onInputChange({ target: { name: 'opn_dt', value: date } })}
-                            variant="outlined"
-                            InputProps={{ style: { height: 30, padding: '0 10px' } }}
-                            style={{ width: "100%" }}
-                            slotProps={{ textField: { size: 'small' } }} />
-                        </div>
-                      </LocalizationProvider>
-                    </Grid>
-                    <Grid
-                      item xs={1.85} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <LocalizationProvider dateAdapter={AdapterDayjs} style>
-                        <DatePicker name="cls_dt" onChange={(date) => this.props.onInputChange({ target: { name: 'cls_dt', value: date } })} variant="outlined"
-                          InputProps={{ style: { height: 30, padding: '0 10px' } }}
-                          style={{ width: "100%" }}
-                          slotProps={{ textField: { size: 'small' } }} />
-                      </LocalizationProvider>
-
-                    </Grid>
-
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 9번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">대표자명</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="ceo_nm" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].ceo_nm : this.props.ceo_nm}
-                        variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1">주민등록번호</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="res_nb" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].res_nb : this.props.res_nb}
-                        variant="outlined" />
-                    </Grid>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField variant="outlined" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 10번째 */}
-                  <Grid container >
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">기본도메인</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={7} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      @<MyTextField name="domain" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].domain : this.props.domain}
-                        variant="outlined" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-
-                  {/* 10번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">회사주소</FieldName>
-                    </GridItem1>
-                    <Grid item xs={6} container >
-                      <Grid item xs={12} container>
-                        <Grid
-                          item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
-                          <MyTextField name="adr_zp" onChange={this.props.onInputChange}
-                            value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].adr_zp : this.props.postcode}
-
-                            variant="outlined" />
-                        </Grid>
-                        <Postcode style={{ marginLeft: "10px", height: '40px', marginTop: '5px' }} onComplete={this.props.onComplete} />
-
-                      </Grid>
-                      <Grid item xs={12} container>
-                        <Grid
-                          item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
-                          <MyTextField name="adr_inp" onChange={this.props.onInputChange}
-                            value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].adr_inp : this.props.jibunAddress || this.props.roadAddress}
-                          />
-
-                        </Grid>
-                        <Grid
-                          item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
-                          <MyTextField name="adr_etc" onChange={this.props.onInputChange}
-                            value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].adr_etc : this.props.adr_etc}
-                            variant="outlined" />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 12번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">회계기수</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="ac_per" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].ac_per : this.props.ac_per}
-                        variant="outlined" />
-                    </Grid>
-                    <Grid
-                      item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <Typography variant="subtitle1">기</Typography>
-                    </Grid>
-                    <Grid
-                      item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker name="ac_dt" onChange={(date) => this.props.onInputChange({ target: { name: 'ac_dt', value: date } })} slotProps={{ textField: { size: 'small' } }} />
-                      </LocalizationProvider>
-                    </Grid>
-                    <button style={{ marginLeft: "5px", marginTop: "3.5px", height: "35px" }}>회계기수 등록</button>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 13번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">회사계정유형</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={10} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="acc_tp" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].acc_tp : this.props.acc_tp}
-                        variant="outlined" label="일반" />
-                    </Grid>
-                    <Divider sx={{ width: '65vw' }} />
-                  </Grid>
-                  {/* 14번째 */}
-                  <Grid container>
-                    <GridItem1 item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                      <FieldName variant="subtitle1">홈페이지주소</FieldName>
-                    </GridItem1>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="url" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].url : this.props.url}
-                        variant="outlined" />
-                    </Grid>
-                    <GridItem3 item xs={2} >
-                      <FieldName variant="subtitle1">정렬</FieldName>
-                    </GridItem3>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                      <MyTextField name="sort" onChange={this.props.onInputChange}
-                        value={this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].sort : this.props.sort}
-                        variant="outlined" />
-                    </Grid>
-                  </Grid>
-
-                </Grid>
-              </Box>
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <p style={{ height: '3px' }}>인감정보</p>
-
-                </div>
-                <hr style={{ height: '3px', color: 'black' }} />
+                <Acc1013BasicInfo
+                  {...this.state}
+                  companyCardData={this.state.companyCardData}
+                  onInputChange={this.handleInputChange}
+                  handleSaveButton={this.handleSaveButton}
+                  handleDeleteButton={this.handleDeleteButton}
+                  handleCardClick={this.handleCardClick}
+                  co_cd={this.state.co_cd}
+                  handleInputChangeReadOnly={this.handleInputChangeReadOnly}
+                  // sco={this.state.companyCards} //카드리스트 sco
+                  onComplete={this.handlePostComplete}
+                  // addOrUpdate={this.addOrUpdate} 사용X
+                  onCoCdChange={this.handleCoCdChange}
+                />
+                
               </div>
             </div>
-          </div>
-
-        </div>
-      </form>
+        </DouzoneContainer>
+          </ThemeProvider>
+      </Router>
     );
   }
 }
 
-export default Acc1013; 
+export default Acc1013;

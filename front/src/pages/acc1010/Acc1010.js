@@ -487,7 +487,8 @@ class Acc1010 extends Component {
                 <ThemeProvider theme={acc1010theme}>
                     <DouzoneContainer
                         ref={this.DouzoneContainer}
-                        title={this.state.title} delete={this.handleOpenModal}
+                        title={this.state.title} 
+                        delete={this.handleOpenModal}
                         functionArea={[{ title: '즐겨찾기', id: 'aaa', onClick: this.aaa.bind(this) }]}
                         openDeleteModal={this.state.showModal}
                         handleClose={this.handleCloseModal}

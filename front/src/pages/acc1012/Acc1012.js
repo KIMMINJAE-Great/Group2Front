@@ -186,7 +186,7 @@ class Acc1012 extends Component {
                       <Box sx={{ overflowY: "auto", maxHeight: "600px" }}>
                         {/* 스크롤바 영역 설정 */}
                         <Grid container spacing={2} >
-                          {this.props.companyCards.map((sco, index) => (
+                          {this.props.companyCards?.map((sco, index) => (
                             <Grid
                               item
                               xs={12}
