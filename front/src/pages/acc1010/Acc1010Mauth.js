@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Checkbox } from '@mui/material';
-import { MenuCollection } from './../../components/menu/MenuCollection';
+import { MenuCollection } from '../../components/menu/MenuCollection';
 import { del, post } from "../../components/api_url/API_URL";
 
 class Acc1010Mauth extends React.Component {

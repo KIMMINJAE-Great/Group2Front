@@ -5,19 +5,17 @@ import LoginImage from '../../images/mainPage.png'
 import './mainPage.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 //import PrivateRoute from '../components/routes/PrivateRoute';
-import Acc1010 from './../../pages/empManagement/Acc1010';
-import Acc1011 from './../../pages/depManagement/Acc1011';
-import Acc1012 from './../../pages/tradeManagement/Acc1012';
-import Acd1010 from './../../pages/regCar/Acd1010';
-import Acd1011 from './../../pages/carDriveLogManagement/Acd1011';
-import Acd1012 from './../../pages/relCostState/Acd1012';
-import Ace1010 from './../../pages/carDriveLogPersonal/Ace1010';
-import Ace1011 from './../../pages/carDriveExcelUpload/Ace1011';
-import Acc1013 from './../../pages/companyReg/Acc1013';
+import Acc1010 from './../../pages/acc1010/Acc1010';
+import Acc1011 from './../../pages/acc1011/Acc1011';
+import Acc1012 from './../../pages/acc1012/Acc1012';
+import Acd1010 from './../../pages/acd1010/Acd1010';
+import Acd1011 from './../../pages/acd1011/Acd1011';
+import Acd1012 from './../../pages/acd1012/Acd1012';
+import Ace1010 from './../../pages/acd1010/Ace1010';
+import Ace1011 from './../../pages/acd1011/Ace1011';
+import Acc1013 from './../../pages/acc1013/Acc1013';
 
 import { Redirect } from "react-router-dom/cjs/react-router-dom";
-import Acc1013Con from "../../pages/companyReg/Acc1013Con";
-import Acc1012Con from './../../pages/tradeManagement/Acc1012Con';
 import MainPageHome from "../../pages/MainPageHome";
 import PrivateRoute from "../routes/PrivateRoute";
 
@@ -68,8 +66,8 @@ class MainPage extends Component {
                 <Route path='/mainpage' exact component={MainPageHome} />
                 <Route path='/mainpage/empmanagement' component={Acc1010} />
                 <Route path='/mainpage/depmanagement' component={Acc1011} />
-                <Route path='/mainpage/trademanagement' component={Acc1012Con} />
-                <Route path='/mainpage/companyreg' component={Acc1013Con} />
+                <Route path='/mainpage/trademanagement' component={Acc1012} />
+                <Route path='/mainpage/companyreg' component={Acc1013} />
                 <Route path='/mainpage/regcar' component={Acd1010} />
                 <Route path='/mainpage/cardrivelogmanagement' component={Acd1011} />
                 <Route path='/mainpage/relcoststate' component={Acd1012} />
