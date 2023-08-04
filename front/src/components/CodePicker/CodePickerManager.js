@@ -1,18 +1,18 @@
 import React from "react";
-import CodePicker from "./CodePicker";
-import TradeCodePicker from "./Acc1012CodePicker";
-import Acc1013CodePicker from "./Acc1013CodePicker";
-import Acc1012CodePicker from "./Acc1012CodePicker";
-import RegCarCodePicker from "./RegCarCodPicker";
+
+import EmpCodePicker from "./EmpCodePicker";
+import CompanyCodePicker from "./CompanyCodePicker";
+import DeptCodePicker from "./DeptCodePicker";
+import CarCodePicker from "./CarCodePicker";
 
 
 class CodePickerManager extends React.Component {
     render() {
       return (
-        this.props.helpId === 'company' ? <Acc1013CodePicker></Acc1013CodePicker>
-        : this.props.helpId === 'regcar' ? <RegCarCodePicker></RegCarCodePicker>
-        : this.props.helpId === 'TRADE_CODE' ? <Acc1012CodePicker></Acc1012CodePicker>
-        
+        this.props.helpId === 'CompanyCodePicker' ? <CompanyCodePicker></CompanyCodePicker> //회사코드도움
+        : this.props.helpId === 'DeptCodePicker' ? <DeptCodePicker></DeptCodePicker> //부서코드도움
+        : this.props.helpId === 'EmpCodePicker' ? <EmpCodePicker></EmpCodePicker> //사원코드도움 
+        : this.props.helpId === 'CarCodePicker' ? <CarCodePicker></CarCodePicker> //차량코드도움 
         : null
       );
     }

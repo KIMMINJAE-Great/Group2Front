@@ -56,13 +56,13 @@ class Acd1010Search extends Component {
                   <Grid item xs={1.6} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
                     
                     {/* 텍스트필드 대신 코드피커 들어가야함 */}
-                    <CodePickerManager helpId={'regcar'} variant="outlined" />
+                    <CodePickerManager helpId={'DeptCodePicker'} variant="outlined" />
                   </Grid>
                   <Grid item xs={0} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
                     <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_name">관리자</Typography>
                   </Grid>
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    <CodePickerManager helpId={'regcar'} variant="outlined" />
+                    <CodePickerManager helpId={'EmpCodePicker'} variant="outlined" />
                   </Grid>
                   
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
@@ -77,7 +77,7 @@ class Acd1010Search extends Component {
                     <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}  >차량관리</Typography>
                   </Grid>
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    <CodePickerManager helpId={'regcar'} variant="outlined" />
+                    <CodePickerManager helpId={'CarCodePicker'} variant="outlined" />
                   </Grid>
                   <Grid item xs={1.03} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
                     <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }} >임차구분</Typography>

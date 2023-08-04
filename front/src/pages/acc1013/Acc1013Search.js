@@ -100,7 +100,7 @@ class Acc1013Search extends React.Component {
               }}
             >
               <CodePickerManager
-                helpId={'company'}
+                helpId={'CompanyCodePicker'}
                 
                 variant="outlined"
                 
