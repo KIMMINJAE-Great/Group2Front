@@ -2,14 +2,14 @@ import { Component } from "react";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import CardList from "../../components/commons/CardList";
-import { createTheme } from '@mui/material';
+import { Box, CardContent, createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { get, post } from "../../components/api_url/API_URL";
 import Acd1010BasicInfo from "./Acd1010BasicInfo";
 import Acd1010Search from "./Acd1010Search";
-
+import { Divider, Grid, MenuItem,Card, Select, TextField, Typography } from "@mui/material";
 const acd1010theme = createTheme({
   components: {
     MuiListItemText: {
@@ -110,6 +110,7 @@ class Acd1010 extends Component {
           regCarCards: [], //카드리스트
           regCarCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
           title:"차량등록부",
+          content:[],
         };
       }
 
@@ -146,12 +147,99 @@ class Acd1010 extends Component {
       const response = await get("/regcar/cardlist");
       console.log("Acc1013Con.........fetchRegCarCards 요청");
       this.setState({ 
-        regCarCards: response.data });
+        regCarCards: response.data,
+        content: response.data, });
       console.log("regCarCards: "+this.state.regCarCards);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // 회사 카드리스트를 그려줄 함수
+  onCardItemDraw = () => {
+
+    return (
+      <div>
+        <Card
+          style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
+          class="noHoverEffect"
+        >
+          <CardContent>
+            <Typography variant="caption">
+              회사 수 : {this.state.content.length}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            </Typography>
+          </CardContent>
+        </Card>
+        <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
+          {/* 스크롤바 영역 설정 */}
+          <Grid container spacing={2}>
+            {this.state.content.map((item, index) => (
+              <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    border: "0.5px solid lightgrey",
+                    marginRight: "2px",
+                    display: "flex",
+                  }}
+                  onClick={() =>
+                    this.handleCardClick(this.state.content[index].car_cd)
+                  }
+                >
+
+                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                    
+                    {/* item1,item2 */}
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.car_cd}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.car_nm}
+                    </Typography>
+                    <div> </div>
+                  </CardContent>
+                  <CardContent
+                    style={{
+                      marginLeft: "30px",
+                      paddingLeft: "0",
+                      paddingRight: "0",
+                      minWidth: "100px",
+                    }}
+                  >
+                    {/* item3 */}
+                    <Typography variant="body2">
+                      {item.co_nk}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </div>
+    )
+  }
 
 
 
@@ -177,10 +265,10 @@ class Acd1010 extends Component {
               ></Acd1010Search>
               <div style={{ display: "flex" }}>
                   <CardList
-                      regCarCards={regCarCards}
-                      content={this.state.regCarCards}    
                       handleCardClick={this.handleCardClick}
                       handleNewButtonClick={this.handleNewButtonClick}
+                      onCardItemDraw={this.onCardItemDraw}
+                      content={this.state.content}
                   />
                   <Acd1010BasicInfo
                       onInputChange={this.handleInputChange}

@@ -224,69 +224,20 @@ class Acc1013 extends Component {
   handleSaveButton = async (e, companyCardData) => {
     e.preventDefault();
 
-    console.log("오 드뎌?" + JSON.stringify(companyCardData));
-
     const {
-      co_cd,
-      co_nm,
-      co_nk,
-      use_yn,
-      lng,
-      adm_cd,
-      bz_type,
-      bz_item,
-      co_tel,
-      co_tel2,
-      co_fax,
-      reg_nb,
-      cp_ct,
-      cp_no,
-      adr_zp,
-      adr_inp,
-      adr_etc,
-      est_dt,
-      opn_dt,
-      cls_dt,
-      ceo_nm,
-      res_nb,
-      domain,
-      ac_per,
-      ac_dt,
-      acc_tp,
-      url,
-      sort,
-      companyCards,
+      co_cd,      co_nm,      co_nk,      use_yn,      lng,      adm_cd,      bz_type,
+      bz_item,      co_tel,      co_tel2,      co_fax,      reg_nb,      cp_ct,
+      cp_no,      adr_zp,      adr_inp,      adr_etc,      est_dt,      opn_dt,
+      cls_dt,      ceo_nm,      res_nb,      domain,      ac_per,      ac_dt,      acc_tp,
+      url,      sort,      
+      companyCards,    
     } = this.state;
     //필드데이터f
     const data = {
-      co_cd,
-      co_nm,
-      co_nk,
-      use_yn,
-      lng,
-      adm_cd,
-      bz_type,
-      bz_item,
-      co_tel,
-      co_tel2,
-      co_fax,
-      reg_nb,
-      cp_ct,
-      cp_no,
-      adr_zp,
-      adr_inp,
-      adr_etc,
-      est_dt,
-      opn_dt,
-      cls_dt,
-      ceo_nm,
-      res_nb,
-      domain,
-      ac_per,
-      ac_dt,
-      acc_tp,
-      url,
-      sort,
+      co_cd,      co_nm,      co_nk,      use_yn,      lng,      adm_cd,      bz_type,      bz_item,
+      co_tel,      co_tel2,      co_fax,      reg_nb,      cp_ct,      cp_no,      adr_zp,      adr_inp,
+      adr_etc,      est_dt,      opn_dt,      cls_dt,      ceo_nm,      res_nb,      domain,      ac_per,
+      ac_dt,      acc_tp,      url,      sort,
       companyCards,
     };
 
@@ -399,6 +350,7 @@ class Acc1013 extends Component {
                     <Typography
                       variant="body2"
                       style={{
+                        marginLeft: "10px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -406,11 +358,12 @@ class Acc1013 extends Component {
                         maxWidth: "90px",
                       }}
                     >
-                      {item.dept_st}
+                      {item.co_cd}
                     </Typography>
                     <Typography
                       variant="body2"
                       style={{
+                        marginLeft: "10px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -424,7 +377,7 @@ class Acc1013 extends Component {
                   </CardContent>
                   <CardContent
                     style={{
-                      marginLeft: "30px",
+                      marginLeft: "90px",
                       paddingLeft: "0",
                       paddingRight: "0",
                       minWidth: "100px",
@@ -432,9 +385,22 @@ class Acc1013 extends Component {
                   >
                     {/* item3 */}
                     <Typography variant="body2">
-                      {item.co_nk}
+                      username
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      개인/법인
                     </Typography>
                   </CardContent>
+                  
                 </Card>
               </Grid>
             ))}
@@ -446,7 +412,9 @@ class Acc1013 extends Component {
 
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
-
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    console.log("user!@!@!@!@"+JSON.stringify(user));
+    const mauthList = user.mauthList;
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용

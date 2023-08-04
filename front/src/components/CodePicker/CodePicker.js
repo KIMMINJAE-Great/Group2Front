@@ -17,13 +17,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import { LocalizationProvider } from '@mui/lab';
 import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import DatePicker from '@mui/lab/DatePicker';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 class CodePicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cpAnchor1: null,
-      cpAnchor2: null,
+      anchor1: null,
+      anchor2: null,
 
       showMenu: false,
       // menuItems: [],
@@ -39,13 +41,13 @@ class CodePicker extends React.Component {
   
   handleDropDown = (e) => {
     this.setState({ 
-      cpAnchor1: e.currentTarget,
+      anchor1: e.currentTarget,
       // selectedItems: this.state.menuItems.filter(item => this.state.selectedIds.includes(item.id)) 
     });
   };
 
   handleClose1 = () => {
-    this.setState({ cpAnchor1: null });
+    this.setState({ anchor1: null });
   };
 
   //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수
@@ -83,11 +85,21 @@ class CodePicker extends React.Component {
     this.setState({ textFieldValue: e.target.value });
   };
 
-  
+
+  handleKeyDown = (e) => {
+    // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
+    if (e.key === 'F2') {
+      this.openModal();
+    }
+    if (this.props.onHandleKeyDown) {
+      this.props.onHandleKeyDown(e, this.state.textFieldValue);
+    }
+  };
+
 
   render() {
-    const { cpAnchor1, selectedValue, } = this.state;
-    const { menuItems, selectedIds } = this.props;
+    const { anchor1, selectedValue, } = this.state;
+    const { menuItems, deleteMenuItem, valueField, codeField, selectedIds } = this.props;
     this.handleDropDown = this.handleDropDown.bind(this);
     
     const { isModalOpen } = this.state; // 모달 열림/닫힘 상태
@@ -95,21 +107,15 @@ class CodePicker extends React.Component {
     // 드롭다운
     
 
-    const open1 = Boolean(cpAnchor1);
-
-
+    const open1 = Boolean(anchor1);
     const { content } = this.props;
-
-    
-
-    
     return (
       <div>
         <div style={{ position: 'relative', width: '179px', height: '42px' }}>
           <TextField
             style={{ display: "flex", boxSizing: 'border-box', width: '175px' }}
             variant="outlined"
-            onKeyDown={(e) => this.props.onHandleKeyDown(e, this.state.textFieldValue)}
+            onKeyDown={(e) => this.handleKeyDown(e, this.state.textFieldValue)}
             value={this.state.textFieldValue}
             onChange={this.handleTextFieldChange}
             inputProps={{ style: { height: '2px' } }}
@@ -138,7 +144,7 @@ class CodePicker extends React.Component {
           {/* v 부분 나타나는 부분임!!  */}
           <Popover
             id="codepicker"
-            anchorEl={this.state.cpAnchor1}
+            anchorEl={this.state.anchor1}
             keepMounted
             open={open1}
             onClose={this.handleClose1}
@@ -147,13 +153,7 @@ class CodePicker extends React.Component {
             style={{ marginLeft: '-120px' }}
           >  
 
-          {/* {
-          contentArray.map((contentArray, index) => (
-              <MenuItem key={index} onClick={() => this.handleMenuItemClick(contentArray.itemcode)} >
-                {contentArray.item2}
-              </MenuItem>
-            ))
-          } */}
+         
 
          {
             menuItems?.map((item,index) => {
@@ -195,10 +195,9 @@ class CodePicker extends React.Component {
         </div>
 
         <div>
-          모달
           <Dialog open={this.state.isModalOpen} 
           onClose={this.closeModal}
-          maxWidth="sm"
+          maxWidth="lg"
           fullWidth 
           >
           <DialogTitle>
@@ -279,19 +278,23 @@ class CodePicker extends React.Component {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                       <thead>
                       <tr style={{ borderBottom: '1px solid #D3D3D3' }}>
-                      <th style={{ width: 80, padding: '8px', textAlign: 'center' }}>
+                        <th style={{ width: 80, padding: '8px', textAlign: 'center' }}>
                             {/* 체크박스 열 */}
                             <input type="checkbox" onChange={this.handleAllCheck} /> 
                         </th>
                         <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
-                            회사코드
-                          </th>
-                          <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
-                            회사명
-                          </th>
-                        </tr>
+                            {this.props.pickerCodeName}
+                        </th>
+                        <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                          {this.props.pickerName}
+                        </th>
+                        <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                          삭제
+                        </th>
+                      </tr>
                       </thead>
                       <tbody>
+
 
                       {menuItems?.map((item, index) => (
                       <tr key={index} 
@@ -316,6 +319,18 @@ class CodePicker extends React.Component {
                         <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
                           {/* 회사명 */}
                           {item[this.props.valueField]}
+                        </td>
+                        <td style={{ width: 50, padding: '8px', textAlign: 'center' }}>
+                        {/* 휴지통 이미지 */}
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
+                          }}
+                          
+                        >
+                          <DeleteIcon />
+                        </IconButton>
                         </td>
                       </tr>
                     ))}
