@@ -15,8 +15,7 @@ class Acc1013CodePicker extends React.Component{
     
         };
       }
-  // 엔터 쳤을 때 . 검색 하는 조건에 맞게 스프링으로 보내야함..!!
-  // 공통 컴포넌트라고 생각해보면... 
+ 
   handleKeyDown = async (e ,textFieldValue) => {
     if (e.key === "Enter") {
       e.preventDefault();

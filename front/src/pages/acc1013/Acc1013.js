@@ -81,43 +81,43 @@ class Acc1013 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      co_cd: "", //회사 코드
-      co_nm: "", //회사 이름
-      co_nk: "", //회사 약칭
-      use_yn: "",
-      lng: "",
-      adm_cd: "",
-      bz_type: "",
-      bz_item: "",
-      co_tel: "",
-      co_tel2: "",
-      co_fax: "",
-      reg_nb: "",
-      cp_ct: "",
-      cp_no: "",
-      adr_zp: "",
-      adr_inp: "",
-      adr_etc: "",
-      est_dt: "",
-      opn_dt: "",
-      cls_dt: "",
-      ceo_nm: "",
-      res_nb: "",
-      domain: "",
-      ac_per: "",
-      ac_dt: "",
-      acc_tp: "",
-      url: "",
-      sort: "",
-      defaultLange: "",
+      co_cd: '', //회사 코드
+      co_nm: '', //회사 이름
+      co_nk: '', //회사 약칭
+      use_yn: '',
+      lng: '',
+      adm_cd: '',
+      bz_type: '',
+      bz_item: '',
+      co_tel: '',
+      co_tel2: '',
+      co_fax: '',
+      reg_nb: '',
+      cp_ct: '',
+      cp_no: '',
+      adr_zp: '',
+      adr_inp: '',
+      adr_etc: '',
+      est_dt: '',
+      opn_dt: '',
+      cls_dt: '',
+      ceo_nm: '',
+      res_nb: '',
+      domain: '',
+      ac_per: '',
+      ac_dt: '',
+      acc_tp: '',
+      url: '',
+      sort: '',
+      defaultLange: '',
 
-      postcode: "", //우편번호 5자리
-      roadAddress: "",
-      jibunAddress: "", //지번 주소
-      extraAddress: "", //나머지 주소
+      postcode: '', //우편번호 5자리
+      roadAddress: '',
+      jibunAddress: '', //지번 주소
+      extraAddress: '', //나머지 주소
 
       companyCards: [], //카드리스트
-      selectedCompanyCards: "", // 카드리스트 선택된것..?
+      selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
       defaultUse: "use",
       readonly: false,
@@ -306,9 +306,26 @@ class Acc1013 extends Component {
     });
   };
 
+
+  
+
+  handleNewButtonClick = () =>{
+    this.setState({
+      co_cd:'',co_nm: '',co_nk: '',use_yn: '',lng: '',adm_cd: '',bz_type: '',
+      bz_item: '',co_tel: '',co_tel2: '',co_fax: '',reg_nb: '',cp_ct: '',cp_no: '',
+      adr_zp: '',adr_inp: '',adr_etc: '',est_dt: '',opn_dt: '',cls_dt: '',
+      ceo_nm: '',res_nb: '',domain: '',ac_per: '',ac_dt: '',acc_tp: '',url: '',sort: '',
+      companyCardData:null,
+      readonly:false,    
+    });
+  };
+  
+
   handleCoCdChange(value) {
     this.setState({ co_cd: value });
   }
+
+
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -420,6 +437,8 @@ class Acc1013 extends Component {
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
     this.handleCoCdChange = this.handleCoCdChange.bind(this);
+   
+
     return (
       <Router>
         <ThemeProvider theme={acc1013theme}>
@@ -443,11 +462,6 @@ class Acc1013 extends Component {
 
               <div style={{ display: "flex" }}>
                 <div style={{ marginTop: "30px" }}>
-                  {/* <CardList
-                  content={companyCards}
-                  handleCardClick={this.handleCardClick}
-                  handleNewButtonClick={this.handleNewButtonClick}
-                /> */}
                   <CardList
                     handleCardClick={this.handleCardClick}
                     handleNewButtonClick={this.handleNewButtonClick}
@@ -455,7 +469,6 @@ class Acc1013 extends Component {
                     content={this.state.content}
                   ></CardList>
                 </div>
-
                 <Acc1013BasicInfo
                   {...this.state}
                   companyCardData={this.state.companyCardData}
@@ -470,7 +483,6 @@ class Acc1013 extends Component {
                   // addOrUpdate={this.addOrUpdate} 사용X
                   onCoCdChange={this.handleCoCdChange}
                 />
-
               </div>
             </div>
           </DouzoneContainer>

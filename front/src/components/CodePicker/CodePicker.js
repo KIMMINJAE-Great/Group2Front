@@ -180,6 +180,14 @@ class CodePicker extends React.Component {
                       '[' + item[this.props.codeField] + ']' + item[this.props.valueField] 
                       : item[this.props.valueField]
                     }
+                    <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
+                          }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </MenuItem>
                 );
               }
@@ -194,6 +202,7 @@ class CodePicker extends React.Component {
           </Popover>
         </div>
 
+    {/* 모달창 */}
         <div>
           <Dialog open={this.state.isModalOpen} 
           onClose={this.closeModal}
