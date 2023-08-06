@@ -34,6 +34,8 @@ class CodePicker extends React.Component {
       // textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
     };
   }
+
+  
   
   handleDropDown = (e) => {
     this.setState({ 
@@ -71,26 +73,23 @@ class CodePicker extends React.Component {
 
   handleMenuItemClick = (value) => {
     this.props.onTextFieldChange(value);
-
-  
   };
 
 
   handleKeyDown = (e , value) => {
     // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
-    
-    
     if (e.key === 'F2') {
       this.openModal();
+    }else if(e.key ==='Enter'){
+      this.openModal();
     }
+  
     if (this.props.onHandleKeyDown) {
       this.props.onHandleKeyDown(e, value);
-      if(this.props.menuItems.length >= 2){
-        this.openModal();
-      }
+      
     }
-    
   };
+
 
   render() {
     const { anchor1, selectedValue, } = this.state;
@@ -104,9 +103,9 @@ class CodePicker extends React.Component {
     const { content } = this.props;
     return (
       <div>
-        <div style={{ position: 'relative', width: '179px', height: '42px' }}>
+        <div style={{ position: 'relative', width: '194px', height: '42px' }}>
           <TextField
-            style={{ display: "flex", boxSizing: 'border-box', width: '175px' }}
+            style={{ display: "flex", boxSizing: 'border-box', width: '190px' }}
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
@@ -142,43 +141,24 @@ class CodePicker extends React.Component {
             onClose={this.handleClose1}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-            style={{ marginLeft: '-120px' }}
+            style={{ marginLeft: '-135px' }}
+            PaperProps={{
+              style: {
+                width: 'fit-content', 
+                minWidth: '190px', 
+              },
+            }}
+          
           >  
-         {
-            menuItems?.map((item,index) => {
-              // selectedIds가 있고, item.id가 selectedIds에 포함되어 있을 경우에만 MenuItem을 렌더링
-              if (this.props.selectedIds && this.props.selectedIds.includes(item[this.props.valueField])) {
-                console.log("111이게 실행된거야!");
+           { 
+              this.props.menuItems?.map((item,index) => {
+                // 아래의 로직은 필요에 따라 변경
                 return (
                   <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
                     {this.props.dispType === 'codeAndValue' ? 
                       '[' + item[this.props.codeField] + ']' + item[this.props.valueField] 
                       : this.props.dispType === 'codeAndValueAndValue' ? 
                       '[' + item[this.props.codeField] + ']' + item[this.props.valueField] + item[this.props.valueField2] 
-                      : item[this.props.valueField]
-                    }
-                  <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
-                          }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </MenuItem>
-                );
-              }
-              // selectedIds가 없을 경우 모든 MenuItem을 렌더링
-              else if (!this.props.selectedIds || this.props.selectedIds.length === 0) {
-                
-                console.log("222이게 실행된거야!");
-                return (
-                  <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}
-                  onClose={this.handleClose1}>
-                    {this.props.dispType === 'codeAndValue' ? 
-                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField] 
-                      : this.props.dispType === 'codeAndValueAndValue' ? 
-                      '[' + item[this.props.codeField] + ']' + '  ' + item[this.props.valueField] +'  '+ item[this.props.valueField2] 
                       : item[this.props.valueField]
                     }
                     <IconButton
@@ -191,19 +171,15 @@ class CodePicker extends React.Component {
                     </IconButton>
                   </MenuItem>
                 );
-              }
-              // 그 외의 경우에는 아무 것도 렌더링
-              else {
-                return null;
-              }
-            })
-          }
+              })
+            }
           </Popover>
         </div>
 
     {/* 모달창 */}
         <div>
-          <Dialog open={this.state.isModalOpen} 
+          <Dialog 
+            open={this.state.isModalOpen} 
             onClose={this.closeModal}
             maxWidth="sm"
             fullWidth 
@@ -235,7 +211,8 @@ class CodePicker extends React.Component {
                     onChange={this.props.onTextInputChange}
                     variant="outlined" size="small" 
                     inputProps={{ style: { height: '12px' } }} />
-                  <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 26, width: '30px', height: '30px' }}>
+                  <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 26, width: '30px', height: '30px' }}
+                              onClick={(e) => this.props.onHandleOnClick(e, this.props.textFieldValue)}>
                     <SearchIcon />
                   </IconButton>
                 </Grid>

@@ -51,6 +51,34 @@ handleKeyDown = async (e, textFieldValue) => {
     }
   };
 
+  handleOnClick = async (e, textFieldValue) => {
+    e.preventDefault();
+    console.log("textFieldValue의 현재 값: "+textFieldValue)
+    this.setState({
+      textFieldValue: textFieldValue
+    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+      try {
+        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        this.state.menuItems = response.data;
+        this.setState({
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+
+        });
+          if(this.state.menuItems.length === 1 ){
+            this.setState({
+              selectedIds: response.data,
+            });
+          }
+            console.log(response.data);
+          } catch (error) {
+            console.log(error);
+          }
+      }
+    );
+  };
+  
+
   deleteMenuItem = (valueToDelete) => {
 
     const updatedMenuItems = this.state.menuItems.filter(
@@ -97,9 +125,11 @@ handleKeyDown = async (e, textFieldValue) => {
             //필수 전달 
             valueField='car_nm' 
             codeField='car_cd' 
-            dispType='codeAndValue'
+            valueField2='car_nb'
+            dispType='codeAndValueAndValue'
             pickerCodeName='차량코드'
-            pickerName='차량이름'
+            pickerName='차량명'
+            pickerName2='차량번호'
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
             menuItems={this.state.menuItems}
@@ -109,6 +139,7 @@ handleKeyDown = async (e, textFieldValue) => {
             deleteMenuItem={this.deleteMenuItem}
             onTextInputChange={this.handleTextInputChange} 
             onTextFieldChange={this.handleTextFieldChange}
+            onHandleOnClick={this.handleOnClick}
             />
         )
     }

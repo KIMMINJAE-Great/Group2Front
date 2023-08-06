@@ -35,6 +35,34 @@ class CompanyCodePicker extends React.Component{
       }
     }
   };
+  //serach버튼을 위해..
+  handleOnClick = async (e, textFieldValue) => {
+    e.preventDefault();
+    this.setState({
+      textFieldValue: textFieldValue
+    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+      try {
+        const response = await get(`/codepicker/company/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        this.state.menuItems = response.data;
+        this.setState({
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+
+        });
+          if(this.state.menuItems.length === 1 ){
+            this.setState({
+              selectedIds: response.data,
+            });
+          }
+            console.log(response.data);
+          } catch (error) {
+            console.log(error);
+          }
+      }
+    );
+  };
+
+
   toggleMenuItemCheck = (id) => {
     this.setState(prevState => ({
       selectedIds: prevState.selectedIds
@@ -76,6 +104,7 @@ class CompanyCodePicker extends React.Component{
             deleteMenuItem={this.deleteMenuItem}
             onTextInputChange={this.handleTextInputChange} 
             onTextFieldChange={this.handleTextFieldChange}
+            onHandleOnClick={this.handleOnClick}
             />
         )
     }

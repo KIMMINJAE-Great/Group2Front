@@ -20,7 +20,6 @@ class EmpCodePicker extends React.Component{
 handleKeyDown = async (e, textFieldValue) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    console.log("엔터의 텍필"+textFieldValue);
     this.setState({
       textFieldValue: textFieldValue
     }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
@@ -39,37 +38,64 @@ handleKeyDown = async (e, textFieldValue) => {
   }
 };
 
-deleteMenuItem = (valueToDelete) => {
-  const updatedMenuItems = this.state.menuItems.filter(
-    item => item.emp_cd !== valueToDelete
-  );
-  this.setState({ menuItems: updatedMenuItems });
-};
+  //serach버튼을 위해..
+  handleOnClick = async (e, textFieldValue) => {
+    e.preventDefault();
+    this.setState({
+      textFieldValue: textFieldValue
+    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+      try {
+        const response = await get(`/codepicker/empmanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        this.state.menuItems = response.data;
+        this.setState({
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
 
-// 메뉴아이템 체크할때
-toggleMenuItemCheck = (id) => {
-    this.setState(prevState => ({
-      selectedIds: prevState.selectedIds
-        ? prevState.selectedIds.includes(id)
-          ? prevState.selectedIds.filter(codeField => codeField !== id)
-          : [...prevState.selectedIds, id]
-        : [id]
-  }));
-}
+        });
+          if(this.state.menuItems.length === 1 ){
+            this.setState({
+              selectedIds: response.data,
+            });
+          }
+            console.log(response.data);
+          } catch (error) {
+            console.log(error);
+          }
+      }
+    );
+  };
 
-//텍스트필드값 핸들러
-handleTextInputChange = (e) => {
-  this.setState({ 
-    [e.target.name]: e.target.value, 
-  });
-};
-//popover 핸들러
-handleTextFieldChange = (value) => {
-  this.setState({
-    textFieldValue: value, 
-    selectedValue: value,
-  });
-};
+  deleteMenuItem = (valueToDelete) => {
+    const updatedMenuItems = this.state.menuItems.filter(
+      item => item.emp_cd !== valueToDelete
+    );
+    this.setState({ menuItems: updatedMenuItems });
+  };
+
+  // 메뉴아이템 체크할때
+  toggleMenuItemCheck = (id) => {
+      this.setState(prevState => ({
+        selectedIds: prevState.selectedIds
+          ? prevState.selectedIds.includes(id)
+            ? prevState.selectedIds.filter(codeField => codeField !== id)
+            : [...prevState.selectedIds, id]
+          : [id]
+    }));
+  }
+
+  //텍스트필드값 핸들러
+  handleTextInputChange = (e) => {
+    this.setState({ 
+      [e.target.name]: e.target.value, 
+    });
+  };
+  //popover 핸들러
+  handleTextFieldChange = (value) => {
+    this.setState({
+      textFieldValue: value, 
+      selectedValue: value,
+    });
+  };
 
     render(){
       console.log("muenuItems"+JSON.stringify(this.state.menuItems));
@@ -93,6 +119,7 @@ handleTextFieldChange = (value) => {
             deleteMenuItem={this.deleteMenuItem}
             onTextInputChange={this.handleTextInputChange} 
             onTextFieldChange={this.handleTextFieldChange}
+            onHandleOnClick={this.handleOnClick}
             />
         )
     }
