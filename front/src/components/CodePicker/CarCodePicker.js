@@ -69,6 +69,7 @@ handleKeyDown = async (e, textFieldValue) => {
             : [...prevState.selectedIds, id]
           : [id]
     }));
+    console.log(",,,,,"+this.state.selectedIds);
   }
 
   //텍스트필드값 핸들러

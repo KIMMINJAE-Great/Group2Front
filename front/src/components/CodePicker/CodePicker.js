@@ -10,7 +10,7 @@ import Popover from '@mui/material/Popover';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import Checkbox from '@mui/material/Checkbox';
-
+import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import SearchIcon from '@mui/icons-material/Search';
@@ -127,7 +127,7 @@ class CodePicker extends React.Component {
               
             </ExpandMoreIcon>
             {/* 여러개데이터가 검색되면 이게 먼저 실행되어야함 */}
-            <ZoomInIcon              
+            <InsertInvitationIcon              
               aria-controls="codepicker2"
               aria-haspopup="true"
               onClick={this.openModal}
@@ -147,9 +147,26 @@ class CodePicker extends React.Component {
          {
             menuItems?.map((item,index) => {
               // selectedIds가 있고, item.id가 selectedIds에 포함되어 있을 경우에만 MenuItem을 렌더링
-              if (this.props.selectedIds || this.props.selectedIds.includes(item[this.props.valueField])) {
+              if (this.props.selectedIds && this.props.selectedIds.includes(item[this.props.valueField])) {
                 console.log("111이게 실행된거야!");
-                
+                return (
+                  <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
+                    {this.props.dispType === 'codeAndValue' ? 
+                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField] 
+                      : this.props.dispType === 'codeAndValueAndValue' ? 
+                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField] + item[this.props.valueField2] 
+                      : item[this.props.valueField]
+                    }
+                  <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
+                          }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </MenuItem>
+                );
               }
               // selectedIds가 없을 경우 모든 MenuItem을 렌더링
               else if (!this.props.selectedIds || this.props.selectedIds.length === 0) {
@@ -160,6 +177,8 @@ class CodePicker extends React.Component {
                   onClose={this.handleClose1}>
                     {this.props.dispType === 'codeAndValue' ? 
                       '[' + item[this.props.codeField] + ']' + item[this.props.valueField] 
+                      : this.props.dispType === 'codeAndValueAndValue' ? 
+                      '[' + item[this.props.codeField] + ']' + '  ' + item[this.props.valueField] +'  '+ item[this.props.valueField2] 
                       : item[this.props.valueField]
                     }
                     <IconButton
@@ -278,6 +297,13 @@ class CodePicker extends React.Component {
                         <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
                           {this.props.pickerName}
                         </th>
+                        {
+                          // 부모로부터 전달받은 dispType 가 cvv일때
+                          this.props.dispType === 'codeAndValueAndValue' &&
+                          <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                            {this.props.pickerName2}
+                          </th>
+                        }
                         <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
                           삭제
                         </th>
@@ -303,13 +329,19 @@ class CodePicker extends React.Component {
                           />
                         </td>
                         <td style={{ width: 50, padding: '8px', textAlign: 'center' }}>
-                          {/* 회사 코드 */}
+                          {/* 코드 */}
                           {item[this.props.codeField]}
                         </td>
                         <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
-                          {/* 회사명 */}
+                          {/* 이름 */}
                           {item[this.props.valueField]}
                         </td>
+                        {
+                          this.props.dispType === 'codeAndValueAndValue' &&
+                          <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                          {item[this.props.valueField2]}
+                          </td>
+                        }
                         <td style={{ width: 50, padding: '8px', textAlign: 'center' }}>
                         {/* 휴지통 이미지 */}
                         <IconButton

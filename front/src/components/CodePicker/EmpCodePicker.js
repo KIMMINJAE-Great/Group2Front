@@ -20,11 +20,13 @@ class EmpCodePicker extends React.Component{
 handleKeyDown = async (e, textFieldValue) => {
   if (e.key === "Enter") {
     e.preventDefault();
+    console.log("엔터의 텍필"+textFieldValue);
     this.setState({
       textFieldValue: textFieldValue
     }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
       try {
         const response = await get(`/codepicker/empmanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        console.log("reseses"+response.data);
         this.setState({
           menuItems: response.data,
           selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
@@ -75,11 +77,13 @@ handleTextFieldChange = (value) => {
             // <CodePicker valueField='trNm' codeField='trCd' dispType='codeAndValue'></CodePicker>
             <CodePicker 
             //필수 전달 
-            valueField='emp_nm' 
-            codeField='emp_cd'
-            dispType='codeAndValue'
+            valueField='emp_nm'  //사원명
+            codeField='emp_cd'    //사원코드
+            valueField2='dept_nm' //부서명
+            dispType='codeAndValueAndValue'
             pickerCodeName='사원코드'
             pickerName='사원이름'
+            pickerName2='부서이름'
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
             menuItems={this.state.menuItems}
