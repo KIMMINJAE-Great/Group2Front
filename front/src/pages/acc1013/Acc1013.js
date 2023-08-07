@@ -225,19 +225,19 @@ class Acc1013 extends Component {
     e.preventDefault();
 
     const {
-      co_cd,      co_nm,      co_nk,      use_yn,      lng,      adm_cd,      bz_type,
-      bz_item,      co_tel,      co_tel2,      co_fax,      reg_nb,      cp_ct,
-      cp_no,      adr_zp,      adr_inp,      adr_etc,      est_dt,      opn_dt,
-      cls_dt,      ceo_nm,      res_nb,      domain,      ac_per,      ac_dt,      acc_tp,
-      url,      sort,      
-      companyCards,    
+      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type,
+      bz_item, co_tel, co_tel2, co_fax, reg_nb, cp_ct,
+      cp_no, adr_zp, adr_inp, adr_etc, est_dt, opn_dt,
+      cls_dt, ceo_nm, res_nb, domain, ac_per, ac_dt, acc_tp,
+      url, sort,
+      companyCards,
     } = this.state;
     //필드데이터f
     const data = {
-      co_cd,      co_nm,      co_nk,      use_yn,      lng,      adm_cd,      bz_type,      bz_item,
-      co_tel,      co_tel2,      co_fax,      reg_nb,      cp_ct,      cp_no,      adr_zp,      adr_inp,
-      adr_etc,      est_dt,      opn_dt,      cls_dt,      ceo_nm,      res_nb,      domain,      ac_per,
-      ac_dt,      acc_tp,      url,      sort,
+      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type, bz_item,
+      co_tel, co_tel2, co_fax, reg_nb, cp_ct, cp_no, adr_zp, adr_inp,
+      adr_etc, est_dt, opn_dt, cls_dt, ceo_nm, res_nb, domain, ac_per,
+      ac_dt, acc_tp, url, sort,
       companyCards,
     };
 
@@ -248,10 +248,11 @@ class Acc1013 extends Component {
         });
         await post("/company/save", data);
         console.log("post이후" + JSON.stringify(companyCardData));
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 수정이 완료됐습니다', 'success');
       } else {
         await post("/company/save", data);
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
       }
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
       this.fetchCompanyCards(); //카드리스트 새로고침됨!
       console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
     } catch (error) {
@@ -307,19 +308,19 @@ class Acc1013 extends Component {
   };
 
 
-  
 
-  handleNewButtonClick = () =>{
+
+  handleNewButtonClick = () => {
     this.setState({
-      co_cd:'',co_nm: '',co_nk: '',use_yn: '',lng: '',adm_cd: '',bz_type: '',
-      bz_item: '',co_tel: '',co_tel2: '',co_fax: '',reg_nb: '',cp_ct: '',cp_no: '',
-      adr_zp: '',adr_inp: '',adr_etc: '',est_dt: '',opn_dt: '',cls_dt: '',
-      ceo_nm: '',res_nb: '',domain: '',ac_per: '',ac_dt: '',acc_tp: '',url: '',sort: '',
-      companyCardData:null,
-      readonly:false,    
+      co_cd: '', co_nm: '', co_nk: '', use_yn: '', lng: '', adm_cd: '', bz_type: '',
+      bz_item: '', co_tel: '', co_tel2: '', co_fax: '', reg_nb: '', cp_ct: '', cp_no: '',
+      adr_zp: '', adr_inp: '', adr_etc: '', est_dt: '', opn_dt: '', cls_dt: '',
+      ceo_nm: '', res_nb: '', domain: '', ac_per: '', ac_dt: '', acc_tp: '', url: '', sort: '',
+      companyCardData: null,
+      readonly: false,
     });
   };
-  
+
 
   handleCoCdChange(value) {
     this.setState({ co_cd: value });
@@ -417,7 +418,7 @@ class Acc1013 extends Component {
                       개인/법인
                     </Typography>
                   </CardContent>
-                  
+
                 </Card>
               </Grid>
             ))}
@@ -430,14 +431,14 @@ class Acc1013 extends Component {
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
     const user = JSON.parse(sessionStorage.getItem('user'));
-    console.log("user!@!@!@!@"+JSON.stringify(user));
+    console.log("user!@!@!@!@" + JSON.stringify(user));
     const mauthList = user.mauthList;
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
     this.handleCoCdChange = this.handleCoCdChange.bind(this);
-   
+
 
     return (
       <Router>

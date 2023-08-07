@@ -6,7 +6,7 @@ import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from 
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acd1010Search from "./Acd1010Search";
 
-import { Divider, Grid, MenuItem, Card, Select, TextField, Typography } from "@mui/material";
+import { Divider, MenuItem, Select, TextField, } from "@mui/material";
 import TaxiAlertIcon from '@mui/icons-material/TaxiAlert';
 
 import { Box } from "@mui/system";
