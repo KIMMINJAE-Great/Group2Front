@@ -1,3 +1,5 @@
+// acd1010search
+
 import { Component } from "react";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -51,7 +53,7 @@ class Acd1010Search extends Component {
 
                 
                   <Grid item xs={1.15} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
-                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_code" >회계단위</Typography>
+                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_code" >관리부서</Typography>
                   </Grid>
                   <Grid item xs={1.6} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
                     
@@ -59,17 +61,12 @@ class Acd1010Search extends Component {
                     <CodePickerManager helpId={'regcar'} variant="outlined" />
                   </Grid>
                   <Grid item xs={0} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
-                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_name">관리부서</Typography>
+                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} name="search_bp_name">관리자</Typography>
                   </Grid>
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    {/* <CodePicker content={this.props.regCarCards} variant="outlined"></CodePicker> */}
+                    <CodePickerManager helpId={'regcar'} variant="outlined" />
                   </Grid>
-                  <Grid item xs={1} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
-                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }} >관리자</Typography>
-                    </Grid>
-                  <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    {/* <CodePicker content={this.props.regCarCards} variant="outlined"></CodePicker> */}
-                  </Grid>
+                  
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
                     <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px' }}>
                       <SearchIcon />
@@ -82,7 +79,7 @@ class Acd1010Search extends Component {
                     <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}  >차량관리</Typography>
                   </Grid>
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    <CodePicker content={this.props.regCarCards} variant="outlined"></CodePicker>
+                    <CodePickerManager helpId={'regcar'} variant="outlined" />
                   </Grid>
                   <Grid item xs={1.03} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end"}}>
                     <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }} >임차구분</Typography>
