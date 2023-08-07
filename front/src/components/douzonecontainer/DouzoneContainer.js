@@ -9,6 +9,72 @@ import {
   Slide,
 } from '@mui/material';
 import "./douzonecontainer.css"
+import { createTheme } from '@mui/material';
+import { ThemeProvider } from '@emotion/react';
+
+const douzonecontainertheme = createTheme({
+  components: {
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          fontSize: '15px',
+          fontWeight: 'bold',
+          height: '15px',
+          lineHeight: '15px'
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          backgroundColor: "#FBFBFB",
+          color: "black",
+        }
+      },
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+        fullWidth: true,
+      }
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {  // 모든 Grid 태그에 적용하려면 root를 사용하세요.
+          // borderBottom: '1px solid black',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&:hover $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
+          },
+          '&.Mui-focused $notchedOutline': {
+            borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
+          },
+          borderRadius: 0,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          '&:hover ': {
+            cursor: 'pointer',
+            border: '1px solid #0f8bff',
+          }, '&.noHoverEffect:hover': {
+            cursor: 'auto',
+            border: 'none',
+          },
+        },
+      },
+    }
+
+
+  },
+});
 class DouzoneContainer extends Component {
   constructor(props) {
     super(props);
@@ -59,87 +125,89 @@ class DouzoneContainer extends Component {
     }
     //const showDelete = this.props.onDelete
     return (
-      <div className="douzone-container">
-        <div className="container-header">
-          <div className="container-header-left" >
-            {this.props.title}
-          </div>
-          <div className="container-header-right">
-            <div className="functionButton">
-              <Button
-                id="basic-button"
-                // aria-controls={open ? 'basic-menu' : undefined}
-                // aria-haspopup="true"
-                // aria-expanded={open ? 'true' : undefined}
-                onClick={this.handleClick}
-              >
-                기능모음
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={this.state.funcVowel}
-                open={Boolean(this.state.funcVowel)}
-                onClose={this.handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                <MenuItem onClick={this.handleClose}>Logout</MenuItem>
-              </Menu>
+      <ThemeProvider theme={douzonecontainertheme}>
+        <div className="douzone-container">
+          <div className="container-header">
+            <div className="container-header-left" >
+              {this.props.title}
             </div>
-            <span style={{ color: 'lightgrey' }}>|</span>
-            <DeleteIcon style={{ display: showDelete }} className="deleteIcon" onClick={this.props.delete} sx={{ fontSize: 30 }}></DeleteIcon>
+            <div className="container-header-right">
+              <div className="functionButton">
+                <Button
+                  id="basic-button"
+                  // aria-controls={open ? 'basic-menu' : undefined}
+                  // aria-haspopup="true"
+                  // aria-expanded={open ? 'true' : undefined}
+                  onClick={this.handleClick}
+                >
+                  기능모음
+                </Button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={this.state.funcVowel}
+                  open={Boolean(this.state.funcVowel)}
+                  onClose={this.handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                >
+                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                  <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                </Menu>
+              </div>
+              <span style={{ color: 'lightgrey' }}>|</span>
+              <DeleteIcon style={{ display: showDelete }} className="deleteIcon" onClick={this.props.delete} sx={{ fontSize: 30 }}></DeleteIcon>
 
 
+            </div>
           </div>
-        </div>
 
-        <div className="children" style={{ marginTop: '10px' }}>
-          {this.props.children}
-        </div>
+          <div className="children" style={{ marginTop: '10px' }}>
+            {this.props.children}
+          </div>
 
-        <Dialog
-          open={openDeleteModal}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {message}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>아니오</Button>
-            <Button onClick={handleConfirm} autoFocus>
-              네
-            </Button>
-          </DialogActions>
-        </Dialog>
+          <Dialog
+            open={openDeleteModal}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                {message}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>아니오</Button>
+              <Button onClick={handleConfirm} autoFocus>
+                네
+              </Button>
+            </DialogActions>
+          </Dialog>
 
-        <Snackbar
-          open={this.state.openSnackBar}
-          autoHideDuration={2000}
-          onClose={this.handleSnackbarClose}
-          TransitionComponent={Slide}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert onClose={this.handleSnackbarClose} severity={this.state.severity} sx={{
-            width: '100%',
-            bgcolor: backgroundColor,
-            '.MuiAlert-icon': {
-              color: iconColor
-            },
-            color: 'white',
-            fontWeight: 'bold',
-          }}>
-            {this.state.snackBarMessage}
-          </Alert>
-        </Snackbar>
-      </div >
+          <Snackbar
+            open={this.state.openSnackBar}
+            autoHideDuration={2000}
+            onClose={this.handleSnackbarClose}
+            TransitionComponent={Slide}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert onClose={this.handleSnackbarClose} severity={this.state.severity} sx={{
+              width: '100%',
+              bgcolor: backgroundColor,
+              '.MuiAlert-icon': {
+                color: iconColor
+              },
+              color: 'white',
+              fontWeight: 'bold',
+            }}>
+              {this.state.snackBarMessage}
+            </Alert>
+          </Snackbar>
+        </div >
+      </ThemeProvider>
     )
   }
 }

@@ -1,4 +1,45 @@
 .selected-row {
-  background-color: blue !important;
+  background-color: #2b78e4 !important;
   color: white !important;
+}
+.MuiDataGrid-root .MuiDataGrid-cell {
+  border-right: 1px solid rgb(211, 211, 211);
+  justify-content: center important;
+}
+.MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
+  justify-content: center;
+}
+
+/* 짝수 행 스타일 */
+.my-even-row-class {
+  background-color: #f0f0f0; /* 밝은 회색 */
+}
+
+/* 홀수 행 스타일 */
+.my-odd-row-class {
+  background-color: #ffffff; /* 하얀색 */
+}
+
+/* 헤더 스타일 */
+.my-header-class {
+  background-color: #bcbcbc !important; /* 밝은 회색 */
+  border-right: 1px solid rgb(211, 211, 211) !important; /* 헤더 사이의 여백색을 밝은 회색으로 설정 */
+}
+
+.MuiCheckbox-colorSecondary.Mui-checked {
+  color: black;
+  background-color: white;
+}
+
+.MuiCheckbox-colorSecondary.Mui-checked:hover {
+  background-color: white;
+}
+/* 체크된 상태에서의 체크박스 색상 변경 */
+.MuiCheckbox-root.Mui-checked {
+  color: rgb(146, 145, 145) !important;
+}
+
+/* 체크되지 않은 상태에서의 체크박스 색상 변경 */
+.MuiCheckbox-root {
+  color: rgb(146, 145, 145) !important;
 }
