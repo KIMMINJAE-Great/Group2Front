@@ -71,8 +71,8 @@ class MainPage extends Component {
                 <Route path='/mainpage/regcar' component={Acd1010} />
                 <Route path='/mainpage/cardrivelogmanagement' component={Acd1011} />
                 <Route path='/mainpage/relcoststate' component={Acd1012} />
-                <Route path='/mainpage/cardriveexcelupload' component={Ace1010} />
-                <Route path='/mainpage/cardrivelogpersonal' component={Ace1011} />
+                <Route path='/mainpage/cardrivelogpersonal' component={Ace1010} />
+                <Route path='/mainpage/cardriveexcelupload' component={Ace1011} />
               </Switch>
 
 
