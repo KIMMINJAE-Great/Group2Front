@@ -1,200 +1,527 @@
-import { Component } from "react";
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import CardList from "../../components/commons/CardList";
-import { createTheme } from '@mui/material';
-import { ThemeProvider } from '@emotion/react';
+import React, { Component } from "react";
+import { get, post, del, update } from "../../components/api_url/API_URL";
+import CardList from "../../components/commons/CardList"; // CardList 컴포넌트 임포트
+import Acd1010Presentation from "./Acd1010Presentation"; // Acd1010Presentation 컴포넌트 임포트
+import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { get, post } from "../../components/api_url/API_URL";
-import Acd1010BasicInfo from "./Acd1010BasicInfo";
 import Acd1010Search from "./Acd1010Search";
+import { Box } from "@mui/system";
 
 const acd1010theme = createTheme({
   components: {
     MuiListItemText: {
-        styleOverrides: {
-            primary: {
-                fontSize: '15px',
-                fontWeight: 'bold',
-                height: '15px',
-                lineHeight: '15px'
-            },
+      styleOverrides: {
+        primary: {
+          fontSize: "15px",
+          fontWeight: "bold",
+          height: "15px",
+          lineHeight: "15px",
         },
+      },
     },
     MuiButton: {
-        styleOverrides: {
-            root: {
-                height: "30px",
-                backgroundColor: "#FBFBFB",
-                color: "black",
-            }
+      styleOverrides: {
+        root: {
+          marginRight: "8px",
+          height: "30px",
+          backgroundColor: "#FBFBFB",
+          color: "black",
         },
-        defaultProps: {
-            variant: "contained",
-            color: "primary",
-            fullWidth: true,
-        }
+      },
+      defaultProps: {
+        variant: "contained",
+        color: "primary",
+        fullWidth: true,
+      },
     },
     MuiGrid: {
-        styleOverrides: {
-            root: {  // 모든 Grid 태그에 적용하려면 root를 사용하세요.
-                // borderBottom: '1px solid black',
-            },
+      styleOverrides: {
+        root: {
+          // 모든 Grid 태그에 적용하려면 root를 사용하세요.
+          // borderBottom: '1px solid black',
         },
+      },
     },
     MuiOutlinedInput: {
-        styleOverrides: {
-            root: {
-                '&:hover $notchedOutline': {
-                    borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-                },
-                '&.Mui-focused $notchedOutline': {
-                    borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-                },
-            },
+      styleOverrides: {
+        root: {
+          "&:hover $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          "&.Mui-focused $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
         },
+      },
     },
     MuiCard: {
-        styleOverrides: {
-            root: {
-                '&:hover ': {
-                    cursor: 'pointer',
-                    border: '1px solid #0f8bff',
-                }, '&.noHoverEffect:hover': {
-                    cursor: 'auto',
-                    border: 'none',
-                },
-            },
+      styleOverrides: {
+        root: {
+          "&:hover ": {
+            cursor: "pointer",
+            border: "1px solid #0f8bff",
+          },
+          "&.noHoverEffect:hover": {
+            cursor: "auto",
+            border: "none",
+          },
         },
-    }
-
-
-},
+      },
+    },
+  },
 });
-
-
 class Acd1010 extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          co_cd: '',
-          car_cd: '',
-          car_nb: '',
-          car_nm: '',
-          dept_cd: '',
-          emp_cd: '',
-          duty: '',
-          use_yn: '',
-          acct_cd: '',
-          asset_cd: '',
-          div_cd: '',
-          get_dt: '',
-          expen_ty: '',
-          insur_yn: '',
-          insur_tr_cd: '',
-          ifr_dt: '',
-          ito_dt: '',
-          lease_yn: '',
-          lfr_dt: '',
-          lto_dt: '',
-          insert_id: '',
-          insert_ip: '',
-          insert_dt: '',
-          modify_id: '',
-          modify_ip: '',
-          modify_dt: '',
-          biz_fg: '',
-          disposal_dt: '',
-          file_group: '',
-          regCarCards: [], //카드리스트
-          regCarCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
-          title:"차량등록부",
-        };
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      regcarCards: [], // 카드리스트 저장할 빈 배열
+      selectedregcar: '', // 클릭한 부서 정보를 저장할 상태 변수
+      contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
+      content : [],
+
+      selectedDate: new Date(),
+
+    
+      showModal: false,
+
+      
+
+      title: '차량등록'
 
 
-
-  //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
-  componentDidMount() {
-    this.fetchCarRegCards();
+    };
+    this.DouzoneContainer = React.createRef();
   }
 
-  //카드 클릭시 입력됨 (회사 코드로)
-  handleCardClick = async (car_cd) => {    
-    const data = { car_cd };
-    try {
-      const response = await post("/company/selectCard", data);
-      console.log(response);
-      console.log("카드리스트 클릭됨!");
-      this.setState({
-        regCarCardData: response.data,
-        car_cd: response.data.car_cd,
-        car_nm: response.data.car_nm,
-        
+  componentDidMount() {
+    get(`/regcar/cardlist`)
+      .then((response) => {
+        this.setState({ regcarCards: response.data,content:response.data});
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      console.log("car_cd이다!!"+this.state.car_cd);
-      this.fetchCarRegCards();
-    } catch (error) {
-      console.error(error);
-      console.log("카드리스트 클릭 중에 오류발생");
-    }
-  };
- //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
-  fetchCarRegCards = async () => {
+  }
+
+  // 카드를 클릭했을때
+  handleCardClick = async (car_cd) => {
+
     try {
-      const response = await get("/regcar/cardlist");
-      console.log("Acc1013Con.........fetchRegCarCards 요청");
-      this.setState({ 
-        regCarCards: response.data });
-      console.log("regCarCards: "+this.state.regCarCards);
+      const response = await post(`/regcar/getRegcarCard`, {
+        car_cd: car_cd,
+      });
+      this.setState({
+        selectedregcar: response.data,
+        selectedRead: "N",
+        complete: '',
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
+  // componentDidUpdate(){
+  //   this.setState({content : response.data});
+  // }
+
+   // 모달 열기
+   handleOpenModal = () => {
+    this.setState({ showModal: true });
+  };
+  // 모달 닫기
+  handleCloseModal = () => {
+    this.setState({ showModal: false });
+  };
+ 
+
+  // 추가 버튼
+  handleNewButtonClick = () => {
+    // selectedDept 상태를 빈 값으로 업데이트
+    this.setState({
+      selectedregcar: '',
+      selectedRead: "Y",
+      complete: '',
+      
+    });
+  };
+ 
+
+//저장버튼
+handleSaveClick = async (e) => {
+  e.preventDefault();
+  const { selectedregcar, selectedRead } = this.state;
 
 
-    //입력값의 변화를 저장함
-    handleInputChange = (e) => {
-        this.setState((prevState) => ({
-        ...prevState,
-        [e.target.name]: e.target.value,
-        }));
-    };
-    render() {
-    const { regCarCards, regCarCardData } = this.state;
+  // 차량코드가 비어있는지 확인합니다.
+  if (!selectedregcar.car_cd) {
+    console.log("차량코드를 입력해주세요.");
+    return;
+  }
+  // 차량번호이 비엉있는지 확인합니다.
+  if (!selectedregcar.car_nb) {
+    console.log("차량번호을 입력해주세요.");
+    return;
+  }
+  // 차량명이 비엉있는지 확인합니다.
+  if (!selectedregcar.car_nm) {
+    console.log("차량명을 입력해주세요.");
+    return;
+  }
+  // 임차구분 비엉있는지 확인합니다.
+  if (!selectedregcar.lease_yn) {
+    console.log("임차구분을 입력해주세요.");
+    return;
+  }
+
+
+  //삽입 기능
+  // 선택한 차량이 있는지 확인하기 위해 selectedregcar null이 아닌지 확인합니다.
+  if (selectedRead === "Y") {
+
+    try {
+
+      const response = await post(`/regcar/addcar`, selectedregcar);
+      console.log("서버 응답:", response.data);
+
+      this.setState((prevState) => ({
+        // 추가된 부서 정보를 regcarCards에 추가.
+        regcarCards: [...prevState.regcarCards, response.data],
+        content: [...prevState.regcarCards, response.data],
+        // 선택한 부서 정보를 초기화합니다.
+        selectedregcar: '',
+        
+      }));
+      this.DouzoneContainer.current.handleSnackbarOpen('차량정보 등록이 완료됐습니다', 'success');
+    } catch (error) {
+      console.log(error);
+      this.DouzoneContainer.current.handleSnackbarOpen('차량정보 등록 에러', 'error');
+    }
+  }// 수정 기능
+   else {
+
+    try {
+      console.log(selectedregcar);
+      const response = await update(`/regcar/updatecar`, selectedregcar);
+      console.log("서버 응답:", response.data);
+      this.DouzoneContainer.current.handleSnackbarOpen('차량정보 수정이 완료됐습니다', 'success');
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+// 삭제 버튼 눌렀을 때
+handleDeleteClick = async (e) => {
+  e.preventDefault();
+  const { selectedregcar, regcarCards } = this.state;
+
+  try {
+    // 서버에 DELETE 요청 보내기
+    const response = await del(
+      `/regcar/deletecar/${selectedregcar.car_cd}`
+    );
+    console.log("서버 응답", response.data);
+
+    // 서버 응답에 따라 삭제된 차량 정보를 regcarCards에서 제거
+    const newCardList = regcarCards.filter(
+      (item) => item.car_cd !== selectedregcar.car_cd
+    );
+
+    this.setState({
+      regcarCards: newCardList,
+      content: newCardList,
+      selectedregcar: '',
+      
+    });
+    this.DouzoneContainer.current.handleSnackbarOpen('차량정보 삭제가 완료됐습니다', 'success');
+  } catch (error) {
+    console.log(error);
+  }
+
+  this.handleCloseModal();
+
+};
+
+
+
+
+
+
+
+  // 입력된 값을 car_cd 필드에 저장(차량코드)
+  handleCarCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedregcar: {
+        ...prevState.selectedregcar,
+        car_cd: value,
+      },
+    }));
+  };
+   // 입력된 값을 car_nb 필드에 저장(차량번호)
+   handleCarNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedregcar: {
+        ...prevState.selectedregcar,
+        car_nb: value,
+      },
+    }));
+  };
+   // 입력된 값을 car_nm 필드에 저장(차량명)
+   handleCarNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedregcar: {
+        ...prevState.selectedregcar,
+        car_nm: value,
+      },
+    }));
+  };
+
+  handleGetDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedregcar: {
+            ...prevState.selectedregcar,
+            get_dt: value,
+        },
+    }));
+}
+handleDisposalDtChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          disposal_dt: value,
+      },
+  }));
+}
+
+handleLeaseynChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          lease_yn: value,
+      },
+  }));
+}
+
+handleLfrChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          lfr_dt: value,
+      },
+  }));
+}
+handleLtoChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          lto_dt: value,
+      },
+  }));
+}
+
+handleInsurChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          insur_tr_cd: value,
+      },
+  }));
+}
+
+handleIfrChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          ifr_dt: value,
+      },
+  }));
+}
+handleItoChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          ito_dt: value,
+      },
+  }));
+}
+
+handleUseynChange = (value) => {
+  this.setState((prevState) => ({
+    selectedregcar: {
+          ...prevState.selectedregcar,
+          use_yn: value,
+      },
+  }));
+}
+
+// 조회 조건으로 받은 차량정보 카드리스트
+handleRegcarCards = (regcarCards) => {
+  this.setState({ regcarCards, content: regcarCards });
+};
+
+
+
+
+  // 부서 카드리스트를 그려줄 함수
+  onCardItemDraw = () => {
+
     return (
+      <div>
+        <Card
+          style={{ backgroundColor: "#ECECEC", marginBottom: "5px" }}
+          class="noHoverEffect"
+        >
+          <CardContent>
+            <Typography variant="caption">
+              차량 개수 : {this.state.content.length}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            </Typography>
+          </CardContent>
+        </Card>
+        <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
+          {/* 스크롤바 영역 설정 */}
+          <Grid container spacing={2}>
+            {this.state.content.map((item, index) => (
+              <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: "5px",
+                    border: "0.5px solid lightgrey",
+                    marginRight: "2px",
+                    display: "flex",
+                  }}
+                  onClick={() =>
+                    this.handleCardClick(this.state.content[index].car_cd)
+                  }
+                >
 
-      <Router>
-        <DouzoneContainer title={this.state.title} delete={this.handleOpenModal}>
-          <ThemeProvider theme={acd1010theme} >
-            <div>
-              <Acd1010Search    
-                regCarCards={regCarCards}
-                onInputChange={this.handleInputChange}
-                handleSaveButton={this.handleSaveButton} //저장 미구현
-              ></Acd1010Search>
-              <div style={{ display: "flex" }}>
-                  <CardList
-                      regCarCards={regCarCards}
-                      content={this.state.regCarCards}    
-                      handleCardClick={this.handleCardClick}
-                      handleNewButtonClick={this.handleNewButtonClick}
-                  />
-                  <Acd1010BasicInfo
-                      onInputChange={this.handleInputChange}
-                      
-                      regCarCardData={this.state.regCarCardData}
-                      // car_cd={this.state.car_cd}               
-                       
-                      regCarCards={this.state.regCarCards}  // 카드리스트 전체 배열 담긴거
-                  />
+                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                    {/* item1,item2 */}
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.car_nm}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      {item.car_nb}
+                    </Typography>
+                    <div> </div>
+                  </CardContent>
+                  <CardContent
+                    style={{
+                      marginLeft: "30px",
+                      paddingLeft: "0",
+                      paddingRight: "0",
+                      minWidth: "100px",
+                    }}
+                  >
+                    {/* item3 */}
+                    <Typography variant="body2">
+                      {item.car_cd}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </div>
+    )
+  }
+
+
+ 
+  render() {
+    const { regcarCards, selectedregcar, selectedRead, showModal,complete } = this.state;
+
+    return (
+      <ThemeProvider theme={acd1010theme}>
+        <DouzoneContainer ref={this.DouzoneContainer}
+          title={this.state.title}
+          delete={this.handleOpenModal}
+          openDeleteModal={this.state.showModal}
+          handleClose={this.handleCloseModal}
+          handleConfirm={this.handleDeleteClick}
+          showDelete={''}
+          message="정말로 차량 정보를 삭제하시겠습니까?">
+          <Acd1010Search regcarSearch ={this.handleRegcarCards}></Acd1010Search>
+       
+        <form onSubmit={this.handleSaveClick}>
+          <div>
+            <div style={{ padding: "0px" }}>
+              <div>
+                <h5 style={{ margin: "10px" }}>
+                  회사별 차량을 등록할 수 있으며,'차종/기간/보험'유형을
+                  선택하여 등록할 수 있습니다.
+                </h5>
               </div>
-            </div>           
-          </ThemeProvider>
-        </DouzoneContainer>        
-      </Router>
+              
+            </div>
+            <div style={{ display: "flex" }}>
+              <CardList
+                handleCardClick={this.handleCardClick}
+                handleNewButtonClick={this.handleNewButtonClick}
+                onCardItemDraw={this.onCardItemDraw}
+                content={this.state.content}
+              ></CardList>
+
+              <Acd1010Presentation
+                selectedregcar={selectedregcar}
+                selectedRead={selectedRead}
+                open={showModal}
+                handleCloseModal={this.handleCloseModal}
+                handleOpenModal={this.handleOpenModal}
+
+
+                handleCarCdChange={this.handleCarCdChange}
+                handleCarNbChange={this.handleCarNbChange}
+                handleCarNmChange={this.handleCarNmChange}
+                handleGetDtChange={this.handleGetDtChange}
+                handleDisposalDtChange={this.handleDisposalDtChange}
+                handleLeaseynChange={this.handleLeaseynChange}
+                handleLfrChange={this.handleLfrChange}
+                handleLtoChange={this.handleLtoChange}
+                handleInsurChange={this.handleInsurChange}
+                handleIfrChange={this.handleIfrChange}
+                handleItoChange={this.handleItoChange}
+                handleUseynChange={this.handleUseynChange}
+                handleDeleteClick={this.handleDeleteClick}
+           
+
+
+
+                
+
+
+
+              
+              ></Acd1010Presentation>
+            </div>
+          </div>
+        </form>
+        </DouzoneContainer>
+      </ThemeProvider>
     );
   }
 }

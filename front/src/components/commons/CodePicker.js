@@ -195,7 +195,7 @@ class CodePicker extends React.Component {
         </div>
 
         <div>
-          모달
+          
           <Dialog open={this.state.isModalOpen} 
           onClose={this.closeModal}
           maxWidth="sm"
