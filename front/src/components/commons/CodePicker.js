@@ -45,7 +45,7 @@ class CodePicker extends React.Component {
   handleDropDown = (e) => {
     this.setState({ 
       anchor1: e.currentTarget,
-      // selectedItems: this.state.menuItems.filter(item => this.state.selectedIds.includes(item.id)) 
+       // selectedItems: this.state.menuItems.filter(item => this.state.selectedIds.includes(item.id)) 
     });
   };
 
