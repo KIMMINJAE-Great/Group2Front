@@ -116,7 +116,7 @@ class Acc1012Con extends Component {
                     <Typography variant="subtitle1" sx={{ ml: 23, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처코드</Typography>
                     <div style={{backgroundColor: "white", width: '60%'}}>
                     <TextField
-                      sx={{ width: '95%', ml: 1, mt: 1, mb: 1, backgroundColor: selectedSt?.bp_code ? '#f0f0f0' : 'white'}}
+                      sx={{ width: '95%', ml: 1, mt: 1, mb: 1, backgroundColor: '#f0f0f0'}}
                       placeholder="거래처코드는 자동 채번됩니다."
                       variant="outlined"
                       size="small"
