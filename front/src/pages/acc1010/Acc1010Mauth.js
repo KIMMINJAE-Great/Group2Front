@@ -102,6 +102,7 @@ class Acc1010Mauth extends React.Component {
         field: 'permission',
         headerName: '허가',
         width: 50,
+        flex: 1,
         renderCell: (params) => (
           <Checkbox
             checked={

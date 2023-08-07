@@ -1,0 +1,10 @@
+.acd1010-input-container {
+  background-color: #fafafa;
+}
+
+.acd1010search_container {
+  border: 1px solid lightgrey;
+  margin: 13px;
+  display: flex;
+}
+

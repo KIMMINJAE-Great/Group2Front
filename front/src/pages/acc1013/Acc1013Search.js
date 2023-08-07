@@ -26,7 +26,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import CodePickerManager from "../../components/commons/CodePickerManager";
+import CodePickerManager from "../../components/CodePicker/CodePickerManager";
 
 //사용자정의함수로 만듦
 const GridItem1 = styled(Grid)(({ theme }) => ({
@@ -100,7 +100,7 @@ class Acc1013Search extends React.Component {
               }}
             >
               <CodePickerManager
-                helpId={'company'}
+                helpId={'CompanyCodePicker'}
                 
                 variant="outlined"
                 

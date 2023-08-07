@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Postcode from "../../components/commons/Postcode";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import CodePicker from "../../components/commons/CodePicker";
+import CodePicker from "../../components/CodePicker/CodePicker";
 
 const MyTextField = styled(TextField)(({ theme }) => ({
   marginLeft: "8px",

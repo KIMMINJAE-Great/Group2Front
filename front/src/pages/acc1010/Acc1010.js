@@ -39,69 +39,7 @@ import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer
 import Acc1010Search from "./Acc1010Search";
 import { queryByAttribute } from "@testing-library/react";
 import { getByQueryString } from "../../components/api_url/API_URL";
-const acc1010theme = createTheme({
-    components: {
-        MuiListItemText: {
-            styleOverrides: {
-                primary: {
-                    fontSize: '15px',
-                    fontWeight: 'bold',
-                    height: '15px',
-                    lineHeight: '15px'
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    height: "30px",
-                    backgroundColor: "#FBFBFB",
-                    color: "black",
-                }
-            },
-            defaultProps: {
-                variant: "contained",
-                color: "primary",
-                fullWidth: true,
-            }
-        },
-        MuiGrid: {
-            styleOverrides: {
-                root: {  // 모든 Grid 태그에 적용하려면 root를 사용하세요.
-                    // borderBottom: '1px solid black',
-                },
-            },
-        },
-        MuiOutlinedInput: {
-            styleOverrides: {
-                root: {
-                    '&:hover $notchedOutline': {
-                        borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-                    },
-                    '&.Mui-focused $notchedOutline': {
-                        borderColor: 'rgba(0, 0, 0, 0.23)', // 기본 테두리 색상으로 유지
-                    },
-                    borderRadius: 0,
-                },
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    '&:hover ': {
-                        cursor: 'pointer',
-                        border: '1px solid #0f8bff',
-                    }, '&.noHoverEffect:hover': {
-                        cursor: 'auto',
-                        border: 'none',
-                    },
-                },
-            },
-        }
 
-
-    },
-});
 class Acc1010 extends Component {
 
 
@@ -142,7 +80,6 @@ class Acc1010 extends Component {
             try {
                 const response = await get('/emp/cardlist');
 
-                // Modify each employee card to include the 'newEmp' property
                 const employeeCards = response.data.map(card => ({
                     ...card,
                     newEmp: 'Y',
@@ -469,9 +406,9 @@ class Acc1010 extends Component {
 
 
     //  ?
-    dateChange = (date) => {
-        this.setState({ selectedDate: date });
-    };
+    // dateChange = (date) => {
+    //     this.setState({ selectedDate: date });
+    // };
 
     // 부서 카드리스트를 그려줄 함수
     onCardItemDraw = () => {
@@ -583,118 +520,118 @@ class Acc1010 extends Component {
 
         return (
             <Router>
-                <ThemeProvider theme={acc1010theme}>
-                    <DouzoneContainer
-                        ref={this.DouzoneContainer}
-                        title={this.state.title} delete={this.handleOpenModal}
-                        openDeleteModal={this.state.showModal}
-                        handleClose={this.handleCloseModal}
-                        handleConfirm={this.deleteEmp}
-                        showDelete={''}
-                        //title="사원 삭제 확인"
-                        message="정말로 사원 정보를 삭제하시겠습니까?"
-                    >
 
-                        <Acc1010Search empSearch={this.handleEmployeeCards}
+                <DouzoneContainer
+                    ref={this.DouzoneContainer}
+                    title={this.state.title} delete={this.handleOpenModal}
+                    openDeleteModal={this.state.showModal}
+                    handleClose={this.handleCloseModal}
+                    handleConfirm={this.deleteEmp}
+                    showDelete={''}
+                    //title="사원 삭제 확인"
+                    message="정말로 사원 정보를 삭제하시겠습니까?"
+                >
 
-                        ></Acc1010Search>
+                    <Acc1010Search empSearch={this.handleEmployeeCards}
 
-                        <div className="acc1010-container" style={{ display: 'flex' }}>
-                            <CardList
-                                onCardItemDraw={this.onCardItemDraw}
-                                handleCardClick={this.handleCardClick}
-                                handleNewButtonClick={this.addCard}
-                            ></CardList>
+                    ></Acc1010Search>
 
-
+                    <div className="acc1010-container" style={{ display: 'flex' }}>
+                        <CardList
+                            onCardItemDraw={this.onCardItemDraw}
+                            handleCardClick={this.handleCardClick}
+                            handleNewButtonClick={this.addCard}
+                        ></CardList>
 
 
-                            {/* 카드리스트 pp< */}
-                            <form onSubmit={this.addOrUpdate} className="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
-                                {/* Header < */}
-                                <div className="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-                                    <span style={{ fontWeight: 'bold' }} >ㆍ상세정보 </span>
-                                    <span style={{ fontWeight: 'bold', color: 'red' }}> {this.state.complete}</span>
-                                    <div style={{ display: 'flex' }}>
 
-                                        <Button type="submit">저장</Button>
-                                        {/* //<Button onClick={this.handleOpenModal}>삭제</Button> */}
-                                        {/* 삭제 확인 */}
 
-                                    </div>
+                        {/* 카드리스트 pp< */}
+                        <form onSubmit={this.addOrUpdate} className="acc1010-basic-container" style={{ width: '100%', margin: '0px 15px' }}>
+                            {/* Header < */}
+                            <div className="ac1010-header" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
+                                <span style={{ fontWeight: 'bold' }} >ㆍ상세정보 </span>
+                                <span style={{ fontWeight: 'bold', color: 'red' }}> {this.state.complete}</span>
+                                <div style={{ display: 'flex' }}>
 
+                                    <Button type="submit">저장</Button>
+                                    {/* //<Button onClick={this.handleOpenModal}>삭제</Button> */}
+                                    {/* 삭제 확인 */}
 
                                 </div>
 
-                                {/* submenu < */}
-                                <div className="acc1010-submenu-name-container">
-                                    | <NavLink to="/mainpage/empmanagement/basic" activeStyle={{
-                                        color: 'rgb(82, 82, 244)',
-                                        textDecoration: 'none'
-                                    }}
-                                        style={{ textDecoration: 'none' }}>
-                                        <span>기본정보</span>
-                                    </NavLink>|
 
-                                    {authority === 'ROLE_ADMIN' &&
+                            </div>
 
-                                        <NavLink
-                                            to="/mainpage/empmanagement/mauth"
-                                            activeStyle={{
-                                                color: 'rgb(82, 82, 244)',
-                                                textDecoration: 'none'
-                                            }}
-                                            style={{ textDecoration: 'none' }}
-                                        >
-                                            <span>메뉴권한 부여</span>
-                                        </NavLink>
-                                    }
-                                </div>
+                            {/* submenu < */}
+                            <div className="acc1010-submenu-name-container">
+                                | <NavLink to="/mainpage/empmanagement/basic" activeStyle={{
+                                    color: 'rgb(82, 82, 244)',
+                                    textDecoration: 'none'
+                                }}
+                                    style={{ textDecoration: 'none' }}>
+                                    <span>기본정보</span>
+                                </NavLink>|
+
+                                {authority === 'ROLE_ADMIN' &&
+
+                                    <NavLink
+                                        to="/mainpage/empmanagement/mauth"
+                                        activeStyle={{
+                                            color: 'rgb(82, 82, 244)',
+                                            textDecoration: 'none'
+                                        }}
+                                        style={{ textDecoration: 'none' }}
+                                    >
+                                        <span>메뉴권한 부여</span>
+                                    </NavLink>
+                                }
+                            </div>
 
 
-                                {/* 기초정보, 조직정보 Switch */}
-                                <Switch>
-                                    <Route exact path="/mainpage/empmanagement/basic">
-                                        <Acc1010Basic
-                                            selectedCard={this.state.selectedCard}
-                                            errorMessage={this.state.errorMessage}
-                                            handleEmpEmpCdChange={this.handleEmpEmpCdChange}
-                                            handleEmpCoCdChange={this.handleEmpCoCdChange}
-                                            handleEmpIdChange={this.handleEmpIdChange}
-                                            handleEmpPwChange={this.handleEmpPwChange}
-                                            handleEmpGenderChange={this.handleEmpGenderChange}
-                                            handleEmpLangChange={this.handleEmpLangChange}
-                                            handleEmpEmail1Change={this.handleEmpEmail1Change}
-                                            handleEmpEmail2Change={this.handleEmpEmail2Change}
-                                            handleEmpSEmail1Change={this.handleEmpSEmail1Change}
-                                            handleEmpSEmail2Change={this.handleEmpSEmail2Change}
-                                            handleEmpMobileChange={this.handleEmpMobileChange}
-                                            handleEmpHPhoneChange={this.handleEmpHPhoneChange}
-                                            handlePostComplete={this.handlePostComplete}
-                                            handleEmpHrdChange={this.handleEmpHrdChange}
-                                            handleEmpDeptChange={this.handleEmpDeptChange}
-                                            handleEmpAppPwChange={this.handleEmpAppPwChange}
-                                            handleEmpResiChange={this.handleEmpResiChange}
-                                            handleEmpNmChange={this.handleEmpNmChange}
+                            {/* 기초정보, 조직정보 Switch */}
+                            <Switch>
+                                <Route exact path="/mainpage/empmanagement/basic">
+                                    <Acc1010Basic
+                                        selectedCard={this.state.selectedCard}
+                                        errorMessage={this.state.errorMessage}
+                                        handleEmpEmpCdChange={this.handleEmpEmpCdChange}
+                                        handleEmpCoCdChange={this.handleEmpCoCdChange}
+                                        handleEmpIdChange={this.handleEmpIdChange}
+                                        handleEmpPwChange={this.handleEmpPwChange}
+                                        handleEmpGenderChange={this.handleEmpGenderChange}
+                                        handleEmpLangChange={this.handleEmpLangChange}
+                                        handleEmpEmail1Change={this.handleEmpEmail1Change}
+                                        handleEmpEmail2Change={this.handleEmpEmail2Change}
+                                        handleEmpSEmail1Change={this.handleEmpSEmail1Change}
+                                        handleEmpSEmail2Change={this.handleEmpSEmail2Change}
+                                        handleEmpMobileChange={this.handleEmpMobileChange}
+                                        handleEmpHPhoneChange={this.handleEmpHPhoneChange}
+                                        handlePostComplete={this.handlePostComplete}
+                                        handleEmpHrdChange={this.handleEmpHrdChange}
+                                        handleEmpDeptChange={this.handleEmpDeptChange}
+                                        handleEmpAppPwChange={this.handleEmpAppPwChange}
+                                        handleEmpResiChange={this.handleEmpResiChange}
+                                        handleEmpNmChange={this.handleEmpNmChange}
 
-                                        //{...this.state} onComplete={this.handlePostComplete}
-                                        />
+                                    //{...this.state} onComplete={this.handlePostComplete}
+                                    />
 
-                                    </Route>
-                                    <Route path="/mainpage/empmanagement/mauth">
-                                        <Acc1010Mauth selectedCard={this.state.selectedCard}
-                                            mauth={this.state.mauth}
-                                            handleCardClick={this.handleCardClick}
-                                        />
-                                    </Route>
-                                    <Redirect from="/mainpage/empmanagement" to="/mainpage/empmanagement/basic" />
-                                </Switch>
+                                </Route>
+                                <Route path="/mainpage/empmanagement/mauth">
+                                    <Acc1010Mauth selectedCard={this.state.selectedCard}
+                                        mauth={this.state.mauth}
+                                        handleCardClick={this.handleCardClick}
+                                    />
+                                </Route>
+                                <Redirect from="/mainpage/empmanagement" to="/mainpage/empmanagement/basic" />
+                            </Switch>
 
-                                {/* Form Container > */}
-                            </form>
-                        </div >
-                    </DouzoneContainer>
-                </ThemeProvider >
+                            {/* Form Container > */}
+                        </form>
+                    </div >
+                </DouzoneContainer>
+
             </Router>
         );
     }

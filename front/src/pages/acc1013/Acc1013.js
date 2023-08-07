@@ -81,43 +81,43 @@ class Acc1013 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      co_cd: "", //회사 코드
-      co_nm: "", //회사 이름
-      co_nk: "", //회사 약칭
-      use_yn: "",
-      lng: "",
-      adm_cd: "",
-      bz_type: "",
-      bz_item: "",
-      co_tel: "",
-      co_tel2: "",
-      co_fax: "",
-      reg_nb: "",
-      cp_ct: "",
-      cp_no: "",
-      adr_zp: "",
-      adr_inp: "",
-      adr_etc: "",
-      est_dt: "",
-      opn_dt: "",
-      cls_dt: "",
-      ceo_nm: "",
-      res_nb: "",
-      domain: "",
-      ac_per: "",
-      ac_dt: "",
-      acc_tp: "",
-      url: "",
-      sort: "",
-      defaultLange: "",
+      co_cd: '', //회사 코드
+      co_nm: '', //회사 이름
+      co_nk: '', //회사 약칭
+      use_yn: '',
+      lng: '',
+      adm_cd: '',
+      bz_type: '',
+      bz_item: '',
+      co_tel: '',
+      co_tel2: '',
+      co_fax: '',
+      reg_nb: '',
+      cp_ct: '',
+      cp_no: '',
+      adr_zp: '',
+      adr_inp: '',
+      adr_etc: '',
+      est_dt: '',
+      opn_dt: '',
+      cls_dt: '',
+      ceo_nm: '',
+      res_nb: '',
+      domain: '',
+      ac_per: '',
+      ac_dt: '',
+      acc_tp: '',
+      url: '',
+      sort: '',
+      defaultLange: '',
 
-      postcode: "", //우편번호 5자리
-      roadAddress: "",
-      jibunAddress: "", //지번 주소
-      extraAddress: "", //나머지 주소
+      postcode: '', //우편번호 5자리
+      roadAddress: '',
+      jibunAddress: '', //지번 주소
+      extraAddress: '', //나머지 주소
 
       companyCards: [], //카드리스트
-      selectedCompanyCards: "", // 카드리스트 선택된것..?
+      selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
       defaultUse: "use",
       readonly: false,
@@ -224,69 +224,20 @@ class Acc1013 extends Component {
   handleSaveButton = async (e, companyCardData) => {
     e.preventDefault();
 
-    console.log("오 드뎌?" + JSON.stringify(companyCardData));
-
     const {
-      co_cd,
-      co_nm,
-      co_nk,
-      use_yn,
-      lng,
-      adm_cd,
-      bz_type,
-      bz_item,
-      co_tel,
-      co_tel2,
-      co_fax,
-      reg_nb,
-      cp_ct,
-      cp_no,
-      adr_zp,
-      adr_inp,
-      adr_etc,
-      est_dt,
-      opn_dt,
-      cls_dt,
-      ceo_nm,
-      res_nb,
-      domain,
-      ac_per,
-      ac_dt,
-      acc_tp,
-      url,
-      sort,
+      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type,
+      bz_item, co_tel, co_tel2, co_fax, reg_nb, cp_ct,
+      cp_no, adr_zp, adr_inp, adr_etc, est_dt, opn_dt,
+      cls_dt, ceo_nm, res_nb, domain, ac_per, ac_dt, acc_tp,
+      url, sort,
       companyCards,
     } = this.state;
     //필드데이터f
     const data = {
-      co_cd,
-      co_nm,
-      co_nk,
-      use_yn,
-      lng,
-      adm_cd,
-      bz_type,
-      bz_item,
-      co_tel,
-      co_tel2,
-      co_fax,
-      reg_nb,
-      cp_ct,
-      cp_no,
-      adr_zp,
-      adr_inp,
-      adr_etc,
-      est_dt,
-      opn_dt,
-      cls_dt,
-      ceo_nm,
-      res_nb,
-      domain,
-      ac_per,
-      ac_dt,
-      acc_tp,
-      url,
-      sort,
+      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type, bz_item,
+      co_tel, co_tel2, co_fax, reg_nb, cp_ct, cp_no, adr_zp, adr_inp,
+      adr_etc, est_dt, opn_dt, cls_dt, ceo_nm, res_nb, domain, ac_per,
+      ac_dt, acc_tp, url, sort,
       companyCards,
     };
 
@@ -297,10 +248,11 @@ class Acc1013 extends Component {
         });
         await post("/company/save", data);
         console.log("post이후" + JSON.stringify(companyCardData));
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 수정이 완료됐습니다', 'success');
       } else {
         await post("/company/save", data);
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
       }
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
       this.fetchCompanyCards(); //카드리스트 새로고침됨!
       console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
     } catch (error) {
@@ -355,9 +307,26 @@ class Acc1013 extends Component {
     });
   };
 
+
+
+
+  handleNewButtonClick = () => {
+    this.setState({
+      co_cd: '', co_nm: '', co_nk: '', use_yn: '', lng: '', adm_cd: '', bz_type: '',
+      bz_item: '', co_tel: '', co_tel2: '', co_fax: '', reg_nb: '', cp_ct: '', cp_no: '',
+      adr_zp: '', adr_inp: '', adr_etc: '', est_dt: '', opn_dt: '', cls_dt: '',
+      ceo_nm: '', res_nb: '', domain: '', ac_per: '', ac_dt: '', acc_tp: '', url: '', sort: '',
+      companyCardData: null,
+      readonly: false,
+    });
+  };
+
+
   handleCoCdChange(value) {
     this.setState({ co_cd: value });
   }
+
+
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -399,6 +368,7 @@ class Acc1013 extends Component {
                     <Typography
                       variant="body2"
                       style={{
+                        marginLeft: "10px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -406,11 +376,12 @@ class Acc1013 extends Component {
                         maxWidth: "90px",
                       }}
                     >
-                      {item.dept_st}
+                      {item.co_cd}
                     </Typography>
                     <Typography
                       variant="body2"
                       style={{
+                        marginLeft: "10px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -424,7 +395,7 @@ class Acc1013 extends Component {
                   </CardContent>
                   <CardContent
                     style={{
-                      marginLeft: "30px",
+                      marginLeft: "90px",
                       paddingLeft: "0",
                       paddingRight: "0",
                       minWidth: "100px",
@@ -432,9 +403,22 @@ class Acc1013 extends Component {
                   >
                     {/* item3 */}
                     <Typography variant="body2">
-                      {item.co_nk}
+                      username
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "90px",
+                        maxWidth: "90px",
+                      }}
+                    >
+                      개인/법인
                     </Typography>
                   </CardContent>
+
                 </Card>
               </Grid>
             ))}
@@ -446,12 +430,16 @@ class Acc1013 extends Component {
 
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
-
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    console.log("user!@!@!@!@" + JSON.stringify(user));
+    const mauthList = user.mauthList;
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
     this.handleCoCdChange = this.handleCoCdChange.bind(this);
+
+
     return (
       <Router>
         <ThemeProvider theme={acc1013theme}>
@@ -475,11 +463,6 @@ class Acc1013 extends Component {
 
               <div style={{ display: "flex" }}>
                 <div style={{ marginTop: "30px" }}>
-                  {/* <CardList
-                  content={companyCards}
-                  handleCardClick={this.handleCardClick}
-                  handleNewButtonClick={this.handleNewButtonClick}
-                /> */}
                   <CardList
                     handleCardClick={this.handleCardClick}
                     handleNewButtonClick={this.handleNewButtonClick}
@@ -487,7 +470,6 @@ class Acc1013 extends Component {
                     content={this.state.content}
                   ></CardList>
                 </div>
-
                 <Acc1013BasicInfo
                   {...this.state}
                   companyCardData={this.state.companyCardData}
@@ -502,7 +484,6 @@ class Acc1013 extends Component {
                   // addOrUpdate={this.addOrUpdate} 사용X
                   onCoCdChange={this.handleCoCdChange}
                 />
-
               </div>
             </div>
           </DouzoneContainer>
