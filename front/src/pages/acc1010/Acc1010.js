@@ -406,9 +406,9 @@ class Acc1010 extends Component {
 
 
     //  ?
-    dateChange = (date) => {
-        this.setState({ selectedDate: date });
-    };
+    // dateChange = (date) => {
+    //     this.setState({ selectedDate: date });
+    // };
 
     // 부서 카드리스트를 그려줄 함수
     onCardItemDraw = () => {
