@@ -83,13 +83,13 @@ class Acd1010 extends Component {
       selectedregcar: '', // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
       content: [],
-      selectedchecked:[],
+      selectedchecked: [],
 
       selectedDate: new Date(),
 
 
       showModal: false,
-      selectAllCheckbox : false,
+      selectAllCheckbox: false,
 
 
 
@@ -259,7 +259,7 @@ class Acd1010 extends Component {
   handleDeleteClick = async (e) => {
     e.preventDefault();
     const { selectedregcar, regcarCards, selectedchecked } = this.state;
-  
+
     try {
       if (selectedchecked.length > 0) {
         const response = await del(
@@ -267,11 +267,11 @@ class Acd1010 extends Component {
           { data: selectedchecked }
         );
         console.log(response.data);
-        
+
         const newCardList = regcarCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.car_cd === item.car_cd)
         );
-  
+
         this.setState({
           regcarCards: newCardList,
           content: newCardList,
@@ -288,12 +288,12 @@ class Acd1010 extends Component {
           `/regcar/deletecar/${selectedregcar.car_cd}`
         );
         console.log("서버 응답", response.data);
-        
+
         // 서버 응답에 따라 삭제된 부서 정보를 regcarCards에서 제거
         const newCardList = regcarCards.filter(
           (item) => item.car_cd !== selectedregcar.car_cd
         );
-  
+
         this.setState({
           regcarCards: newCardList,
           content: newCardList,
@@ -307,7 +307,7 @@ class Acd1010 extends Component {
     } catch (error) {
       console.log(error);
     }
-  
+
     this.handleCloseModal();
   };
 
@@ -315,16 +315,16 @@ class Acd1010 extends Component {
   handleToggleAllCheckboxes = () => {
     this.setState((prevState) => {
       const newSelectAllCheckbox = !prevState.selectAllCheckbox;
-  
+
       const updatedContent = prevState.content.map((item) => ({
         ...item,
         checked: newSelectAllCheckbox,
       }));
-  
+
       const selectedchecked = newSelectAllCheckbox
         ? [...updatedContent]
         : [];
-  
+
       return {
         selectAllCheckbox: newSelectAllCheckbox,
         content: updatedContent,
@@ -334,22 +334,22 @@ class Acd1010 extends Component {
       console.log(this.state.selectedchecked);
     });
   };
- // 체크박스 토글 처리하는 함수
- handleToggleCheckbox = (car_cd) => {
-  this.setState(
-    (prevState) => {
-      const updatedContent = prevState.content.map((item) =>
-        item.car_cd === car_cd ? { ...item, checked: !item.checked } : item
-      );
-      const selectedchecked = updatedContent.filter((item) => item.checked);
-      
-      return { content: updatedContent, selectedchecked: selectedchecked };
-    },
-    () => {
-      console.log(this.state.selectedchecked);
-    }
-  );
-};
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (car_cd) => {
+    this.setState(
+      (prevState) => {
+        const updatedContent = prevState.content.map((item) =>
+          item.car_cd === car_cd ? { ...item, checked: !item.checked } : item
+        );
+        const selectedchecked = updatedContent.filter((item) => item.checked);
+
+        return { content: updatedContent, selectedchecked: selectedchecked };
+      },
+      () => {
+        console.log(this.state.selectedchecked);
+      }
+    );
+  };
 
 
 
@@ -481,10 +481,10 @@ class Acd1010 extends Component {
           class="noHoverEffect"
         >
           <CardContent>
-          <Checkbox
-                      
-                      onChange={() => this.handleToggleAllCheckboxes()}
-                    />
+            <Checkbox
+
+              onChange={() => this.handleToggleAllCheckboxes()}
+            />
             <Typography variant="caption">
               차량 개수 : {this.state.content.length}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -509,11 +509,11 @@ class Acd1010 extends Component {
                     this.handleCardClick(this.state.content[index].car_cd)
                   }
                 >
-                     {/* 체크박스 */}
-                     <Checkbox
-                  checked={item.checked || false}
-                  onChange={() => this.handleToggleCheckbox(item.car_cd)}
-                />
+                  {/* 체크박스 */}
+                  <Checkbox
+                    checked={item.checked || false}
+                    onChange={() => this.handleToggleCheckbox(item.car_cd)}
+                  />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
