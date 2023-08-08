@@ -66,9 +66,7 @@ class CodePicker extends React.Component {
   };
   // 모달 닫기 함수
   closeModal = () => {
-    this.setState({
-      isModalOpen: false,
-    });
+    this.setState({ isModalOpen: false, });
   };
 
   handleMenuItemClick = (value) => {
@@ -336,7 +334,7 @@ class CodePicker extends React.Component {
                             type="checkbox"
                             checked={this.props.selectedIds.includes(item[this.props.valueField])}
                             onChange={(e) => {
-                              e.stopPropagation(); // 상위 요소로의 이벤트 전파를 막음
+                              e.stopPropagation(); // 상위로 이벤트 전파를 막음
                               this.props.toggleMenuItemCheck(item[this.props.valueField]);
                             }}
                           />
@@ -355,32 +353,12 @@ class CodePicker extends React.Component {
                             {item[this.props.valueField2]}
                           </td>
                         }
-                        {/* <td style={{ width: 50, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}> */}
-
-                        {/* 휴지통 이미지 */}
-                        {/* <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
-                          }}
-                          
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                        </td> */}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              {/* <Grid container justifyContent="center" alignItems="center" spacing={1} mt={7} mb={-2} ml={-3} backgroundColor={"#f2f2f2"} >
-                    <Grid item mb={0}>
-                      <button onClick={this.closeModal} style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '15px', fontWeight: 'bold'}}>취소</button>
-                    </Grid>
-                    <Grid item mb={0}>
-                      <button onClick={this.saveModalCheckedItems} style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '15px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>확인</button>
-                    </Grid>
-                  </Grid> */}
+
             </DialogContent>
             <Grid container justifyContent="center" alignItems="center" mt={0} mb={0} ml={0} backgroundColor={"#f2f2f2"} height={'50px'}>
               <Grid item mb={0}>
