@@ -1,6 +1,7 @@
 .douzone-container {
   overflow-y: auto;
   width: 100%;
+  transition: width 0s;
 }
 .container-header {
   display: flex;

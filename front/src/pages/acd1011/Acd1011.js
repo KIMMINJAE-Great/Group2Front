@@ -1,150 +1,57 @@
-import React from 'react';
-import {
-    Alert,
-  Avatar,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { Box } from '@mui/system';
-import { grey } from '@mui/material/colors';
-import { post } from "../../components/api_url/API_URL";
+import React, { Component } from 'react';
+import axios from 'axios';
+import Acd1011Child from './Acd1011Child';
+import { get } from '../../components/api_url/API_URL';
 
-
-class Acd1011 extends React.Component {
+class Acd1011 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isModalOpen: '',
-      abizcarNBNM: '',
+      startName: '',
+      endName: '',
+      startCoords: '',
+      endCoords: '',
+      bookmark: '', //abizcar_북마크의 정보를 list로 담을것임. 1개짜리
     };
   }
 
-handleOpenBd = async () =>  {
+  //위도경도 가져오는 서버요청 함수
+  //여러개의 배열이 아닌.. 배열[0]의 출발지와 도착지만 가져오면됨
+  handleGetCoordinate = async () => {
     try {
-      const response = await post(`/regcar/getCarsInfo`, {});
-      console.log(response);
-      const test = !this.state.isModalOpen;
+      const response = await get("Example/ace1010/abizcarbookmark");
       this.setState({
-        isModalOpen: test,
-        abizcarNBNM: response.data,
-    });
-      if(response.data) {
-        console.log(this.state);
-      }
+        bookmark: response.data
+      });
     } catch (error) {
       console.log(error);
     }
-  };
-  
+  }
 
-  closeModal = () => {
-    this.setState({ isModalOpen: false });
-  };
-
-  saveModalCheckedItems = () => {
-    console.log('확인 버튼이 클릭되었습니다.');
-  };
-
-  /* 변경된 값 필드에 저장 => 차량 정보 (차량 번호, 차량명)  */
-  abizcarNBNMChange = (value) => {
-    this.setState(() => ({
-        abizcarNBNM: value,
-    }));
-  };
+  /*
+          <Acd1011Child
+              startName="{서울특별시 종로구 종로5가}"     //
+              endName="더존비즈온"                     //
+              startCoordinate={this.state.bookmark.START_ADDR1}    //
+              endCoordinate={this.state.bookmark.END_ADDR1}  //
+              placeIdNum="12288842"                   //
+          />
+  */
 
   render() {
-    const { isModalOpen } = this.state;
 
     return (
-      <div>
 
-        <MenuItem onClick={this.handleOpenBd}>기초거리 입력</MenuItem>
+      <Acd1011Child
+        startName="서울특별시 종로구 종로5가"     //달라도됨
+        endName="더존비즈온"                     //달라도됨
+        startCoordinate="127.0036,37.570633"    //다르면안됨
+        endCoordinate="127.6378104,37.7563948"  //다르면안됨
+        placeIdNum="12288842"                   //달라도되는듯
+      />
 
-        <Dialog
-          open={isModalOpen}
-          onClose={this.closeModal}
-        //   maxWidth="xs"
-          PaperProps={{
-            style: {
-              width: '19vw',
-              height: '24vh',
-            },
-          }}
-          fullWidth
-        >
-          <Grid item xs={12} display="flex" alignItems="center" sx={{ borderBottom: '1px solid gray', height: '35px'}} mb={-1.8} mt={1}>
-          <DialogTitle sx={{fontWeight: 'bold'}} >차량 기초거리 입력</DialogTitle>
-          </Grid>
-          <DialogContent sx={{ overflow: 'hidden'}}>
-          <Grid item xs={12} display="flex" alignItems="center" >
-            <Typography variant="subtitle1" sx={{ marginLeft: 0, fontSize: '13px' }}>차량정보 :</Typography>
-            <TextField
-                      sx={{ width: '50%', fontSize: '13px', ml: 1, 
-                      '& .MuiInput-underline:before, & .MuiInput-underline:after': {
-                        borderBottom: 'none', // 하단 선 제거
-                      },
-                      '& input': {
-                        pointerEvents: 'none', // 입력 비활성화
-                        fontSize: '13px',
-                      },}}
-                      InputProps={{
-                        readOnly: true, // 읽기 전용 설정
-                        disableUnderline: true, // 밑줄 제거
-                      }}
-                      value={this.state.abizcarNBNM}
-                      onChange={(e) => this.abizcarNBNMChange(e.target.value)}
-                    variant="standard"
-                       size="small"
-                      />
-              
-                </Grid>
-            <Grid item xs={12} display="flex" alignItems="center">
-            <Typography variant="subtitle1" sx={{ marginLeft: 1.6, fontSize: '13px' }}>기초거리(km) : </Typography>
-                <TextField
-                      sx={{ width: '50%', ml: 1 }}
-                      variant="outlined" size="small"
-                      inputProps={{ style: { height: '12px' } }} />
-            </Grid>
 
-            <Box>
-            <Grid item xs={12} display="flex" alignItems="center" mt={2}>
-            <Avatar
-        style={{
-          backgroundColor: grey[500], // 동그라미 색상
-          width: '24px',
-          height: '24px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontWeight: 'bold',
-        }}
-      >
-        !
-      </Avatar>
-            <Typography variant="subtitle1" sx={{ marginLeft: 1, fontSize: '13px' }}> 기초거리는 주행전(km), 주행후(km)를 계산하기 위해 최초 한번만 입력을 해주시면 됩니다. </Typography>
-                </Grid>
-            </Box>
 
-            <Grid container justifyContent="center" alignItems="center" mt={2} mb={0} ml={0} >
-            <Grid item mb={0}>
-              <button onClick={this.closeModal} style={{ backgroundColor: '#f2f2f2', border: '1px solid #D3D3D3', height: '25px', width: '60px', fontSize: '12px' }}>취소</button>
-            </Grid>
-            <Grid item mb={0} ml={1}>
-              <button onClick={this.saveModalCheckedItems} style={{ background: '#f2f2f2', border: '1px solid #D3D3D3', height: '25px', width: '60px', fontSize: '12px' }}>확인</button>
-            </Grid>
-          </Grid>
-
-          </DialogContent>
-          
-          
-        </Dialog>
-      </div>
     );
   }
 }

@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Postcode from "../../components/commons/Postcode";
+import CodePickerManager from "../../components/codepicker/CodePickerManager";
 
 import {
   Button,
@@ -26,7 +27,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import CodePickerManager from "../../components/CodePicker/CodePickerManager";
+
 
 //사용자정의함수로 만듦
 const GridItem1 = styled(Grid)(({ theme }) => ({
