@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Typography from '@mui/material/Typography';
 import { Button, Divider, Grid } from "@mui/material";
-import './Acc1012Con.css';
+import './Acc1012BasicInfo.css';
 
 /* 거래등록사항 컴포넌트를 정의 */
 class Acc1012TdManage extends Component {
@@ -57,7 +57,7 @@ class Acc1012TdManage extends Component {
               fontSize: '14px',
               fontWeight: '1000',
               width: '150px',
-              color: '#00bfff',
+              color: '#408fff',
               backgroundColor: 'white'
             }}
           >
@@ -65,25 +65,7 @@ class Acc1012TdManage extends Component {
           </Button>
           <Grid
                     item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center"}} >
-          <div>
-          <Button
-            type="submit"
-            variant="contained"
-            style={{
-              backgroundColor: '#FAFAFA',
-              border: '1px solid #D3D3D3',
-              fontWeight: 'bolder',
-              fontSize: '12px',
-              width: '100%',
-              height: '1.5vw',
-              cursor: 'pointer',
-              marginLeft: "1rem", // 이 부분으로 버튼 간격 조절
-            }}
-            onClick={this.props.handleSaveClick}
-          >
-            저장
-          </Button>
-          </div>
+          
           </Grid>
           </Grid>
 

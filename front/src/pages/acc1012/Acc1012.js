@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
-import Acc1012Con from "./Acc1012Con";
-import Acc1012Header from "./Acc1012Header";
+import Acc1012BasicInfo from "./Acc1012BasicInfo";
+import Acc1012Search from "./Acc1012Search";
 import Acc1012Trade from "./Acc1012Trade";
 import Acc1012TdManage from "./Acc1012TdManage";
 
@@ -10,8 +10,6 @@ import CardList from "../../components/commons/CardList.js";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer.js";
 import { createTheme, Card, CardContent, Typography, Box, Grid, } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-// import DeleteDialog from "../../components/commons/DeleteDialog";
-
 
 const Acc1012theme = createTheme({
   components: {
@@ -137,26 +135,13 @@ class Acc1012 extends Component {
   }
 
   componentDidMount() {
-    this.forRender();
-  }
-  forRender = () => {
-    (async () => {
-      try {
-        const response = await get('/tradeManagement');
-
-        const stradeCards = response.data.map(card => ({
-          ...card,
-          newTrade: 'Y',
-        }));
-
-        this.setState({ stradeCards });
-        this.setState({ content: response.data });
-        console.log(response);
-      } catch (error) {
+    get(`/tradeManagement`)
+      .then((response) => {
+        this.setState({ stradeCards: response.data, newTrade: "Y", content: response.data });
+      })
+      .catch((error) => {
         console.log(error);
-      }
-    })();
-    this.firstTradeCard();
+      });
   }
 
   /* 카드를 클릭했을때 */
@@ -166,14 +151,13 @@ class Acc1012 extends Component {
     try {
       const response = await post(`/tradeManagement/getst`, {
         tr_cd: tr_cd,
-
       });
-      this.setState({
-        selectedSt: {
-          ...response.data,
-          newTrade: 'N'
-        }
 
+      this.setState({
+        selectedSt: response.data,
+          newTrade: "N",
+          complete: '',
+        
       });
     } catch (error) {
       console.log(error);
@@ -181,7 +165,6 @@ class Acc1012 extends Component {
   };
 
   firstTradeCard = () => {
-    // 기존 selectedSt의 모든 필드 값을 null로 초기화하고 newEmp를 'Y'로 설정
 
     this.setState({
       selectedSt: {
@@ -207,7 +190,7 @@ class Acc1012 extends Component {
         tr_email: '',
         tr_mn_cd: '',
         tr_ct_cd: '',
-        newTrade: 'Y'
+        newTrade: "Y"
 
       }
     });
@@ -218,33 +201,31 @@ class Acc1012 extends Component {
     /* selectedSt 상태를 빈 값으로 업데이트 */
 
     this.firstTradeCard()
-    this.setState({ complete: '', errorMessage: '' })
+    this.setState({ complete: '', errorMessage: '', newTrade: "Y" })
 
   };
 
   handleSaveClick = async (e) => {
     e.preventDefault();
-    const { selectedSt } = this.state;
+    const { selectedSt, newTrade } = this.state;
     console.log("handleSaveClick   실행")
     /* 필수값 유효성 검사 */
     if (!selectedSt.tr_fg) {
-      alert("거래처구분을 선택해 주세요.");
+      this.DouzoneContainer.current.handleSnackbarOpen('거래처구분을 선택해 주세요.', 'error');
       return;
     }
     if (!selectedSt.tr_nm) {
-      alert("거래처명을 입력해 주세요.");
+      this.DouzoneContainer.current.handleSnackbarOpen('거래처명을 입력해 주세요.', 'error');
       return;
     }
     // 거래처약칭이 비어있는지 확인합니다.
     if (!selectedSt.tr_al) {
-      alert("거래처약칭을 입력해 주세요.");
+      this.DouzoneContainer.current.handleSnackbarOpen('거래처 약칭을 입력해 주세요.', 'error');
       return;
     }
-    console.log('.............' + selectedSt.newTrade)
-    if (selectedSt.newTrade === 'Y') {
+    if (newTrade === 'Y') {
       try {
         const response = await post(`/tradeManagement/insertSt`, selectedSt);
-
 
         this.DouzoneContainer.current.handleSnackbarOpen('거래처 등록이 완료되었습니다.', 'success');
         this.setState((prevState) => ({
@@ -559,7 +540,6 @@ class Acc1012 extends Component {
                     this.handleCardClick(this.state.content[index].tr_cd)
                   }
                 >
-
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
                     <Typography
@@ -610,7 +590,7 @@ class Acc1012 extends Component {
     )
   }
   render() {
-    const { stradeCards, selectedSt, searchSt, showAcc1012Con, showAcc1012Trade, showAcc1012TdManage } = this.state;
+    const { stradeCards, selectedSt, searchSt, showAcc1012Con, showAcc1012Trade, showAcc1012TdManage, newTrade } = this.state;
 
     return (
 
@@ -629,7 +609,7 @@ class Acc1012 extends Component {
             message="정말로 거래처 정보를 삭제하시겠습니까?"
           >
 
-            <Acc1012Header
+            <Acc1012Search
               searchSt={searchSt}
               handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
               handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
@@ -639,7 +619,7 @@ class Acc1012 extends Component {
               handleSearch={this.handleSearch}
             >
 
-            </Acc1012Header>
+            </Acc1012Search>
 
             <div style={{ display: 'flex' }}>
               <CardList
@@ -654,9 +634,10 @@ class Acc1012 extends Component {
 
 
 
-                  {showAcc1012Con && <Acc1012Con
+                  {showAcc1012Con && <Acc1012BasicInfo
                     selectedSt={selectedSt}
                     showAcc1012Con={showAcc1012Con}
+                    newTrade={newTrade}
 
 
                     handleTr_fgChange={this.handleTr_fgChange}
@@ -690,7 +671,7 @@ class Acc1012 extends Component {
                     handleMoveTrade={this.handleMoveTrade}
                     handleMoveTdManage={this.handleMoveTdManage}
 
-                  ></Acc1012Con>}
+                  ></Acc1012BasicInfo>}
                   {showAcc1012Trade && <Acc1012Trade
                     handleMoveBasic={this.handleMoveBasic}
                     handleMoveTdManage={this.handleMoveTdManage}

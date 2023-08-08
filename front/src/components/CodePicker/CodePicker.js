@@ -66,9 +66,7 @@ class CodePicker extends React.Component {
   };
   // 모달 닫기 함수
   closeModal = () => {
-    this.setState({
-      isModalOpen: false,
-    });
+    this.setState({ isModalOpen: false, });
   };
 
   handleMenuItemClick = (value) => {
@@ -152,26 +150,57 @@ class CodePicker extends React.Component {
 
           >
             {
-              this.props.menuItems?.map((item, index) => {
-                // 아래의 로직은 필요에 따라 변경
-                return (
-                  <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
-                    {this.props.dispType === 'codeAndValue' ?
-                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
-                      : this.props.dispType === 'codeAndValueAndValue' ?
-                        '[' + item[this.props.codeField] + ']' + item[this.props.valueField] + item[this.props.valueField2]
-                        : item[this.props.valueField]
-                    }
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </MenuItem>
-                );
+              menuItems?.map((item, index) => {
+                // selectedIds가 있고, item.id가 selectedIds에 포함되어 있을 경우에만 MenuItem을 렌더링
+                if (this.props.selectedIds && this.props.selectedIds.includes(item[this.props.valueField])) {
+                  console.log("111이게 실행된거야!");
+                  return (
+                    <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
+                      {this.props.dispType === 'codeAndValue' ?
+                        '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
+                        : this.props.dispType === 'codeAndValueAndValue' ?
+                          '[' + item[this.props.codeField] + ']' + item[this.props.valueField] + item[this.props.valueField2]
+                          : item[this.props.valueField]
+                      }
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </MenuItem>
+                  );
+                }
+                // selectedIds가 없을 경우 모든 MenuItem을 렌더링
+                else if (!this.props.selectedIds || this.props.selectedIds.length === 0) {
+
+                  console.log("222이게 실행된거야!");
+                  return (
+                    <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}
+                      onClose={this.handleClose1}>
+                      {this.props.dispType === 'codeAndValue' ?
+                        '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
+                        : this.props.dispType === 'codeAndValueAndValue' ?
+                          '[' + item[this.props.codeField] + ']' + '  ' + item[this.props.valueField] + '  ' + item[this.props.valueField2]
+                          : item[this.props.valueField]
+                      }
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </MenuItem>
+                  );
+                }
+                // 그 외의 경우에는 아무 것도 렌더링
+                else {
+                  return null;
+                }
               })
             }
           </Popover>
@@ -282,9 +311,13 @@ class CodePicker extends React.Component {
                       <th style={{ width: 170, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
                         {this.props.pickerName}
                       </th>
-                      <th style={{ width: 150, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
-
-                      </th>
+                      {
+                        // 부모로부터 전달받은 dispType 가 cvv일때
+                        this.props.dispType === 'codeAndValueAndValue' &&
+                        <th style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                          {this.props.pickerName2}
+                        </th>
+                      }
                     </tr>
                   </thead>
                   <tbody>
@@ -301,7 +334,7 @@ class CodePicker extends React.Component {
                             type="checkbox"
                             checked={this.props.selectedIds.includes(item[this.props.valueField])}
                             onChange={(e) => {
-                              e.stopPropagation(); // 상위 요소로의 이벤트 전파를 막음
+                              e.stopPropagation(); // 상위로 이벤트 전파를 막음
                               this.props.toggleMenuItemCheck(item[this.props.valueField]);
                             }}
                           />
@@ -314,32 +347,18 @@ class CodePicker extends React.Component {
                           {/* 회사명 */}
                           {item[this.props.valueField]}
                         </td>
-                        <td style={{ width: 50, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
-
-                          {/* 휴지통 이미지 */}
-                          {/* <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.props.deleteMenuItem(item[this.props.codeField]); // 부모로부터 전달받은 삭제 함수 호출
-                          }}
-                          
-                        >
-                          <DeleteIcon />
-                        </IconButton> */}
-                        </td>
+                        {
+                          this.props.dispType === 'codeAndValueAndValue' &&
+                          <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                            {item[this.props.valueField2]}
+                          </td>
+                        }
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              {/* <Grid container justifyContent="center" alignItems="center" spacing={1} mt={7} mb={-2} ml={-3} backgroundColor={"#f2f2f2"} >
-                    <Grid item mb={0}>
-                      <button onClick={this.closeModal} style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '15px', fontWeight: 'bold'}}>취소</button>
-                    </Grid>
-                    <Grid item mb={0}>
-                      <button onClick={this.saveModalCheckedItems} style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '15px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>확인</button>
-                    </Grid>
-                  </Grid> */}
+
             </DialogContent>
             <Grid container justifyContent="center" alignItems="center" mt={0} mb={0} ml={0} backgroundColor={"#f2f2f2"} height={'50px'}>
               <Grid item mb={0}>

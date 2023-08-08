@@ -11,6 +11,8 @@ import {
 import "./douzonecontainer.css"
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
+import Acd1011 from "../../pages/acd1011/Acd1011";
+
 
 const douzonecontainertheme = createTheme({
   components: {
@@ -83,6 +85,7 @@ class DouzoneContainer extends Component {
       openSnackBar: false,
       snackBarMessage: '',
       severity: 'success',
+      isModalOpen: '',
     };
   }
   // 기능 모음 열기 닫기
@@ -93,6 +96,21 @@ class DouzoneContainer extends Component {
   handleClose = () => {
     this.setState({ funcVowel: null });
   };
+
+  state = {
+    isModalOpen: false,
+  };
+
+  handleOpenBd = () => {
+    this.setState({ isModalOpen: true });
+    console.log("handleOpenBd 실행됨!!!")
+  };
+  closeModal = () => {
+    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
+  };
+
+
+  
 
   //  스낵바 닫기
   handleSnackbarClose = (event, reason) => {
@@ -114,8 +132,8 @@ class DouzoneContainer extends Component {
 
   render() {
     //const open = Boolean(this.state.funcVowel);
-    const { severity } = this.state;
-    const { openDeleteModal, handleClose, handleConfirm, title, message, showDelete } = this.props;
+    const { severity, isModalOpen } = this.state;
+    const { openDeleteModal, handleClose, handleConfirm, title, message, showDelete, handleOpenBd } = this.props;
 
     let backgroundColor = 'success.main';  // 초록색 배경
     let iconColor = '#ffffff';  // 아이콘 색상
@@ -126,7 +144,9 @@ class DouzoneContainer extends Component {
     //const showDelete = this.props.onDelete
     return (
       <ThemeProvider theme={douzonecontainertheme}>
+
         <div className="douzone-container">
+
           <div className="container-header">
             <div className="container-header-left" >
               {this.props.title}
@@ -151,7 +171,10 @@ class DouzoneContainer extends Component {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                  <MenuItem >
+                  <Acd1011
+                  >기초거리입력</Acd1011>
+                   </MenuItem>
                   <MenuItem onClick={this.handleClose}>My account</MenuItem>
                   <MenuItem onClick={this.handleClose}>Logout</MenuItem>
                 </Menu>
