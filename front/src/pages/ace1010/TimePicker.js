@@ -36,12 +36,21 @@ class TimePicker extends Component {
   }
 
   handleMinutesChange = (e) => {
-    e.stopPropagation();
-    this.setState({ minutes: e.target.value }, () => {
-      if (this.state.hours && this.state.minutes) {
-        this.applyTime();
-      }
-    });
+    console.log(e.target.value);  // 추가된 부분
+    let minuteVal = e.target.value;
+    if (minuteVal === "00" || minuteVal === "0" || minuteVal === 0) {
+      this.setState({ minutes: "00" }, () => {
+        if (this.state.hours && this.state.minutes) {
+          this.applyTime();
+        }
+      });
+    } else {
+      this.setState({ minutes: minuteVal }, () => {
+        if (this.state.hours && this.state.minutes) {
+          this.applyTime();
+        }
+      });
+    }
   }
 
   render() {
@@ -49,12 +58,13 @@ class TimePicker extends Component {
     for (let i = 0; i <= 23; i++) {
       hours.push(i < 10 ? '0' + i : '' + i);
     }
-
+    hours.unshift('- -')
     const minutes = [];
     for (let i = 0; i <= 59; i++) {
       minutes.push(i < 10 ? '0' + i : '' + i);
     }
-
+    minutes.push('00')
+    minutes.unshift('- -')
     return (
       <Popover
         open={this.props.timeopen}
@@ -67,13 +77,13 @@ class TimePicker extends Component {
       >
         <div  >
           <div>
-            <select onChange={this.handleHoursChange} style={{ width: 48, height: 40, border: 0, marginLeft: 10 }}>
+            <select onChange={this.handleHoursChange} style={{ width: 45, height: 40, border: 0, marginLeft: 10 }}>
               {hours.map((hour, index) =>
-                <option key={index} value={hour}>{hour}</option>
+                <option style={{ width: 100 }} key={index} value={hour}>{hour}</option>
               )}
             </select>
             :
-            <select onChange={this.handleMinutesChange} style={{ width: 48, height: 40, border: 0, marginLeft: 10 }} >
+            <select onChange={this.handleMinutesChange} style={{ width: 45, height: 40, border: 0, marginLeft: 10 }} >
               {minutes.map((minute, index) =>
                 <option key={index} value={minute}>{minute}</option>
               )}
