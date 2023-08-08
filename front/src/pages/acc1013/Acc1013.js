@@ -4,7 +4,7 @@ import { Component } from "react";
 
 import CardList from "../../components/commons/CardList";
 
-import { createTheme, Card, CardContent, Typography, Box, Grid } from "@mui/material";
+import { createTheme, Card, CardContent, Typography, Box, Grid, Checkbox } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -119,11 +119,13 @@ class Acc1013 extends Component {
       companyCards: [], //카드리스트
       selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
+      selectedchecked:[],
       defaultUse: "use",
       readonly: false,
       title: "회사등록",
       //모달d
       showModal: false,
+      selectAllCheckbox : false,
       // 카드리스트에 보내줄 content 배열
       content: [],
       mauth: [],
@@ -202,6 +204,7 @@ class Acc1013 extends Component {
       this.setState({
         companyCards: response.data,
         content: response.data,
+        
       });
     } catch (error) {
       console.log(error);
@@ -264,25 +267,85 @@ class Acc1013 extends Component {
   };
 
   //삭제 버튼을 눌렀을 때 실행할 함수
+  // handleDeleteButton = async (e) => {
+  //   e.preventDefault();
+  //   const { selectedDept, companyCards, selectedchecked } = this.state;
+  //   //필드데이터 // 회사 코드만 있으면 된다.
+  //   const data = {
+  //     co_cd: this.state.co_cd,
+  //   };
+  //   // Send data to server
+  //   try {
+  //     const response = await post("/company/delete", data);
+  //     console.log(response);
+  //     console.log("회사정보(DB) 삭제가 정상 실행");
+  //     this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
+  //     this.fetchCompanyCards();
+  //   } catch (error) {
+  //     console.error(error);
+  //     this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
+  //     console.log("회사정보(DB) 삭제중에 오류발생");
+  //   }
+  //   this.handleCloseModal();
+  // };
+
+  // 휴지통 눌렀을때,삭제
   handleDeleteButton = async (e) => {
     e.preventDefault();
-    //필드데이터 // 회사 코드만 있으면 된다.
-    const data = {
-      co_cd: this.state.co_cd,
-    };
-    // Send data to server
+    const {  companyCards, selectedchecked } = this.state;
+  
     try {
-      const response = await post("/company/delete", data);
-      console.log(response);
-      console.log("회사정보(DB) 삭제가 정상 실행");
-      //this.setState({ showModal: false });
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
-      this.fetchCompanyCards();
+      if (selectedchecked.length > 0) {
+        const response = await del(
+          `/company/delete`,
+          { data: selectedchecked }
+        );
+        console.log(response.data);
+        
+        const newCardList = companyCards.filter(
+          (item) => !selectedchecked.some((checkedItem) => checkedItem.co_cd === item.co_cd)
+        );
+  
+        this.setState({
+          companyCards: newCardList,
+          content: newCardList,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+          selectedchecked: [], // 선택된 체크박스 초기화
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 삭제가 완료됐습니다', 'success');
+      } else {
+
+        const data = {
+          co_cd: this.state.co_cd,
+        };
+        // 서버에 DELETE 요청 보내기
+        const response = await del(`/company/delete/${this.state.co_cd}`);
+        console.log(response);
+        console.log("회사정보(DB) 삭제가 정상 실행");
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
+        this.fetchCompanyCards();
+        
+        // 서버 응답에 따라 삭제된 부서 정보를 companyCards에서 제거
+        const newCardList = companyCards.filter(
+          (item) => item.co_cd !== data
+        );
+  
+        this.setState({
+          companyCards: newCardList,
+          content: newCardList,
+          selectedDept: null,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제가 완료됐습니다', 'success');
+      }
     } catch (error) {
-      console.error(error);
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
-      console.log("회사정보(DB) 삭제중에 오류발생");
+      console.log(error);
     }
+  
     this.handleCloseModal();
   };
 
@@ -326,6 +389,46 @@ class Acc1013 extends Component {
     this.setState({ co_cd: value });
   }
 
+   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+   handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+  
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+  
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+  
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+ // 체크박스 토글 처리하는 함수
+ handleToggleCheckbox = (co_cd) => {
+  this.setState(
+    (prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+      
+      return { content: updatedContent, selectedchecked: selectedchecked };
+    },
+    () => {
+      console.log(this.state.selectedchecked);
+    },
+  );
+};
+
 
 
   // 회사 카드리스트를 그려줄 함수
@@ -338,6 +441,10 @@ class Acc1013 extends Component {
           class="noHoverEffect"
         >
           <CardContent>
+          <Checkbox
+                      
+                      onChange={() => this.handleToggleAllCheckboxes()}
+                    />
             <Typography variant="caption">
               회사 수 : {this.state.content.length}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -362,6 +469,10 @@ class Acc1013 extends Component {
                     this.handleCardClick(this.state.content[index].co_cd)
                   }
                 >
+                  <Checkbox
+                  checked={item.checked || false}
+                  onChange={() => this.handleToggleCheckbox(item.co_cd)}
+                />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
@@ -395,7 +506,7 @@ class Acc1013 extends Component {
                   </CardContent>
                   <CardContent
                     style={{
-                      marginLeft: "90px",
+                      marginLeft: "50px",
                       paddingLeft: "0",
                       paddingRight: "0",
                       minWidth: "100px",
@@ -431,7 +542,7 @@ class Acc1013 extends Component {
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
     const user = JSON.parse(sessionStorage.getItem('user'));
-    console.log("user!@!@!@!@" + JSON.stringify(user));
+    
     const mauthList = user.mauthList;
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능

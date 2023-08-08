@@ -14,6 +14,7 @@ import {
     Snackbar,
     Alert,
     Slide,
+    Checkbox,
 } from "@mui/material";
 import profile from "../../images/profile.png";
 import React, { Component } from "react";
@@ -54,6 +55,7 @@ class Acc1010 extends Component {
             employeeCards: [],
 
             content: [],
+            selectedchecked:[],
 
             //모달
             showModal: false,
@@ -65,6 +67,8 @@ class Acc1010 extends Component {
             mauth: [],
 
             errorMessage: '',
+
+            selectAllCheckbox : false,
 
         };
         this.DouzoneContainer = React.createRef();
@@ -156,30 +160,60 @@ class Acc1010 extends Component {
     }
 
 
-    deleteEmp = async (e) => {
-        e.preventDefault();
-        const { selectedCard, employeeCards } = this.state;
-        try {
-            const response = await del(`/emp/delete/${selectedCard.emp_cd}`);
-            console.log("서버 응답 : ", response.data);
-            const newCardList = employeeCards.filter(
-                (item) => item.emp_cd !== selectedCard.emp_cd
-            );
-
-            this.setState({
-                employeeCards: newCardList,
-                content: newCardList
-            })
-            this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제가 완료되었습니다.', 'success');
-            this.firstEmpCard();
-        } catch (error) {
-            this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제 실패하였습니다.', 'error');
-            console.log('사원 등록 에러 : ' + error)
-        }
-
-        this.handleCloseModal();
+    // 사원 삭제 버튼 눌렀을 때
+deleteEmp = async (e) => {
+    e.preventDefault();
+    const { selectedCard, employeeCards, selectedchecked } = this.state;
+    
+    try {
+      if (selectedchecked.length > 0) {
+        const response = await del(
+          `/emp/delete`,{ data: selectedchecked }
+        );
+        console.log("서버 응답 : ", response.data);
+        
+        const newCardList = employeeCards.filter(
+          (item) => !selectedchecked.some((checkedItem) => checkedItem.emp_cd === item.emp_cd)
+        );
+  
+        this.setState({
+          employeeCards: newCardList,
+          content: newCardList,
+          selectedCard: null,
+          selectedchecked: [], // 선택된 체크박스 초기화
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제가 완료되었습니다.', 'success');
+        this.firstEmpCard();
+      } else {
+        const response = await del(`/emp/delete/${selectedCard.emp_cd}`);
+        console.log("서버 응답 : ", response.data);
+        
+        const newCardList = employeeCards.filter(
+          (item) => item.emp_cd !== selectedCard.emp_cd
+        );
+  
+        this.setState({
+          employeeCards: newCardList,
+          content: newCardList,
+          selectedCard: null,
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제가 완료되었습니다.', 'success');
+        this.firstEmpCard();
+      }
+    } catch (error) {
+      this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제 실패하였습니다.', 'error');
+      console.log('사원 등록 에러 : ' + error);
     }
-    // 
+  
+    this.handleCloseModal();
+  };
+
+
+
+
+
+
+    // 카드클릭
     handleCardClick = async (emp_cd) => {
         try {
             const response = await post(`/emp/getEmpCard`, {
@@ -404,13 +438,45 @@ class Acc1010 extends Component {
     }
 
 
-
-    //  ?
-    // dateChange = (date) => {
-    //     this.setState({ selectedDate: date });
-    // };
-
-    // 부서 카드리스트를 그려줄 함수
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+  
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+  
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+  
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+ // 체크박스 토글 처리하는 함수
+ handleToggleCheckbox = (emp_cd) => {
+  this.setState(
+    (prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.emp_cd === emp_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+      
+      return { content: updatedContent, selectedchecked: selectedchecked };
+    },
+    () => {
+      console.log(this.state.selectedchecked);
+    }
+  );
+};
     onCardItemDraw = () => {
 
         return (
@@ -420,6 +486,10 @@ class Acc1010 extends Component {
                     class="noHoverEffect"
                 >
                     <CardContent>
+                    <Checkbox
+                      
+                      onChange={() => this.handleToggleAllCheckboxes()}
+                    />
                         <Typography variant="caption">
                             사원 수 : {this.state.content.length}
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -444,13 +514,18 @@ class Acc1010 extends Component {
                                         this.handleCardClick(this.state.content[index].emp_cd)
                                     }
                                 >
+                                     {/* 체크박스 */}
+                                     <Checkbox
+                  checked={item.checked || false}
+                  onChange={() => this.handleToggleCheckbox(item.emp_cd)}
+                />
                                     {/* 프로필 이미지 */}
                                     <img
                                         src={profile}
                                         style={{
                                             width: "50px",
                                             height: "50px",
-                                            marginLeft: "10px",
+                                            marginLeft: "0px",
                                             marginTop: "10px",
                                             borderRadius: "3px",
                                         }}
@@ -487,7 +562,7 @@ class Acc1010 extends Component {
                                     </CardContent>
                                     <CardContent
                                         style={{
-                                            marginLeft: "30px",
+                                            marginLeft: "-10",
                                             paddingLeft: "0",
                                             paddingRight: "0",
                                             minWidth: "100px",
