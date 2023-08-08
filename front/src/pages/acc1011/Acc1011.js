@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { get, post, del, update } from "../../components/api_url/API_URL";
 import CardList from "../../components/commons/CardList"; // CardList 컴포넌트 임포트
 import Acc1011Presentation from "./Acc1011Presentation"; // Acc1011Presentation 컴포넌트 임포트
-import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Card, CardContent, Checkbox, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acc1011Search from "./Acc1011Search";
 import { Box } from "@mui/system";
@@ -79,12 +79,14 @@ class Acc1011 extends Component {
       selectedDept: null, // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
       content: [],
+      selectedchecked:[],
 
       postcode: "", //우편번호 찾기 저장할 상태 변수
       roadAddress: "",
       jibunAddress: "",
 
       showModal: false,
+      selectAllCheckbox : false,
 
       //완료 확인
       complete: '',
@@ -194,39 +196,61 @@ class Acc1011 extends Component {
       }
     }
   };
-
-  // 삭제 버튼 눌렀을 때
+ 
+   // 휴지통 눌렀을때,삭제
   handleDeleteClick = async (e) => {
     e.preventDefault();
-    const { selectedDept, departmentCards } = this.state;
-
+    const { selectedDept, departmentCards, selectedchecked } = this.state;
+  
     try {
-      // 서버에 DELETE 요청 보내기
-      const response = await del(
-        `/depmanagement/deletedept/${selectedDept.dept_cd}`
-      );
-      console.log("서버 응답", response.data);
-
-      // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
-      const newCardList = departmentCards.filter(
-        (item) => item.dept_cd !== selectedDept.dept_cd
-      );
-
-      this.setState({
-        departmentCards: newCardList,
-        content: newCardList,
-        selectedDept: null,
-        postcode: "",
-        roadAddress: "",
-        jibunAddress: "",
-      });
-      this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
+      if (selectedchecked.length > 0) {
+        const response = await del(
+          `/depmanagement/deletedept`,
+          { data: selectedchecked }
+        );
+        console.log(response.data);
+        
+        const newCardList = departmentCards.filter(
+          (item) => !selectedchecked.some((checkedItem) => checkedItem.dept_cd === item.dept_cd)
+        );
+  
+        this.setState({
+          departmentCards: newCardList,
+          content: newCardList,
+          selectedDept: null,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+          selectedchecked: [], // 선택된 체크박스 초기화
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
+      } else {
+        // 서버에 DELETE 요청 보내기
+        const response = await del(
+          `/depmanagement/deletedept/${selectedDept.dept_cd}`
+        );
+        console.log("서버 응답", response.data);
+        
+        // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
+        const newCardList = departmentCards.filter(
+          (item) => item.dept_cd !== selectedDept.dept_cd
+        );
+  
+        this.setState({
+          departmentCards: newCardList,
+          content: newCardList,
+          selectedDept: null,
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
+      }
     } catch (error) {
       console.log(error);
     }
-
+  
     this.handleCloseModal();
-
   };
 
   // 입력된 값을 co_cd 필드에 저장(회사명)
@@ -313,10 +337,50 @@ class Acc1011 extends Component {
     this.setState({ departmentCards, content: departmentCards });
   };
 
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+  
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+  
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+  
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+ // 체크박스 토글 처리하는 함수
+ handleToggleCheckbox = (dept_cd) => {
+  this.setState(
+    (prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.dept_cd === dept_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+      
+      return { content: updatedContent, selectedchecked: selectedchecked };
+    },
+    () => {
+      console.log(this.state.selectedchecked);
+    }
+  );
+};
+
 
   // 부서 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
-
+    const { selectedDepartments } = this.state;
     return (
       <div>
         <Card
@@ -324,6 +388,10 @@ class Acc1011 extends Component {
           class="noHoverEffect"
         >
           <CardContent>
+               <Checkbox
+                      
+                      onChange={() => this.handleToggleAllCheckboxes()}
+                    />
             <Typography variant="caption">
               부서 수 : {this.state.content.length}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -348,8 +416,13 @@ class Acc1011 extends Component {
                     this.handleCardClick(this.state.content[index].dept_cd)
                   }
                 >
+                   <Checkbox
+                  checked={item.checked || false}
+                  onChange={() => this.handleToggleCheckbox(item.dept_cd)}
+                />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                 
                     {/* item1,item2 */}
                     <Typography
                       variant="body2"
@@ -411,7 +484,8 @@ class Acc1011 extends Component {
           handleClose={this.handleCloseModal}
           handleConfirm={this.handleDeleteClick}
           showDelete={''}
-          message="정말로 부서 정보를 삭제하시겠습니까?">
+          message="정말로 부서 정보를 삭제하시겠습니까?"
+          >
           <Acc1011Search deptSearch={this.handleDepartmentCards}></Acc1011Search>
           <form onSubmit={this.handleSaveClick}>
             <div>
