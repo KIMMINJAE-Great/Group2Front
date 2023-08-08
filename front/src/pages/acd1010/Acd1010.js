@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { get, post, del, update } from "../../components/api_url/API_URL";
 import CardList from "../../components/commons/CardList"; // CardList 컴포넌트 임포트
 import Acd1010Presentation from "./Acd1010Presentation"; // Acd1010Presentation 컴포넌트 임포트
-import { Card, CardContent, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { Card, CardContent, Checkbox, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acd1010Search from "./Acd1010Search";
 
@@ -83,11 +83,15 @@ class Acd1010 extends Component {
       selectedregcar: '', // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
       content: [],
+      selectedchecked:[],
 
       selectedDate: new Date(),
 
 
       showModal: false,
+      selectAllCheckbox : false,
+
+
 
 
 
@@ -251,6 +255,103 @@ class Acd1010 extends Component {
   };
 
 
+  // 휴지통 눌렀을때,삭제
+  handleDeleteClick = async (e) => {
+    e.preventDefault();
+    const { selectedregcar, regcarCards, selectedchecked } = this.state;
+  
+    try {
+      if (selectedchecked.length > 0) {
+        const response = await del(
+          `/regcar/deletecar`,
+          { data: selectedchecked }
+        );
+        console.log(response.data);
+        
+        const newCardList = regcarCards.filter(
+          (item) => !selectedchecked.some((checkedItem) => checkedItem.car_cd === item.car_cd)
+        );
+  
+        this.setState({
+          regcarCards: newCardList,
+          content: newCardList,
+          selectedregcar: "",
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+          selectedchecked: [], // 선택된 체크박스 초기화
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('차량정보 삭제가 완료됐습니다', 'success');
+      } else {
+        // 서버에 DELETE 요청 보내기
+        const response = await del(
+          `/regcar/deletecar/${selectedregcar.car_cd}`
+        );
+        console.log("서버 응답", response.data);
+        
+        // 서버 응답에 따라 삭제된 부서 정보를 regcarCards에서 제거
+        const newCardList = regcarCards.filter(
+          (item) => item.car_cd !== selectedregcar.car_cd
+        );
+  
+        this.setState({
+          regcarCards: newCardList,
+          content: newCardList,
+          selectedregcar: "",
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('차량정보 삭제가 완료됐습니다', 'success');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  
+    this.handleCloseModal();
+  };
+
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+  
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+  
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+  
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+ // 체크박스 토글 처리하는 함수
+ handleToggleCheckbox = (car_cd) => {
+  this.setState(
+    (prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.car_cd === car_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+      
+      return { content: updatedContent, selectedchecked: selectedchecked };
+    },
+    () => {
+      console.log(this.state.selectedchecked);
+    }
+  );
+};
+
+
 
 
 
@@ -380,6 +481,10 @@ class Acd1010 extends Component {
           class="noHoverEffect"
         >
           <CardContent>
+          <Checkbox
+                      
+                      onChange={() => this.handleToggleAllCheckboxes()}
+                    />
             <Typography variant="caption">
               차량 개수 : {this.state.content.length}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -404,6 +509,11 @@ class Acd1010 extends Component {
                     this.handleCardClick(this.state.content[index].car_cd)
                   }
                 >
+                     {/* 체크박스 */}
+                     <Checkbox
+                  checked={item.checked || false}
+                  onChange={() => this.handleToggleCheckbox(item.car_cd)}
+                />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}

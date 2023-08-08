@@ -81,42 +81,13 @@ class Acc1013 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      co_cd: '', //회사 코드
-      co_nm: '', //회사 이름
-      co_nk: '', //회사 약칭
-      use_yn: '',
-      lng: '',
-      adm_cd: '',
-      bz_type: '',
-      bz_item: '',
-      co_tel: '',
-      co_tel2: '',
-      co_fax: '',
-      reg_nb: '',
-      cp_ct: '',
-      cp_no: '',
-      adr_zp: '',
-      adr_inp: '',
-      adr_etc: '',
-      est_dt: '',
-      opn_dt: '',
-      cls_dt: '',
-      ceo_nm: '',
-      res_nb: '',
-      domain: '',
-      ac_per: '',
-      ac_dt: '',
-      acc_tp: '',
-      url: '',
-      sort: '',
-      defaultLange: '',
 
       postcode: '', //우편번호 5자리
       roadAddress: '',
       jibunAddress: '', //지번 주소
       extraAddress: '', //나머지 주소
 
-      companyCards: [], //카드리스트
+      companyCards: [], // 빈 카드리스트
       selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
       defaultUse: "use",
@@ -133,8 +104,28 @@ class Acc1013 extends Component {
 
   //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
   componentDidMount() {
-    this.fetchCompanyCards();
+    get(`/company/cardlist`)
+      .then((response) => {
+        this.setState({ companyCards: response.data, selectedRead: "Y", content: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
+
+  //  //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
+  //  fetchCompanyCards = async (co_cd) => {
+  //   try {
+  //     const response = await get("/company/cardlist");
+  //     this.setState({
+  //       companyCards: response.data,
+  //       selectedRead: "Y",
+  //       content: response.data,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   // 모달 열기
   handleOpenModal = () => {
@@ -147,66 +138,32 @@ class Acc1013 extends Component {
 
   //카드 클릭시 입력됨 (회사 코드로)
   handleCardClick = async (co_cd) => {
-    const data = { co_cd };
+    console.log('co_cd............' + co_cd)
     try {
-      const response = await post("/company/selectCard", data);
-      console.log(response);
-      console.log("카드리스트 클릭됨!");
-      this.setState({
-        companyCardData: response.data,
-        co_cd: response.data.co_cd,
-        co_nm: response.data.co_nm,
-        co_nk: response.data.co_nk,
-        adm_cd: response.data.adm_cd,
-        use_yn: response.data.use_yn,
-        lng: response.data.lng,
-        bz_type: response.data.bz_type,
-        bz_item: response.data.bz_item,
-        co_tel: response.data.co_tel,
-        co_tel2: response.data.co_tel2,
-        co_fax: response.data.co_fax,
-        reg_nb: response.data.reg_nb,
-        cp_ct: response.data.cp_ct,
-        cp_no: response.data.cp_no,
-        adr_zp: response.data.adr_zp,
-        adr_inp: response.data.adr_inp,
-        adr_etc: response.data.adr_etc,
-        est_dt: response.data.est_dt,
-        opn_dt: response.data.opn_dt,
-        cls_dt: response.data.cls_dt,
-        ceo_nm: response.data.ceo_nm,
-        res_nb: response.data.res_nb,
-        domain: response.data.domain,
-        ac_per: response.data.ac_per,
-        ac_dt: response.data.ac_dt,
-        acc_tp: response.data.acc_tp,
-        url: response.data.url,
-        sort: response.data.sort,
-        defaultLange: response.data.defaultLange,
+      const response = await post("/company/selectCard", { co_cd: co_cd });
 
-        readonly: "true",
+      console.log("카드리스트 클릭됨!");
+      console.log("co_cd" + co_cd);
+      this.setState({
+        selectedCompanyCards: response.data,
+        selectedRead: "N",
+        complete: '',
+        readonly: true,
       });
+      // this.setState({
+      //   selectedCompanyCards: {
+      //     ...response.data,
+      //   }
+      // });
       console.log("!!companyCardData!!" + this.state.companyCardData);
 
-      //this.fetchCompanyCards();
     } catch (error) {
       console.error(error);
       console.log("카드리스트 클릭 중에 오류발생");
     }
   };
 
-  //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
-  fetchCompanyCards = async () => {
-    try {
-      const response = await get("/company/cardlist");
-      this.setState({
-        companyCards: response.data,
-        content: response.data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
 
   //입력값의 변화를 저장함
   handleInputChange = (e) => {
@@ -221,63 +178,83 @@ class Acc1013 extends Component {
   };
 
   //저장 버튼을 눌렀을 때 실행할 함수 (저장!!)
-  handleSaveButton = async (e, companyCardData) => {
+  handleSaveButton = async (e) => {
     e.preventDefault();
 
-    const {
-      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type,
-      bz_item, co_tel, co_tel2, co_fax, reg_nb, cp_ct,
-      cp_no, adr_zp, adr_inp, adr_etc, est_dt, opn_dt,
-      cls_dt, ceo_nm, res_nb, domain, ac_per, ac_dt, acc_tp,
-      url, sort,
-      companyCards,
-    } = this.state;
-    //필드데이터f
-    const data = {
-      co_cd, co_nm, co_nk, use_yn, lng, adm_cd, bz_type, bz_item,
-      co_tel, co_tel2, co_fax, reg_nb, cp_ct, cp_no, adr_zp, adr_inp,
-      adr_etc, est_dt, opn_dt, cls_dt, ceo_nm, res_nb, domain, ac_per,
-      ac_dt, acc_tp, url, sort,
-      companyCards,
-    };
+    const { selectedCompanyCards, selectedRead } = this.state;
+    /* 필수값 유효성 검사 */
+    if (!selectedCompanyCards.co_cd) {
+      alert("회사 코드를 입력해주세요.");
+      return;
+    }
+    if (!selectedCompanyCards.co_nm) {
+      alert("회사이름을 입력해 주세요.");
+      return;
+    }
 
-    try {
-      if (companyCardData) {
-        this.setState({
-          co_cd: companyCardData.co_cd,
-        });
-        await post("/company/save", data);
-        console.log("post이후" + JSON.stringify(companyCardData));
-        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 수정이 완료됐습니다', 'success');
-      } else {
-        await post("/company/save", data);
-        this.DouzoneContainer.current.handleSnackbarOpen('회사 등록이 완료됐습니다', 'success');
+
+
+    if (selectedRead === "Y") {
+
+      try {
+        const response = await post("/company/save", selectedCompanyCards);
+        console.log("post이후" + JSON.stringify(selectedCompanyCards));
+        let updatedSelectedCompanyCards = {
+          ...selectedCompanyCards,
+          est_dt: selectedCompanyCards.est_dt || '',
+          opn_dt: selectedCompanyCards.opn_dt || '',
+          cls_dt: selectedCompanyCards.cls_dt || '',
+        };
+
+        this.setState((prevState) => ({
+          companyCardData: [...prevState.companyCards, updatedSelectedCompanyCards],
+          content: [...prevState.companyCards, updatedSelectedCompanyCards],
+          selectedCompanyCards: updatedSelectedCompanyCards,
+        }));
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 등록이 완료됐습니다', 'success');
+
+
+        console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
+      } catch (error) {
+        console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
+        console.error(error);
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
+        console.log("회사등록(DB) 중에 오류발생");
       }
-      this.fetchCompanyCards(); //카드리스트 새로고침됨!
-      console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
-    } catch (error) {
-      console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
-      console.error(error);
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
-      console.log("회사등록(DB) 중에 오류발생");
+    } else {
+      try {
+        const response = await update("/company/update", selectedCompanyCards);
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 수정이 완료됐습니다', 'success');
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   //삭제 버튼을 눌렀을 때 실행할 함수
   handleDeleteButton = async (e) => {
     e.preventDefault();
+    const { selectedCompanyCards, companyCards } = this.state;
     //필드데이터 // 회사 코드만 있으면 된다.
-    const data = {
-      co_cd: this.state.co_cd,
-    };
+
     // Send data to server
     try {
-      const response = await post("/company/delete", data);
-      console.log(response);
-      console.log("회사정보(DB) 삭제가 정상 실행");
-      //this.setState({ showModal: false });
+      const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
+
+      console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
+      const newCardList = companyCards.filter(
+        (item) => item.co_cd !== selectedCompanyCards.co_cd
+      );
+      this.setState({
+        companyCards: newCardList,
+        selectedCompanyCards: '',
+        postcode: "",
+        roadAddress: "",
+        jibunAddress: "",
+        content: newCardList,
+      });
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
-      this.fetchCompanyCards();
+
     } catch (error) {
       console.error(error);
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
@@ -311,21 +288,250 @@ class Acc1013 extends Component {
 
 
   handleNewButtonClick = () => {
+    console.log('추가ㅓ 누르기')
     this.setState({
-      co_cd: '', co_nm: '', co_nk: '', use_yn: '', lng: '', adm_cd: '', bz_type: '',
-      bz_item: '', co_tel: '', co_tel2: '', co_fax: '', reg_nb: '', cp_ct: '', cp_no: '',
-      adr_zp: '', adr_inp: '', adr_etc: '', est_dt: '', opn_dt: '', cls_dt: '',
-      ceo_nm: '', res_nb: '', domain: '', ac_per: '', ac_dt: '', acc_tp: '', url: '', sort: '',
-      companyCardData: null,
+      selectedCompanyCards: '',
+      selectedRead: "Y",
+      complete: '',
       readonly: false,
+      postcode: '',
+      roadAddress: '',
+      jibunAddress: '',
+      extraAddress: '',
     });
   };
 
+  //강제로전송..
+  handleDataChange(value) {
+    this.setState({
+      co_cd: value.co_cd,
+      adr_zp: value.co_nm,
+      adr_inp: value.adr_inp,
+      adr_etc: value.adr_etc,
+    });
 
-  handleCoCdChange(value) {
-    this.setState({ co_cd: value });
   }
 
+  handleCoCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_cd: value,
+      },
+    }));
+  };
+
+  handleCoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nm: value,
+      },
+    }));
+  };
+  handleCoNkChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nk: value,
+      },
+    }));
+  };
+
+
+  handleUseYnChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        use_yn: value,
+      },
+    }));
+  };
+  handleLngChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        lng: value,
+      },
+    }));
+  };
+  handleAdmCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adm_cd: value,
+      },
+    }));
+  };
+  handleBzTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_type: value,
+      },
+    }));
+  };
+
+  handleBzItemChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_item: value,
+      },
+    }));
+  };
+
+  handleCoTelChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel: value,
+      },
+    }));
+  };
+  handleCoTel2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel2: value,
+      },
+    }));
+  };
+  handleCoFaxChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_fax: value,
+      },
+    }));
+  };
+  handleRegNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        reg_nb: value,
+      },
+    }));
+  };
+  handleCpCtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_ct: value,
+      },
+    }));
+  };
+
+  handleCpNoChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_no: value,
+      },
+    }));
+  };
+  handleAdrZpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_zp: value,
+      },
+    }));
+  };
+
+
+  handleAdrInpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_inp: value,
+      },
+    }));
+  };
+  handleAdrEtcChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_etc: value,
+      },
+    }));
+  };
+  handleEstDtChange = (value) => {
+    console.log('est_dt찍어보기.... : ' + value);
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        est_dt: value,
+      },
+    }));
+  };
+
+  handleOpnDtChange = (value) => {
+    console.log('개업찍어보기.... : ' + value);
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        opn_dt: value,
+      },
+    }));
+  };
+  handleClsDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cls_dt: value,
+      },
+    }));
+  };
+
+  handleCeoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ceo_nm: value,
+      },
+    }));
+  };
+  handleResNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb: value,
+      },
+    }));
+  };
+  handleResNb2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb2: value,
+      },
+    }));
+  };
+  handleAcPerChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_per: value,
+      },
+    }));
+  };
+  handleAcDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_dt: value,
+      },
+    }));
+  };
+  handleAccTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        acc_type: value,
+      },
+    }));
+  };
 
 
   // 회사 카드리스트를 그려줄 함수
@@ -430,14 +636,14 @@ class Acc1013 extends Component {
 
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
-    const user = JSON.parse(sessionStorage.getItem('user'));
-    console.log("user!@!@!@!@" + JSON.stringify(user));
-    const mauthList = user.mauthList;
+    // const user = JSON.parse(sessionStorage.getItem('user'));
+    // console.log("user!@!@!@!@" + JSON.stringify(user));
+    // const mauthList = user.mauthList;
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
-    this.handleCoCdChange = this.handleCoCdChange.bind(this);
+    this.handleDataChange = this.handleDataChange.bind(this);
 
 
     return (
@@ -471,8 +677,9 @@ class Acc1013 extends Component {
                   ></CardList>
                 </div>
                 <Acc1013BasicInfo
-                  {...this.state}
-                  companyCardData={this.state.companyCardData}
+                  selectedCompanyCards={this.state.selectedCompanyCards}
+                  selectedRead={this.state.selectedRead}
+                  complete={this.state.complete}
                   onInputChange={this.handleInputChange}
                   handleSaveButton={this.handleSaveButton}
                   handleDeleteButton={this.handleDeleteButton}
@@ -482,7 +689,36 @@ class Acc1013 extends Component {
                   // sco={this.state.companyCards} //카드리스트 sco
                   onComplete={this.handlePostComplete}
                   // addOrUpdate={this.addOrUpdate} 사용X
-                  onCoCdChange={this.handleCoCdChange}
+                  onDataChange={this.handleDataChange}
+                  readonly={this.state.readonly}
+
+                  handleCoCdChange={this.handleCoCdChange}
+                  handleCoNmChange={this.handleCoNmChange}
+                  handleCoNkChange={this.handleCoNkChange}
+                  handleUseYnChange={this.handleUseYnChange}
+                  handleLngChange={this.handleLngChange}
+                  handleAdmCdChange={this.handleAdmCdChange}
+                  handleBzTypeChange={this.handleBzTypeChange}
+                  handleBzItemChange={this.handleBzItemChange}
+                  handleCoTelChange={this.handleCoTelChange}
+                  handleCoTel2Change={this.handleCoTel2Change}
+                  handleCoFaxChange={this.handleCoFaxChange}
+                  handleRegNbChange={this.handleRegNbChange}
+                  handleCpCtChange={this.handleCpCtChange}
+                  handleCpNoChange={this.handleCpNoChange}
+                  handleAdrZpChange={this.handleAdrZpChange}
+                  handleAdrInpChange={this.handleAdrInpChange}
+                  handleAdrEtcChange={this.handleAdrEtcChange}
+                  handleEstDtChange={this.handleEstDtChange}
+                  handleOpnDtChange={this.handleOpnDtChange}
+                  handleClsDtChange={this.handleClsDtChange}
+                  handleCeoNmChange={this.handleCeoNmChange}
+                  handleResNbChange={this.handleResNbChange}
+                  handleResNb2Change={this.handleResNb2Change}
+                  handleAcPerChange={this.handleAcPerChange}
+                  handleAcDtChange={this.handleAcDtChange}
+                  handleAccTypeChange={this.handleAccTypeChange}
+
                 />
               </div>
             </div>

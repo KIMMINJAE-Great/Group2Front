@@ -74,12 +74,12 @@ class Acd1010Search extends Component {
                   <Grid item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <CodePickerManager helpId={'CarCodePicker'} variant="outlined" />
                   </Grid>
-                  <Grid item xs={1.03} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                  <Grid item xs={0.92} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
                     <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }} >임차구분</Typography>
                   </Grid>
-                  <Grid item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <Select
-                      sx={{ width: '100%', ml: 1, height: '75%' }}
+                      sx={{ width: '200px', ml: 1, height: '80%' }}
                       variant="outlined"
                       size="small"
                       name="lease_yn"
