@@ -78,17 +78,18 @@ class Acc1013Search extends React.Component {
       <div>
         <div style={{  display: "flex" ,padding:"5px"}}>
           <Grid container style={{ height: "40px" }}>
-            <GridItem1
+            <Grid
               item
               xs={0.6}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
+                justifyContent: "flex-end",
               }}
             >
               <FieldName inputProps={{ style:{ marginLeft: "35px" }}} variant="subtitle1">회사</FieldName>
-            </GridItem1>
+            </Grid>
             <Grid
               item
               xs={1.3}
@@ -108,11 +109,17 @@ class Acc1013Search extends React.Component {
               />
             </Grid>
 
-            <GridItem3 item xs={1.2}>
+            <Grid item xs={1.2} 
+                  style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                    }}>
               <FieldName variant="subtitle1" style={{ marginRight: "5px" }}>
                 사용여부
               </FieldName>
-            </GridItem3>
+            </Grid>
             <Grid
               item
               xs={1.3}
@@ -146,7 +153,7 @@ class Acc1013Search extends React.Component {
             >
               <Button
                 onClick={(e) =>
-                  this.props.handleSaveButton(e, this.props.companyCardData)
+                  this.props.handleSaveButton(e)
                 }
                 style={{ marginRight: 40, width: "5px" }}
                 variant="outlined"
