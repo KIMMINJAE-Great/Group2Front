@@ -1,31 +1,59 @@
-// import React, { Component } from 'react';
-// import mapboxgl from 'mapbox-gl';
-// import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
+import React, { Component } from 'react';
+import axios from 'axios';
+import Acd1011Child from './Acd1011Child';
+import { get } from '../../components/api_url/API_URL';
 
-// mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';  // Mapbox에서 발급받은 토큰을 여기에 넣어주세요.
+class Acd1011 extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      startName: '',
+      endName: '',
+      startCoords: '',
+      endCoords: '',
+      bookmark: '', //abizcar_북마크의 정보를 list로 담을것임. 1개짜리
+    };
+  }
 
-// class Acd1011 extends Component {
-//   mapContainer = React.createRef();
+  //위도경도 가져오는 서버요청 함수
+  //여러개의 배열이 아닌.. 배열[0]의 출발지와 도착지만 가져오면됨
+  handleGetCoordinate = async () => {
+    try {
+      const response = await get("Example/ace1010/abizcarbookmark");
+      this.setState({
+        bookmark: response.data
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-//   componentDidMount() {
-//     const map = new mapboxgl.Map({
-//       container: this.mapContainer.current,
-//       style: 'mapbox://styles/mapbox/streets-v11',
-//       center: [127.0276, 37.5042],  // 초기 지도 중심 좌표, 이 부분을 변경해야할 수 있습니다.
-//       zoom: 10
-//     });
+  /*
+          <Acd1011Child
+              startName="{서울특별시 종로구 종로5가}"     //
+              endName="더존비즈온"                     //
+              startCoordinate={this.state.bookmark.START_ADDR1}    //
+              endCoordinate={this.state.bookmark.END_ADDR1}  //
+              placeIdNum="12288842"                   //
+          />
+  */
 
-//     map.addControl(
-//       new MapboxDirections({
-//         accessToken: mapboxgl.accessToken
-//       }),
-//       'top-left'
-//     );
-//   }
+  render() {
 
-//   render() {
-//     return <div ref={this.mapContainer} style={{ width: "100%", height: "100vh" }} />;
-//   }
-// }
+    return (
 
-// export default Acd1011;
+      <Acd1011Child
+        startName="서울특별시 종로구 종로5가"     //달라도됨
+        endName="더존비즈온"                     //달라도됨
+        startCoordinate="127.0036,37.570633"    //다르면안됨
+        endCoordinate="127.6378104,37.7563948"  //다르면안됨
+        placeIdNum="12288842"                   //달라도되는듯
+      />
+
+
+
+    );
+  }
+}
+
+export default Acd1011;

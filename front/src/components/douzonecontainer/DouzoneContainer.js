@@ -106,7 +106,6 @@ class DouzoneContainer extends Component {
     this.setState({ funcVowel: null });
   };
 
-
   state = {
     isModalOpen: false,
   };
@@ -146,7 +145,7 @@ class DouzoneContainer extends Component {
 
   render() {
     //const open = Boolean(this.state.funcVowel);
-    const { severity,isModalOpen } = this.state;
+    const { severity, isModalOpen } = this.state;
     const {
       openDeleteModal,
       handleClose,
@@ -166,7 +165,9 @@ class DouzoneContainer extends Component {
     //const showDelete = this.props.onDelete
     return (
       <ThemeProvider theme={douzonecontainertheme}>
+
         <div className="douzone-container">
+
           <div className="container-header">
             <div className="container-header-left">{this.props.title}</div>
             <div className="container-header-right">
