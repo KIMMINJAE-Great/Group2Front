@@ -81,7 +81,7 @@ class Acc1013 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      
+
       postcode: '', //우편번호 5자리
       roadAddress: '',
       jibunAddress: '', //지번 주소
@@ -138,16 +138,16 @@ class Acc1013 extends Component {
 
   //카드 클릭시 입력됨 (회사 코드로)
   handleCardClick = async (co_cd) => {
-    
+    console.log('co_cd............' + co_cd)
     try {
-      const response = await post("/company/selectCard", {co_cd :co_cd });
-      
+      const response = await post("/company/selectCard", { co_cd: co_cd });
+
       console.log("카드리스트 클릭됨!");
       console.log("co_cd" + co_cd);
       this.setState({
-        selectedCompanyCards:response.data,
+        selectedCompanyCards: response.data,
         selectedRead: "N",
-        complete:'',
+        complete: '',
         readonly: true,
       });
       // this.setState({
@@ -163,7 +163,7 @@ class Acc1013 extends Component {
     }
   };
 
- 
+
 
   //입력값의 변화를 저장함
   handleInputChange = (e) => {
@@ -191,24 +191,29 @@ class Acc1013 extends Component {
       alert("회사이름을 입력해 주세요.");
       return;
     }
-  
-    
+
+
 
     if (selectedRead === "Y") {
 
       try {
         const response = await post("/company/save", selectedCompanyCards);
         console.log("post이후" + JSON.stringify(selectedCompanyCards));
-        
+        let updatedSelectedCompanyCards = {
+          ...selectedCompanyCards,
+          est_dt: selectedCompanyCards.est_dt || '',
+          opn_dt: selectedCompanyCards.opn_dt || '',
+          cls_dt: selectedCompanyCards.cls_dt || '',
+        };
 
         this.setState((prevState) => ({
-          companyCardData: [...prevState.companyCards, response.data],
-          content: [...prevState.companyCards, response.data],
-          selectedCompanyCards: null,
+          companyCardData: [...prevState.companyCards, updatedSelectedCompanyCards],
+          content: [...prevState.companyCards, updatedSelectedCompanyCards],
+          selectedCompanyCards: updatedSelectedCompanyCards,
         }));
         this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 등록이 완료됐습니다', 'success');
-      
-        
+
+
         console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
       } catch (error) {
         console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
@@ -216,7 +221,7 @@ class Acc1013 extends Component {
         this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
         console.log("회사등록(DB) 중에 오류발생");
       }
-    }else {
+    } else {
       try {
         const response = await update("/company/update", selectedCompanyCards);
         this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 수정이 완료됐습니다', 'success');
@@ -231,25 +236,25 @@ class Acc1013 extends Component {
     e.preventDefault();
     const { selectedCompanyCards, companyCards } = this.state;
     //필드데이터 // 회사 코드만 있으면 된다.
-    
+
     // Send data to server
     try {
       const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
-      
-      console.log("회사정보(DB) 삭제가 정상 실행"+response.data);
+
+      console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
       const newCardList = companyCards.filter(
         (item) => item.co_cd !== selectedCompanyCards.co_cd
       );
       this.setState({
         companyCards: newCardList,
-        selectedCompanyCards: null,
+        selectedCompanyCards: '',
         postcode: "",
         roadAddress: "",
         jibunAddress: "",
         content: newCardList,
       });
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
-      
+
     } catch (error) {
       console.error(error);
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
@@ -283,15 +288,16 @@ class Acc1013 extends Component {
 
 
   handleNewButtonClick = () => {
+    console.log('추가ㅓ 누르기')
     this.setState({
-      selectedCompanyCards: null,
+      selectedCompanyCards: '',
       selectedRead: "Y",
       complete: '',
       readonly: false,
-      postcode:'',
-      roadAddress:'',
-      jibunAddress:'',
-      extraAddress:'',
+      postcode: '',
+      roadAddress: '',
+      jibunAddress: '',
+      extraAddress: '',
     });
   };
 
@@ -434,6 +440,7 @@ class Acc1013 extends Component {
     }));
   };
   handleEstDtChange = (value) => {
+    console.log('est_dt찍어보기.... : ' + value);
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
@@ -442,6 +449,7 @@ class Acc1013 extends Component {
     }));
   };
   handleOpnDtChange = (value) => {
+    console.log('개업찍어보기.... : ' + value);
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
