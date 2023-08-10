@@ -15,7 +15,7 @@ class DeptCodePicker extends React.Component{
           selectedValue:'',//선택되는 값 // 드롭다운
     
           textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
-    
+          modalTextFieldValue: '',
         };
       }
   // 엔터쳤을때,
@@ -36,6 +36,25 @@ class DeptCodePicker extends React.Component{
             console.log(error);
           }
       });
+    }
+  };
+  handleKeyDownModal = async (e ,textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.setState({
+        modalTextFieldValue: textFieldValue
+      });
+      try {
+        const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        
+        this.setState({ 
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+        });
+        console.log(response.data);
+      } catch (error) {
+          console.log(error);
+      }
     }
   };
   //serach버튼을 위해..
@@ -105,10 +124,12 @@ class DeptCodePicker extends React.Component{
             valueField='dept_nm' 
             codeField='dept_cd'
             dispType='codeAndValue'
+            pickerTitle='부서코드 검색'
             pickerCodeName='부서코드'
             pickerName='부서이름'
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
+            onhandleKeyDownModal={this.handleKeyDownModal}
             menuItems={this.state.menuItems}
             selectedIds={this.state.selectedIds}
             textFieldValue={this.state.textFieldValue}
