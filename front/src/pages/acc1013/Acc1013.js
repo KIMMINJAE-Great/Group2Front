@@ -224,7 +224,7 @@ class Acc1013 extends Component {
         console.log(error);
       }
     }
-    };
+  };
 
   //삭제 버튼을 눌렀을 때 실행할 함수
   handleDeleteButton = async (e) => {
@@ -295,17 +295,8 @@ class Acc1013 extends Component {
     });
   };
 
-  //강제로전송..
-  handleDataChange(value) {
-    this.setState({ 
-      co_cd: value.co_cd,
-      adr_zp: value.co_nm,
-      adr_inp:value.adr_inp,
-      adr_etc:value.adr_etc,
-    });
-
-  }
-
+  
+  //onChange핸들함수
   handleCoCdChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -314,7 +305,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleCoNmChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -331,8 +321,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
-
   handleUseYnChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -365,7 +353,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleBzItemChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -374,8 +361,7 @@ class Acc1013 extends Component {
       },
     }));
   };
-  
-  handleCoTelChange = (value) => {
+    handleCoTelChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
@@ -415,7 +401,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleCpNoChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -432,8 +417,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
-
   handleAdrInpChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -458,7 +441,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleOpnDtChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -475,7 +457,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleCeoNmChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -635,7 +616,7 @@ class Acc1013 extends Component {
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
-    this.handleDataChange = this.handleDataChange.bind(this);
+    
 
 
     return (

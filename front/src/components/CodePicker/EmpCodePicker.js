@@ -107,6 +107,7 @@ handleKeyDown = async (e, textFieldValue) => {
             codeField='emp_cd'    //사원코드
             valueField2='dept_nm' //부서명
             dispType='codeAndValueAndValue'
+            pickerTitle='사원코드 검색'
             pickerCodeName='사원코드'
             pickerName='사원이름'
             pickerName2='부서이름'

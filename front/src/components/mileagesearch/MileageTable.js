@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Acd1011Child from './Acd1011Child';
-import { get } from '../../components/api_url/API_URL';
+
+import { get } from '../api_url/API_URL';
+import MileageTableView from './MileageTableView';
 
 
-class Acd1011 extends Component {
+
+class MileageTable extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -18,30 +20,7 @@ class Acd1011 extends Component {
             coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... bookmarkCards에서 충분할듯? 
         };
     }
-    componentDidMount() {
-        //abizcar_person의 정보를 가져오는코드임
-        get(`/ace1010/getallcars`)
-          .then((response) => {
-            this.setState({ bookmarkCards: response.data, content: response.data });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-
-    //위도경도 가져오는 서버요청 함수
-    //여러개의 배열이 아닌.. 배열[0]의 출발지와 도착지만 가져오면됨
-    handleGetCoordinate = async () => {
-        try {
-            const response = await get("example/ace1010/getcoordinate");
-            this.setState({
-                coordinateInfo : response.data
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
+    
     /*
             //1. 드롭다운 메뉴에는 북마크된것들이 일단 들어가 있을 것임.
             //2. 출발지, 도착지 각각 골라서 "검색 버튼"을 누를테니까.. 출발지, 도착지 2개의 값이 들어올듯
@@ -68,18 +47,20 @@ class Acd1011 extends Component {
 
         return(
 
-            <Acd1011Child
-                startName="서울특별시 종로구 종로5가"     //달라도됨
-                endName="더존비즈온"                     //달라도됨
-                startCoordinate="127.0036,37.570633"    //다르면안됨
-                endCoordinate="127.6378104,37.7563948"  //다르면안됨
-                placeIdNum="12288842"                   //달라도되는듯
-            />
-
+            // <MileageTableView
+            //     startName="서울특별시 종로구 종로5가"     //달라도됨
+            //     endName="더존비즈온"                     //달라도됨
+            //     startCoordinate="127.0036,37.570633"    //다르면안됨
+            //     endCoordinate="127.6378104,37.7563948"  //다르면안됨
+            //     placeIdNum="12288842"                   //달라도되는듯
+            // />
+<div>
+    
+</div>
 
 
         );
     }
 }
 
-export default Acd1011;
+export default MileageTable;
