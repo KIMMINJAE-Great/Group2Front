@@ -54,7 +54,11 @@ class Acc1012BasicInfo extends Component {
 
   cleanUpInputTr_pn(input) {
     if (input) {
-      return input.replace(/[^0-9]/g, "").slice(0, 11);
+      if (input.startsWith("02")) {
+        return input.replace(/[^0-9]/g, "").slice(0, 10);
+      } else {
+        return input.replace(/[^0-9]/g, "").slice(0, 11);
+      }
     }
     return "";
   }
@@ -75,7 +79,7 @@ class Acc1012BasicInfo extends Component {
         formattedPn = cleanUpInputTr_pn.slice(0, 3) + "-" + cleanUpInputTr_pn.slice(3);
       }
       if (cleanUpInputTr_pn.length > 7) {
-        formattedPn = formattedPn.slice(0, 8) + "-" + formattedPn.slice(8, 13);
+        formattedPn = formattedPn.slice(0, 8) + "-" + formattedPn.slice(8, 12);
       }
     }
   
@@ -417,7 +421,7 @@ class Acc1012BasicInfo extends Component {
                       </Grid>
                       <Grid item xs={10}>
                             <TextField
-                            sx={{ width: '98.55%'}}
+                            sx={{ width: '98.4%'}}
                             variant="outlined"
                             size="small"
                             inputProps={{ style: { height: '12px' } }}
@@ -436,7 +440,7 @@ class Acc1012BasicInfo extends Component {
                         
                     <Grid item xs={9.98} style={{ display: "flex", flexDirection: "row", alignItems: "center", backgroundColor: "white"}}>
                       <TextField
-                        sx={{ width: '98.2%', ml: 0.5, mt: 1, mb: 1 }}
+                        sx={{ width: '98.5%', ml: 0.5, mt: 1, mb: 1 }}
                         variant="outlined"
                         size="small"
                         inputProps={{ style: { height: '12px' } }}

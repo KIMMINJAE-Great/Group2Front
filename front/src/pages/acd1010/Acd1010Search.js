@@ -10,7 +10,7 @@ import { Box } from "@mui/system";
 import SearchIcon from '@mui/icons-material/Search';
 
 
-import CodePickerManager from "../../components/codepicker/CodePickerManager"
+import CodePickerManager from '../../components/CodePicker/CodePickerManager';
 
 
 
