@@ -20,6 +20,9 @@ class Ace1010 extends Component {
       // 마지막 셀에서 엔터가 이루어 졌을 때 누락되는 정보를 담기 위함
       editedCell: '',
 
+      isAce1010Open: true, // Ace1010.js 들어가면 거기만 기능모음 열기
+
+
       // 차량에 대해 운행기록부가 저장되면 다시 데이터를 불러오기 위한 state
       selectedRowforbgc: '',
       hour: '',
@@ -521,10 +524,13 @@ class Ace1010 extends Component {
       <DouzoneContainer
         ref={this.DouzoneContainer}
         title={this.state.title}
+        isAce1010Open={this.state.isAce1010Open}
       >
         <Ace1010Search
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
+
+
 
         </Ace1010Search>
         <DataGrid
@@ -562,6 +568,7 @@ class Ace1010 extends Component {
       </DouzoneContainer>
 
     );
+
   }
 }
 
