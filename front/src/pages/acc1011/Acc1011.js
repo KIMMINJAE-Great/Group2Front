@@ -79,14 +79,14 @@ class Acc1011 extends Component {
       selectedDept: null, // 클릭한 부서 정보를 저장할 상태 변수
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
       content: [],
-      selectedchecked:[],
+      selectedchecked: [],
 
       postcode: "", //우편번호 찾기 저장할 상태 변수
       roadAddress: "",
       jibunAddress: "",
 
       showModal: false,
-      selectAllCheckbox : false,
+      selectAllCheckbox: false,
 
       //완료 확인
       complete: '',
@@ -196,12 +196,12 @@ class Acc1011 extends Component {
       }
     }
   };
- 
-   // 휴지통 눌렀을때,삭제
+
+  // 휴지통 눌렀을때,삭제
   handleDeleteClick = async (e) => {
     e.preventDefault();
     const { selectedDept, departmentCards, selectedchecked } = this.state;
-  
+
     try {
       if (selectedchecked.length > 0) {
         const response = await del(
@@ -209,11 +209,11 @@ class Acc1011 extends Component {
           { data: selectedchecked }
         );
         console.log(response.data);
-        
+
         const newCardList = departmentCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.dept_cd === item.dept_cd)
         );
-  
+
         this.setState({
           departmentCards: newCardList,
           content: newCardList,
@@ -230,12 +230,12 @@ class Acc1011 extends Component {
           `/depmanagement/deletedept/${selectedDept.dept_cd}`
         );
         console.log("서버 응답", response.data);
-        
+
         // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
         const newCardList = departmentCards.filter(
           (item) => item.dept_cd !== selectedDept.dept_cd
         );
-  
+
         this.setState({
           departmentCards: newCardList,
           content: newCardList,
@@ -249,7 +249,7 @@ class Acc1011 extends Component {
     } catch (error) {
       console.log(error);
     }
-  
+
     this.handleCloseModal();
   };
 
@@ -341,16 +341,16 @@ class Acc1011 extends Component {
   handleToggleAllCheckboxes = () => {
     this.setState((prevState) => {
       const newSelectAllCheckbox = !prevState.selectAllCheckbox;
-  
+
       const updatedContent = prevState.content.map((item) => ({
         ...item,
         checked: newSelectAllCheckbox,
       }));
-  
+
       const selectedchecked = newSelectAllCheckbox
         ? [...updatedContent]
         : [];
-  
+
       return {
         selectAllCheckbox: newSelectAllCheckbox,
         content: updatedContent,
@@ -360,22 +360,22 @@ class Acc1011 extends Component {
       console.log(this.state.selectedchecked);
     });
   };
- // 체크박스 토글 처리하는 함수
- handleToggleCheckbox = (dept_cd) => {
-  this.setState(
-    (prevState) => {
-      const updatedContent = prevState.content.map((item) =>
-        item.dept_cd === dept_cd ? { ...item, checked: !item.checked } : item
-      );
-      const selectedchecked = updatedContent.filter((item) => item.checked);
-      
-      return { content: updatedContent, selectedchecked: selectedchecked };
-    },
-    () => {
-      console.log(this.state.selectedchecked);
-    }
-  );
-};
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (dept_cd) => {
+    this.setState(
+      (prevState) => {
+        const updatedContent = prevState.content.map((item) =>
+          item.dept_cd === dept_cd ? { ...item, checked: !item.checked } : item
+        );
+        const selectedchecked = updatedContent.filter((item) => item.checked);
+
+        return { content: updatedContent, selectedchecked: selectedchecked };
+      },
+      () => {
+        console.log(this.state.selectedchecked);
+      }
+    );
+  };
 
 
   // 부서 카드리스트를 그려줄 함수
@@ -388,10 +388,10 @@ class Acc1011 extends Component {
           class="noHoverEffect"
         >
           <CardContent>
-               <Checkbox
-                      
-                      onChange={() => this.handleToggleAllCheckboxes()}
-                    />
+            <Checkbox
+
+              onChange={() => this.handleToggleAllCheckboxes()}
+            />
             <Typography variant="caption">
               부서 수 : {this.state.content.length}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -416,13 +416,13 @@ class Acc1011 extends Component {
                     this.handleCardClick(this.state.content[index].dept_cd)
                   }
                 >
-                   <Checkbox
-                  checked={item.checked || false}
-                  onChange={() => this.handleToggleCheckbox(item.dept_cd)}
-                />
+                  <Checkbox
+                    checked={item.checked || false}
+                    onChange={() => this.handleToggleCheckbox(item.dept_cd)}
+                  />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
-                 
+
                     {/* item1,item2 */}
                     <Typography
                       variant="body2"
@@ -485,7 +485,7 @@ class Acc1011 extends Component {
           handleConfirm={this.handleDeleteClick}
           showDelete={''}
           message="정말로 부서 정보를 삭제하시겠습니까?"
-          >
+        >
           <Acc1011Search deptSearch={this.handleDepartmentCards}></Acc1011Search>
           <form onSubmit={this.handleSaveClick}>
             <div>
