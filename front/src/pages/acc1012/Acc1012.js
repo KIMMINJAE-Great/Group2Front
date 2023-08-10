@@ -94,6 +94,9 @@ class Acc1012 extends Component {
       showAcc1012Trade: false,
       showAcc1012TdManage: false,
 
+      selectedCardIndex: null, // 선택한 카드의 인덱스
+      newSelectAllCheckbox:"",
+
     };
     this.DouzoneContainer = React.createRef();
   }
@@ -145,7 +148,7 @@ class Acc1012 extends Component {
   }
 
   /* 카드를 클릭했을때 */
-  handleCardClick = async (tr_cd) => {
+  handleCardClick = async (tr_cd, index) => {
     console.log(tr_cd);
 
     try {
@@ -157,6 +160,7 @@ class Acc1012 extends Component {
         selectedSt: response.data,
           newTrade: "N",
           complete: '',
+          selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
         
       });
     } catch (error) {
@@ -532,12 +536,12 @@ class Acc1012 extends Component {
                 <Card
                   sx={{
                     borderRadius: "5px",
-                    border: "0.5px solid lightgrey",
+                    border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
                   }}
                   onClick={() =>
-                    this.handleCardClick(this.state.content[index].tr_cd)
+                    this.handleCardClick(this.state.content[index].tr_cd, index)
                   }
                 >
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>

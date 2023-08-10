@@ -80,6 +80,8 @@ class Acc1011 extends Component {
       contentArray: [], // 카드 안에 콘텐트정보를 담을 빈 배열
       content: [],
       selectedchecked:[],
+      selectedCardIndex: null, // 선택한 카드의 인덱스
+      newSelectAllCheckbox:"",
 
       postcode: "", //우편번호 찾기 저장할 상태 변수
       roadAddress: "",
@@ -112,7 +114,7 @@ class Acc1011 extends Component {
       });
   }
   // 카드를 클릭했을때
-  handleCardClick = async (dept_cd) => {
+  handleCardClick = async (dept_cd, index) => {
     console.log(dept_cd);
 
     try {
@@ -123,6 +125,7 @@ class Acc1011 extends Component {
         selectedDept: response.data,
         selectedRead: "N",
         complete: '',
+        selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
       });
     } catch (error) {
       console.log(error);
@@ -134,6 +137,9 @@ class Acc1011 extends Component {
     // selectedDept 상태를 빈 값으로 업데이트
     this.setState({
       selectedDept: null,
+      selectedDept: {   
+        dept_fg: "Y"
+      }, //사용여부의 default를 사용 으로 설정해주기 위해서
       selectedRead: "Y",
       complete: '',
     });
@@ -222,6 +228,7 @@ class Acc1011 extends Component {
           roadAddress: "",
           jibunAddress: "",
           selectedchecked: [], // 선택된 체크박스 초기화
+          newSelectAllCheckbox:"",
         });
         this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
       } else {
@@ -243,6 +250,7 @@ class Acc1011 extends Component {
           postcode: "",
           roadAddress: "",
           jibunAddress: "",
+          selectedchecked: [], // 선택된 체크박스 초기화
         });
         this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
       }
@@ -408,12 +416,12 @@ class Acc1011 extends Component {
                 <Card
                   sx={{
                     borderRadius: "5px",
-                    border: "0.5px solid lightgrey",
+                     border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
                   }}
                   onClick={() =>
-                    this.handleCardClick(this.state.content[index].dept_cd)
+                    this.handleCardClick(this.state.content[index].dept_cd, index) // 클릭한 카드의 인덱스 전달
                   }
                 >
                    <Checkbox

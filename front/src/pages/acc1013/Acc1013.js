@@ -98,6 +98,9 @@ class Acc1013 extends Component {
       // 카드리스트에 보내줄 content 배열
       content: [],
       mauth: [],
+
+      selectedCardIndex: null, // 선택한 카드의 인덱스
+      newSelectAllCheckbox:"",
     };
     this.DouzoneContainer = React.createRef();
   }
@@ -137,7 +140,7 @@ class Acc1013 extends Component {
   };
 
   //카드 클릭시 입력됨 (회사 코드로)
-  handleCardClick = async (co_cd) => {
+  handleCardClick = async (co_cd, index) => {
     console.log('co_cd............' + co_cd)
     try {
       const response = await post("/company/selectCard", { co_cd: co_cd });
@@ -148,6 +151,7 @@ class Acc1013 extends Component {
         selectedCompanyCards: response.data,
         selectedRead: "N",
         complete: '',
+        selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
         readonly: true,
       });
       // this.setState({
@@ -560,12 +564,12 @@ class Acc1013 extends Component {
                 <Card
                   sx={{
                     borderRadius: "5px",
-                    border: "0.5px solid lightgrey",
+                    border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
                   }}
                   onClick={() =>
-                    this.handleCardClick(this.state.content[index].co_cd)
+                    this.handleCardClick(this.state.content[index].co_cd, index)
                   }
                 >
 
