@@ -7,7 +7,7 @@ import { IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Select from '@mui/material/Select';
-import CodePickerManager from '../../components/CodePicker/CodePickerManager';
+import CodePickerManager from '../../components/codepicker/CodePickerManager';
 
 
 
