@@ -28,6 +28,7 @@ class CompanyCodePicker extends React.Component{
         this.setState({ 
           menuItems: response.data,
           selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+          textFieldValue: '', // 입력한 검색어 빈 값으로 비워주기
         });
         console.log(response.data);
       } catch (error) {

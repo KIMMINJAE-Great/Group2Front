@@ -28,13 +28,54 @@ class CodePicker extends React.Component {
       anchor2: null,
       isModalOpen: '',
       showMenu: false,
-      // menuItems: [],
+      menuItems: [],
       selectedIds: [], // 선택된 행의 ID를 저장할 배열 //모달
       // selectedValue:'',//선택되는 값 // 드롭다운
       // textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
-      modalTextFieldValue: '', // 모달의 TextField 값을 저장할 state
+      selectAllCheckbox: false,
+      selectCheckbox: false,
+      selectedchecked: [],
+      content: [],
+      co_cd: '',
     };
   }
+  /* 모든 체크박스 선택 호출 함수 */
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    });
+  };
+
+
+  /* 체크박스 토글 처리하는 함수 */
+  handleToggleCheckbox = (co_cd) => {
+    this.setState((prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+
+      return {
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    });
+  };
 
 
 
@@ -52,7 +93,7 @@ class CodePicker extends React.Component {
   saveModalCheckedItems = () => {
     this.setState({
       isModalOpen: false,
-      item: this.props.selectedIds,
+      selectedIds: this.state.selectedchecked.map((item) => item.co_cd),
     });
 
   };
@@ -63,14 +104,14 @@ class CodePicker extends React.Component {
 
   // 모달 열기 함수
   openModal = () => {
-    this.setState({ 
-      isModalOpen: true, 
+    this.setState({
+      isModalOpen: true,
       modalTextFieldValue: '' // 모달 열때마다 모달안의 TextField를 초기화
     });
   };
   // 모달 닫기 함수
   closeModal = () => {
-    this.setState({ isModalOpen: false, });
+    this.setState({ isModalOpen: false, selectedchecked: '' });
   };
 
   handleMenuItemClick = (value) => {
@@ -90,12 +131,13 @@ class CodePicker extends React.Component {
       this.props.onHandleKeyDown(e, value);
 
     }
+
   };
   // 모달 내에서 엔터를 치면 해당 코드피커의 M
   handleKeyDownModal = (e, value) => {
     if (e.key === 'Enter') {
       this.props.onhandleKeyDownModal(e, value);
-    } 
+    }
   };
 
 
@@ -109,7 +151,8 @@ class CodePicker extends React.Component {
 
     // 드롭다운
     const open1 = Boolean(anchor1);
-    const { content } = this.props;
+    // const { content } = this.props;
+    const content = this.props.menuItems;
     return (
       <div>
         <div style={{ position: 'relative', width: '194px', height: '42px' }}>
@@ -151,11 +194,11 @@ class CodePicker extends React.Component {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             style={{ marginLeft: '-135px' }}
-            
+
 
           >
             {
-              menuItems?.map((item, index) => {
+              content?.map((item, index) => {
                 // selectedIds가 있고, item.id가 selectedIds에 포함되어 있을 경우에만 MenuItem을 렌더링
                 if (this.props.selectedIds && this.props.selectedIds.includes(item[this.props.valueField])) {
                   console.log("111이게 실행된거야!");
@@ -164,7 +207,7 @@ class CodePicker extends React.Component {
                       {this.props.dispType === 'codeAndValue' ?
                         '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
                         : this.props.dispType === 'codeAndValueAndValue' ?
-                          '[' + item[this.props.codeField] + ']' + ' ' +item[this.props.valueField] + ' ' + item[this.props.valueField2]
+                          '[' + item[this.props.codeField] + ']' + ' ' + item[this.props.valueField] + ' ' + item[this.props.valueField2]
                           : item[this.props.valueField]
                       }
                       <IconButton
@@ -308,7 +351,12 @@ class CodePicker extends React.Component {
                     <tr style={{ borderBottom: '1px solid #D3D3D3', borderTop: '2px solid gray' }}>
                       <th style={{ width: 8, padding: '4px', textAlign: 'center', borderLeft: '1px solid #D3D3D3', borderRight: '1px solid #D3D3D3' }}>
                         {/* 체크박스 열 */}
-                        <input type="checkbox" onChange={this.handleAllCheck} />
+                        <input
+                          type="checkbox"
+                          // 여기 수정해야함 경호
+                          // checked={false}
+                          onChange={this.handleToggleAllCheckboxes}
+                        />
                       </th>
                       <th style={{ width: 130, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
                         {this.props.pickerCodeName}
@@ -328,7 +376,7 @@ class CodePicker extends React.Component {
                   <tbody>
 
 
-                    {menuItems?.map((item, index) => (
+                    {content?.map((item, index) => (
                       <tr key={index}
                         onClick={() => this.handleMenuItemClick(item[this.props.valueField])}
                         style={{ borderBottom: '1px solid #D3D3D3' }}
@@ -337,11 +385,8 @@ class CodePicker extends React.Component {
                           {/* 체크박스 */}
                           <input
                             type="checkbox"
-                            checked={this.props.selectedIds.includes(item[this.props.valueField])}
-                            onChange={(e) => {
-                              e.stopPropagation(); // 상위로 이벤트 전파를 막음
-                              this.props.toggleMenuItemCheck(item[this.props.valueField]);
-                            }}
+                            checked={item.checked} // 여기를 건드려야함 경호
+                            onChange={() => this.handleToggleCheckbox(item[this.props.codeField])}
                           />
                         </td>
                         <td style={{ width: 130, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
