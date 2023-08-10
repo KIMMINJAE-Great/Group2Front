@@ -32,6 +32,7 @@ class CodePicker extends React.Component {
       selectedIds: [], // 선택된 행의 ID를 저장할 배열 //모달
       // selectedValue:'',//선택되는 값 // 드롭다운
       // textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
+      modalTextFieldValue: '', // 모달의 TextField 값을 저장할 state
     };
   }
 
@@ -62,7 +63,10 @@ class CodePicker extends React.Component {
 
   // 모달 열기 함수
   openModal = () => {
-    this.setState({ isModalOpen: true });
+    this.setState({ 
+      isModalOpen: true, 
+      modalTextFieldValue: '' // 모달 열때마다 모달안의 TextField를 초기화
+    });
   };
   // 모달 닫기 함수
   closeModal = () => {
@@ -86,6 +90,12 @@ class CodePicker extends React.Component {
       this.props.onHandleKeyDown(e, value);
 
     }
+  };
+  // 모달 내에서 엔터를 치면 해당 코드피커의 M
+  handleKeyDownModal = (e, value) => {
+    if (e.key === 'Enter') {
+      this.props.onhandleKeyDownModal(e, value);
+    } 
   };
 
 
@@ -141,12 +151,7 @@ class CodePicker extends React.Component {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             style={{ marginLeft: '-135px' }}
-            PaperProps={{
-              style: {
-                width: 'fit-content',
-                minWidth: '190px',
-              },
-            }}
+            
 
           >
             {
@@ -159,7 +164,7 @@ class CodePicker extends React.Component {
                       {this.props.dispType === 'codeAndValue' ?
                         '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
                         : this.props.dispType === 'codeAndValueAndValue' ?
-                          '[' + item[this.props.codeField] + ']' + item[this.props.valueField] + item[this.props.valueField2]
+                          '[' + item[this.props.codeField] + ']' + ' ' +item[this.props.valueField] + ' ' + item[this.props.valueField2]
                           : item[this.props.valueField]
                       }
                       <IconButton
@@ -222,7 +227,7 @@ class CodePicker extends React.Component {
             <DialogTitle>
               <Grid container alignItems="center" >
                 <Grid item xs={6} display="flex" alignItems="center" marginTop={-2.5} >
-                  <Typography sx={{ fontsize: '24px', fontWeight: 'bolder', mt: 1 }}>사원코드</Typography>
+                  <Typography sx={{ fontsize: '24px', fontWeight: 'bolder', mt: 1 }}>{this.props.pickerTitle}</Typography>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="flex-end" marginTop={-1}>
                   <button style={{ justifyContent: 'space-between', backgroundColor: 'transparent', border: 'none', fontSize: '18px' }} onClick={this.closeModal}>X</button>
@@ -240,10 +245,10 @@ class CodePicker extends React.Component {
                     <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}>검색어</Typography>
                     <TextField
                       sx={{ width: '35%', ml: 1 }}
-                      onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
-                      name="textFieldValue"
-                      value={this.props.textFieldValue}
-                      onChange={this.props.onTextInputChange}
+                      onKeyDown={(e) => this.handleKeyDownModal(e, this.state.modalTextFieldValue)}
+                      name="modalTextFieldValue"
+                      value={this.state.modalTextFieldValue}
+                      onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
                       variant="outlined" size="small"
                       inputProps={{ style: { height: '12px' } }} />
                     <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 26, width: '30px', height: '30px' }}

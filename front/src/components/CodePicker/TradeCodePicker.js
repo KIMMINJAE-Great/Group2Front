@@ -15,7 +15,7 @@ class CarCodePicker extends React.Component{
           selectedValue:'',//선택되는 값 // 드롭다운
     
           textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
-    
+          modalTextFieldValue: '',
         };
         this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
       }
@@ -50,7 +50,25 @@ handleKeyDown = async (e, textFieldValue) => {
       });
     }
   };
-
+  handleKeyDownModal = async (e ,textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.setState({
+        modalTextFieldValue: textFieldValue
+      });
+      try {
+        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        
+        this.setState({ 
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+        });
+        console.log(response.data);
+      } catch (error) {
+          console.log(error);
+      }
+    }
+  };
   handleOnClick = async (e, textFieldValue) => {
     e.preventDefault();
     console.log("textFieldValue의 현재 값: "+textFieldValue)
@@ -58,7 +76,7 @@ handleKeyDown = async (e, textFieldValue) => {
       textFieldValue: textFieldValue
     }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
       try {
-        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
         this.state.menuItems = response.data;
         this.setState({
           menuItems: response.data,
@@ -127,11 +145,13 @@ handleKeyDown = async (e, textFieldValue) => {
             codeField='tr_cd' 
 
             dispType='codeAndValue'
+            pickerTitle='거래처 코드 검색'
             pickerCodeName='거래처코드'
             pickerName='거래처명'
 
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
+            onhandleKeyDownModal={this.handleKeyDownModal}
             menuItems={this.state.menuItems}
             selectedIds={this.state.selectedIds}
             textFieldValue={this.state.textFieldValue}

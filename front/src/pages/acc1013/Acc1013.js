@@ -360,6 +360,7 @@ class Acc1013 extends Component {
     });
   };
 
+<<<<<<< HEAD
   //강제로전송..
   handleDataChange(value) {
     this.setState({
@@ -404,13 +405,225 @@ class Acc1013 extends Component {
         const selectedchecked = updatedContent.filter((item) => item.checked);
 
         return { content: updatedContent, selectedchecked: selectedchecked };
+=======
+  
+  //onChange핸들함수
+  handleCoCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_cd: value,
+>>>>>>> 2c2da7bb8c328b683d0b2d79ea7d700b4665563d
       },
       () => {
         console.log(this.state.selectedchecked);
       },
     );
   };
+<<<<<<< HEAD
 
+=======
+  handleCoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nm: value,
+      },
+    }));
+  };
+  handleCoNkChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nk: value,
+      },
+    }));
+  };
+  handleUseYnChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        use_yn: value,
+      },
+    }));
+  };
+  handleLngChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        lng: value,
+      },
+    }));
+  };
+  handleAdmCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adm_cd: value,
+      },
+    }));
+  };
+  handleBzTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_type: value,
+      },
+    }));
+  };
+  handleBzItemChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_item: value,
+      },
+    }));
+  };
+    handleCoTelChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel: value,
+      },
+    }));
+  };
+  handleCoTel2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel2: value,
+      },
+    }));
+  };
+  handleCoFaxChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_fax: value,
+      },
+    }));
+  };
+  handleRegNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        reg_nb: value,
+      },
+    }));
+  };
+  handleCpCtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_ct: value,
+      },
+    }));
+  };
+  handleCpNoChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_no: value,
+      },
+    }));
+  };
+  handleAdrZpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_zp: value,
+      },
+    }));
+  };
+  handleAdrInpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_inp: value,
+      },
+    }));
+  };
+  handleAdrEtcChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_etc: value,
+      },
+    }));
+  };
+  handleEstDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        est_dt: value,
+      },
+    }));
+  };
+  handleOpnDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        opn_dt: value,
+      },
+    }));
+  };
+  handleClsDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cls_dt: value,
+      },
+    }));
+  };
+  handleCeoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ceo_nm: value,
+      },
+    }));
+  };
+  handleResNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb: value,
+      },
+    }));
+  };
+  handleResNb2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb2: value,
+      },
+    }));
+  };
+  handleAcPerChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_per: value,
+      },
+    }));
+  };
+  handleAcDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_dt: value,
+      },
+    }));
+  };
+  handleAccTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        acc_type: value,
+      },
+    }));
+  };
+>>>>>>> 2c2da7bb8c328b683d0b2d79ea7d700b4665563d
 
 
   // 회사 카드리스트를 그려줄 함수
@@ -530,7 +743,7 @@ class Acc1013 extends Component {
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
-    this.handleDataChange = this.handleDataChange.bind(this);
+    
 
 
     return (
