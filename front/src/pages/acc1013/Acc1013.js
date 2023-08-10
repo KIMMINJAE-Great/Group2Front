@@ -4,7 +4,7 @@ import { Component } from "react";
 
 import CardList from "../../components/commons/CardList";
 
-import { createTheme, Card, CardContent, Typography, Box, Grid } from "@mui/material";
+import { createTheme, Card, CardContent, Checkbox, Typography, Box, Grid } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -98,6 +98,9 @@ class Acc1013 extends Component {
       // 카드리스트에 보내줄 content 배열
       content: [],
       mauth: [],
+      selectedchecked:[], /* 체크박스 선택한 배열의 정보 - 건우*/
+      selectAllCheckbox : false, /* 체크박스 모두 선택 - 건우 */
+
     };
     this.DouzoneContainer = React.createRef();
   }
@@ -234,16 +237,20 @@ class Acc1013 extends Component {
   //삭제 버튼을 눌렀을 때 실행할 함수
   handleDeleteButton = async (e) => {
     e.preventDefault();
-    const { selectedCompanyCards, companyCards } = this.state;
+    const { selectedCompanyCards, companyCards, selectedchecked } = this.state;
     //필드데이터 // 회사 코드만 있으면 된다.
 
     // Send data to server
     try {
-      const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
-
+      if (selectedchecked.length > 1) {
+      // const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
+      const response = await del("/company/delete",
+      { data: selectedchecked }
+      );
       console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
+
       const newCardList = companyCards.filter(
-        (item) => item.co_cd !== selectedCompanyCards.co_cd
+        (item) => !selectedchecked.some((checkedItem) => checkedItem.co_cd === item.co_cd)
       );
       this.setState({
         companyCards: newCardList,
@@ -252,10 +259,36 @@ class Acc1013 extends Component {
         roadAddress: "",
         jibunAddress: "",
         content: newCardList,
+        selectedchecked: [], // 선택된 체크박스 초기화
+        selectAllCheckbox : false,
       });
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
 
-    } catch (error) {
+    } else if (selectedchecked.length == 1){
+      // 서버에 DELETE 요청 보내기
+      const response = await del(
+        `/company/delete/${selectedCompanyCards.co_cd}`
+      );
+      console.log("서버 응답", response.data);
+      
+      // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
+      const newCardList = companyCards.filter(
+        (item) => item.co_cd !== selectedCompanyCards.co_cd
+      );
+
+      this.setState({
+        companyCards: newCardList,
+        selectedCompanyCards: '',
+        postcode: "",
+        roadAddress: "",
+        jibunAddress: "",
+        content: newCardList,
+      });
+      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제가 완료됐습니다', 'success');
+    }
+  }
+    
+    catch (error) {
       console.error(error);
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
       console.log("회사정보(DB) 삭제중에 오류발생");
@@ -533,6 +566,47 @@ class Acc1013 extends Component {
     }));
   };
 
+  // @@@@@@@@@@@@@@@ 체크 박스 - 건우@@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+  
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+  
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+  
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+ // 체크박스 토글 처리하는 함수
+ handleToggleCheckbox = (co_cd) => {
+  this.setState(
+    (prevState) => {
+      const updatedContent = prevState.content.map((item) =>
+        item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+      );
+      const selectedchecked = updatedContent.filter((item) => item.checked);
+      
+      return { content: updatedContent, selectedchecked: selectedchecked };
+    },
+    () => {
+      console.log(this.state.selectedchecked);
+    }
+  );
+};
+
+
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -551,6 +625,7 @@ class Acc1013 extends Component {
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
             </Typography>
           </CardContent>
+          <Checkbox  checked={this.state.selectAllCheckbox} onChange={() => this.handleToggleAllCheckboxes()}/>
         </Card>
         <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
           {/* 스크롤바 영역 설정 */}
@@ -568,6 +643,10 @@ class Acc1013 extends Component {
                     this.handleCardClick(this.state.content[index].co_cd)
                   }
                 >
+                  <Checkbox
+                  checked={item.checked || false}
+                  onChange={() => this.handleToggleCheckbox(item.co_cd)}
+                  />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
@@ -718,6 +797,8 @@ class Acc1013 extends Component {
                   handleAcPerChange={this.handleAcPerChange}
                   handleAcDtChange={this.handleAcDtChange}
                   handleAccTypeChange={this.handleAccTypeChange}
+
+                  handleDeleteClick={this.handleDeleteClick}
 
                 />
               </div>

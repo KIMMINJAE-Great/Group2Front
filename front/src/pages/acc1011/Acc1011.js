@@ -222,6 +222,7 @@ class Acc1011 extends Component {
           roadAddress: "",
           jibunAddress: "",
           selectedchecked: [], // 선택된 체크박스 초기화
+          selectAllCheckbox: false,
         });
         this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
       } else {
@@ -389,7 +390,7 @@ class Acc1011 extends Component {
         >
           <CardContent>
             <Checkbox
-
+              checked={this.state.selectAllCheckbox}
               onChange={() => this.handleToggleAllCheckboxes()}
             />
             <Typography variant="caption">
