@@ -12,7 +12,7 @@ class CompanyCodePicker extends React.Component{
           selectedIds: [], // 선택된 행의 ID를 저장할 배열 //모달    
           selectedValue:'',//선택되는 값 // 드롭다운    
           textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
-    
+          modalTextFieldValue: '',
         };
       }
  
@@ -28,6 +28,7 @@ class CompanyCodePicker extends React.Component{
         this.setState({ 
           menuItems: response.data,
           selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+          textFieldValue: '', // 입력한 검색어 빈 값으로 비워주기
         });
         console.log(response.data);
       } catch (error) {
@@ -35,6 +36,26 @@ class CompanyCodePicker extends React.Component{
       }
     }
   };
+  handleKeyDownModal = async (e ,textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.setState({
+        modalTextFieldValue: textFieldValue
+      });
+      try {
+        const response = await get(`/codepicker/company/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        
+        this.setState({ 
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+        });
+        console.log(response.data);
+      } catch (error) {
+          console.log(error);
+      }
+    }
+  };
+
   //serach버튼을 위해..
   handleOnClick = async (e, textFieldValue) => {
     e.preventDefault();
@@ -62,6 +83,7 @@ class CompanyCodePicker extends React.Component{
     );
   };
 
+  
 
   toggleMenuItemCheck = (id) => {
     this.setState(prevState => ({
@@ -93,10 +115,12 @@ class CompanyCodePicker extends React.Component{
             valueField='co_nm' 
             codeField='co_cd' 
             dispType='codeAndValue'
+            pickerTitle='회사코드 검색'
             pickerCodeName='회사코드'
             pickerName='회사이름'
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
+            onhandleKeyDownModal={this.handleKeyDownModal}
             menuItems={this.state.menuItems}
             selectedIds={this.state.selectedIds}
             textFieldValue={this.state.textFieldValue}

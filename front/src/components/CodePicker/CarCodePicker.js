@@ -15,7 +15,7 @@ class CarCodePicker extends React.Component{
           selectedValue:'',//선택되는 값 // 드롭다운
     
           textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
-    
+          modalTextFieldValue: '',
         };
         this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
       }
@@ -23,21 +23,21 @@ class CarCodePicker extends React.Component{
 
 
 // 엔터쳤을때,
-handleKeyDown = async (e, textFieldValue) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    console.log("textFieldValue의 현재 값: "+textFieldValue)
-    this.setState({
-      textFieldValue: textFieldValue
-    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-      try {
-        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-        this.state.menuItems = response.data;
-        this.setState({
-          menuItems: response.data,
-          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+  handleKeyDown = async (e, textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      console.log("textFieldValue의 현재 값: "+textFieldValue)
+      this.setState({
+        textFieldValue: textFieldValue
+      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+        try {
+          const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+          this.state.menuItems = response.data;
+          this.setState({
+            menuItems: response.data,
+            selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
 
-        });
+          });
           if(this.state.menuItems.length === 1 ){
             this.setState({
               selectedIds: response.data,
@@ -48,6 +48,25 @@ handleKeyDown = async (e, textFieldValue) => {
             console.log(error);
           }
       });
+    }
+  };
+  handleKeyDownModal = async (e ,textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.setState({
+        modalTextFieldValue: textFieldValue
+      });
+      try {
+        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        
+        this.setState({ 
+          menuItems: response.data,
+          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+        });
+        console.log(response.data);
+      } catch (error) {
+          console.log(error);
+      }
     }
   };
 
@@ -127,11 +146,13 @@ handleKeyDown = async (e, textFieldValue) => {
             codeField='car_cd' 
             valueField2='car_nb'
             dispType='codeAndValueAndValue'
+            pickerTitle='차량코드 검색'
             pickerCodeName='차량코드'
             pickerName='차량명'
             pickerName2='차량번호'
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
+            onhandleKeyDownModal={this.handleKeyDownModal}
             menuItems={this.state.menuItems}
             selectedIds={this.state.selectedIds}
             textFieldValue={this.state.textFieldValue}

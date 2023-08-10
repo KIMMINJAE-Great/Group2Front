@@ -7,82 +7,58 @@ import './Acc1012BasicInfo.css';
 class Acc1012TdManage extends Component {
   render() {
     return (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", ml: "40px"}}>
-        <div style={{ display: "flex", justifyContent: "space-between"}}>
-        <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-          <Button
-            variant="subtitle1"
-            onClick={this.props.handleMoveBasic}
-            sx={{
-              ml: 1,
-              fontSize: '14px',
-              fontWeight: '1000',
-              width: '150px',
-              backgroundColor: 'white'
-            }}
-          >
-            기본등록사항
-          </Button>
-          <Typography
-            variant="subtitle1"
-            sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}
-          >
-            |
-          </Typography>
-          <Button
-            variant="subtitle1"
-            onClick={this.props.handleMoveTrade}
-            sx={{
-              ml: 1,
-              fontSize: '14px',
-              fontWeight: '1000',
-              width: '150px',
-              backgroundColor: 'white'
-            }}
-          >
-            거래등록사항
-          </Button>
-          <Typography
-            variant="subtitle1"
-            sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}
-          >
-            |
-          </Typography>
-          <Button
-            variant="subtitle1"
-            onClick={this.props.handleMoveTdManage}
-            sx={{
-              ml: 1,
-              fontSize: '14px',
-              fontWeight: '1000',
-              width: '150px',
-              color: '#408fff',
-              backgroundColor: 'white'
-            }}
-          >
-            거래처담당자관리
-          </Button>
-          <Grid
-                    item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center"}} >
-          
-          </Grid>
-          </Grid>
 
+      <div style={{width: "100%", ml: "40px"}}>
+
+          <div style={{ flex: 2.5 }} >
+            <div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+
+                <Grid
+                  item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                  <Button variant="subtitle1" onClick={this.props.handleMoveBasic} sx={{ ml: 1, fontSize: '14px', fontWeight: '1000', width: '150px', backgroundColor: 'white' }}>
+                    기본등록사항
+                  </Button>
+                  <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}>|</Typography>
+                  <Button variant="subtitle1" onClick={this.props.handleMoveTrade} sx={{ ml: 1, fontSize: '14px', fontWeight: '1000', width: '150px', backgroundColor: 'white' }}>
+                    거래등록사항
+                  </Button>
+                  <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mb: 1, fontSize: '14px', color: '#DCDCDC' }}>|</Typography>
+                  <Button variant="subtitle1" onClick={this.props.handleMoveTdManage} sx={{ ml: 1, fontSize: '14px', fontWeight: '1000', width: '150px', color: '#408fff', backgroundColor: 'white' }}>
+                    거래처담당자관리
+                  </Button>
+                </Grid>
+
+                <Grid
+                  item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                  <Typography variant="subtitle1" sx={{ color: 'white' }}>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+                  　　　　　　　　　　　　　　　　　　</Typography>
+
+                </Grid>
+              </div>
+
+              
+              <Divider sx={{ borderBottom: '2px solid gray' }} />
+             
+
+              <Grid
+                item xs={12} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                <Typography variant="subtitle1" sx={{ ml: 3, mt: 1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}>거래처담당자관리</Typography>
+              </Grid>
+
+            </div>
+            
+          </div>
         </div>
+  )
 
-        <Divider sx={{ borderBottom: '2px solid gray', marginTop: 0 }} />
-
-        <div style={{ marginLeft: "1rem", marginTop: "1rem" }}> {/* 기본정보 텍스트의 간격 조절 */}
-          <Typography
-            variant="subtitle1"
-            sx={{ mt: -1, mb: 1, fontSize: '13px', fontWeight: 'bold' }}
-          >
-            거래처담당자관리
-          </Typography>
-        </div>
-      </div>
-    );
   }
 }
 

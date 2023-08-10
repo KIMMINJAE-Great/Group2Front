@@ -4,7 +4,7 @@ import { Component } from "react";
 
 import CardList from "../../components/commons/CardList";
 
-import { createTheme, Card, CardContent, Typography, Box, Grid } from "@mui/material";
+import { createTheme, Card, CardContent, Checkbox, Typography, Box, Grid } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -98,6 +98,14 @@ class Acc1013 extends Component {
       // 카드리스트에 보내줄 content 배열
       content: [],
       mauth: [],
+
+      selectedchecked: [], /* 체크박스 선택한 배열의 정보 - 건우*/
+      selectAllCheckbox: false, /* 체크박스 모두 선택 - 건우 */
+
+
+      selectedCardIndex: null, // 선택한 카드의 인덱스
+      newSelectAllCheckbox: "",
+
     };
     this.DouzoneContainer = React.createRef();
   }
@@ -137,7 +145,7 @@ class Acc1013 extends Component {
   };
 
   //카드 클릭시 입력됨 (회사 코드로)
-  handleCardClick = async (co_cd) => {
+  handleCardClick = async (co_cd, index) => {
     console.log('co_cd............' + co_cd)
     try {
       const response = await post("/company/selectCard", { co_cd: co_cd });
@@ -148,6 +156,7 @@ class Acc1013 extends Component {
         selectedCompanyCards: response.data,
         selectedRead: "N",
         complete: '',
+        selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
         readonly: true,
       });
       // this.setState({
@@ -234,28 +243,58 @@ class Acc1013 extends Component {
   //삭제 버튼을 눌렀을 때 실행할 함수
   handleDeleteButton = async (e) => {
     e.preventDefault();
-    const { selectedCompanyCards, companyCards } = this.state;
+    const { selectedCompanyCards, companyCards, selectedchecked } = this.state;
     //필드데이터 // 회사 코드만 있으면 된다.
 
     // Send data to server
     try {
-      const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
+      if (selectedchecked.length > 1) {
+        // const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
+        const response = await del("/company/delete",
+          { data: selectedchecked }
+        );
+        console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
 
-      console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
-      const newCardList = companyCards.filter(
-        (item) => item.co_cd !== selectedCompanyCards.co_cd
-      );
-      this.setState({
-        companyCards: newCardList,
-        selectedCompanyCards: '',
-        postcode: "",
-        roadAddress: "",
-        jibunAddress: "",
-        content: newCardList,
-      });
-      this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
+        const newCardList = companyCards.filter(
+          (item) => !selectedchecked.some((checkedItem) => checkedItem.co_cd === item.co_cd)
+        );
+        this.setState({
+          companyCards: newCardList,
+          selectedCompanyCards: '',
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+          content: newCardList,
+          selectedchecked: [], // 선택된 체크박스 초기화
+          selectAllCheckbox: false,
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보가 정상적으로 삭제되었습니다.', 'success');
 
-    } catch (error) {
+      } else if (selectedchecked.length == 1) {
+        // 서버에 DELETE 요청 보내기
+        const response = await del(
+          `/company/delete/${selectedCompanyCards.co_cd}`
+        );
+        console.log("서버 응답", response.data);
+
+        // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
+        const newCardList = companyCards.filter(
+          (item) => item.co_cd !== selectedCompanyCards.co_cd
+        );
+
+        this.setState({
+          companyCards: newCardList,
+          selectedCompanyCards: '',
+          postcode: "",
+          roadAddress: "",
+          jibunAddress: "",
+          content: newCardList,
+        });
+        this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제가 완료됐습니다', 'success');
+      }
+    }
+
+    catch (error) {
       console.error(error);
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
       console.log("회사정보(DB) 삭제중에 오류발생");
@@ -533,6 +572,249 @@ class Acc1013 extends Component {
     }));
   };
 
+  // @@@@@@@@@@@@@@@ 체크 박스 - 건우@@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (co_cd) => {
+    this.setState(
+      (prevState) => {
+        const updatedContent = prevState.content.map((item) =>
+          item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+        );
+        const selectedchecked = updatedContent.filter((item) => item.checked);
+
+        return { content: updatedContent, selectedchecked: selectedchecked };
+      },
+      () => {
+        console.log(this.state.selectedchecked);
+      }
+    );
+  };
+
+
+  handleCoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nm: value,
+      },
+    }));
+  };
+  handleCoNkChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nk: value,
+      },
+    }));
+  };
+  handleUseYnChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        use_yn: value,
+      },
+    }));
+  };
+  handleLngChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        lng: value,
+      },
+    }));
+  };
+  handleAdmCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adm_cd: value,
+      },
+    }));
+  };
+  handleBzTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_type: value,
+      },
+    }));
+  };
+  handleBzItemChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        bz_item: value,
+      },
+    }));
+  };
+  handleCoTelChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel: value,
+      },
+    }));
+  };
+  handleCoTel2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_tel2: value,
+      },
+    }));
+  };
+  handleCoFaxChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_fax: value,
+      },
+    }));
+  };
+  handleRegNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        reg_nb: value,
+      },
+    }));
+  };
+  handleCpCtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_ct: value,
+      },
+    }));
+  };
+  handleCpNoChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cp_no: value,
+      },
+    }));
+  };
+  handleAdrZpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_zp: value,
+      },
+    }));
+  };
+  handleAdrInpChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_inp: value,
+      },
+    }));
+  };
+  handleAdrEtcChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_etc: value,
+      },
+    }));
+  };
+  handleEstDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        est_dt: value,
+      },
+    }));
+  };
+  handleOpnDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        opn_dt: value,
+      },
+    }));
+  };
+  handleClsDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        cls_dt: value,
+      },
+    }));
+  };
+  handleCeoNmChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ceo_nm: value,
+      },
+    }));
+  };
+  handleResNbChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb: value,
+      },
+    }));
+  };
+  handleResNb2Change = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        res_nb2: value,
+      },
+    }));
+  };
+  handleAcPerChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_per: value,
+      },
+    }));
+  };
+  handleAcDtChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        ac_dt: value,
+      },
+    }));
+  };
+  handleAccTypeChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        acc_type: value,
+      },
+    }));
+  };
+
+
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -551,6 +833,7 @@ class Acc1013 extends Component {
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
             </Typography>
           </CardContent>
+          <Checkbox checked={this.state.selectAllCheckbox} onChange={() => this.handleToggleAllCheckboxes()} />
         </Card>
         <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
           {/* 스크롤바 영역 설정 */}
@@ -560,14 +843,18 @@ class Acc1013 extends Component {
                 <Card
                   sx={{
                     borderRadius: "5px",
-                    border: "0.5px solid lightgrey",
+                    border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
                   }}
                   onClick={() =>
-                    this.handleCardClick(this.state.content[index].co_cd)
+                    this.handleCardClick(this.state.content[index].co_cd, index)
                   }
                 >
+                  <Checkbox
+                    checked={item.checked || false}
+                    onChange={() => this.handleToggleCheckbox(item.co_cd)}
+                  />
 
                   <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
                     {/* item1,item2 */}
@@ -643,7 +930,7 @@ class Acc1013 extends Component {
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
     this.handleSaveButton = this.handleSaveButton.bind(this);
-    this.handleDataChange = this.handleDataChange.bind(this);
+
 
 
     return (
@@ -718,6 +1005,8 @@ class Acc1013 extends Component {
                   handleAcPerChange={this.handleAcPerChange}
                   handleAcDtChange={this.handleAcDtChange}
                   handleAccTypeChange={this.handleAccTypeChange}
+
+                  handleDeleteClick={this.handleDeleteClick}
 
                 />
               </div>

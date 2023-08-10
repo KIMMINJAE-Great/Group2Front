@@ -156,6 +156,8 @@ class DouzoneContainer extends Component {
       handleOpenBd,
     } = this.props;
 
+    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
     if (severity === "error") {
@@ -171,6 +173,7 @@ class DouzoneContainer extends Component {
           <div className="container-header">
             <div className="container-header-left">{this.props.title}</div>
             <div className="container-header-right">
+            {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
               <div className="functionButton">
                 <Button
                   id="basic-button"
@@ -195,6 +198,7 @@ class DouzoneContainer extends Component {
                   <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
                 </Menu>
               </div>
+               )} 
               <span style={{ color: "lightgrey" }}>|</span>
               <DeleteIcon
                 style={{ display: showDelete }}

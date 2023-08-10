@@ -1,12 +1,13 @@
 import { Component } from "react";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import { get } from "../../components/api_url/API_URL";
+import MileageTable from "./MileageTable";
+import MileageSeachTextBtn from "./MileageSeachTextBtn";
 
-import MileageModal from "../../components/mileagesearch/MileageModal";
-
-class Acd1012 extends Component {
+class MileageModal extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -19,21 +20,26 @@ class Acd1012 extends Component {
       selectedBookmark:'', //북마크 정보 저장할 상태변수
       content:[], //하위 컴포넌트로의 전달 등 여러기능함
       coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... bookmarkCards에서 충분할듯? 
+
+      tableShow:false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!!
+
+      data: null// 검색api에 사용될것임
     };
   }
 
+  //abizcar_person의 정보를 가져오는코드임
+  componentDidMount() {    
+      get(`/ace1010/getallcars`)
+        .then((response) => {
+          this.setState({ bookmarkCards: response.data, content: response.data });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+        console.log(this.state.content);
+    }
 
-componentDidMount() {
-    //abizcar_person의 정보를 가져오는코드임
-    get(`/ace1010/getallcars`)
-      .then((response) => {
-        this.setState({ bookmarkCards: response.data, content: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
+  
 // 모달의 열림/닫힘 상태를 관리하는 state 추가
 state = {
   isModalOpen: false,
@@ -48,15 +54,58 @@ closeModal = () => {
   this.setState({ isModalOpen: false, });
 };
 
-handleMenuItemClick = (valueField) => {
-  console.log(valueField);
-  // Do something with the valueField when an item is clicked
+handleCardClick = (seq_nb) => { 
+  const selectedCard = this.state.bookmarkCards.find(item => item.seq_nb === seq_nb);
+  
+  if (selectedCard) {
+    this.setState({
+      selectedBookmark: selectedCard,
+      startFieldValue: selectedCard.start_addr,  // 여기서 TextField에 보여질 값을 업데이트합니다.
+      endFieldValue: selectedCard.end_addr,
+    });
+  }
 };
+
+HandleSearchBtnClick  = async () => {
+  const { query } = this.state;
+  const API_ENDPOINT = 'https://map.naver.com/v5/api/search';
+  
+  try {
+    const response = await fetch(`${API_ENDPOINT}?caller=pcweb&query=${encodeURIComponent(query)}&page=1&displayCount=20&isPlaceRecommendationReplace=true&lang=ko`);
+    const data = await response.json();
+
+    if (data.result && data.result.place && data.result.place.boundary) {
+      this.setState({ boundary: data.result.place.boundary, error: null });
+    } else {
+      this.setState({ error: 'Boundary data not found', boundary: null });
+    }
+  } catch (error) {
+    this.setState({ error: 'Error fetching data', boundary: null });
+  }
+
+}
+handleSubmit = async () => {
+  const { query } = this.state;
+  const API_ENDPOINT = 'https://map.naver.com/v5/api/search';
+
+  try {
+      const response = await fetch(`${API_ENDPOINT}?caller=pcweb&query=${encodeURIComponent(query)}&page=1&displayCount=20&isPlaceRecommendationReplace=true&lang=ko`);
+      const data = await response.json();
+
+      if (data.result && data.result.place && data.result.place.boundary) {
+        this.setState({ boundary: data.result.place.boundary, error: null });
+      } else {
+        this.setState({ error: 'Boundary data not found', boundary: null });
+      }
+    } catch (error) {
+      this.setState({ error: 'Error fetching data', boundary: null });
+    }
+  };
 
   render() {
 
     console.log("++"+JSON.stringify(this.state.bookmarkCards));
-    const { bookmarkCards } = this.state;
+    const { bookmarkCards, selectedBookmark } = this.state;
     return (
 
       <div>
@@ -109,11 +158,10 @@ handleMenuItemClick = (valueField) => {
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
-                         
-                          
                         }}
                        
-                        onClick={() => this.handleMenuItemClick(item.valueField)}
+                        onClick={() => 
+                          this.handleCardClick(this.state.content[index].seq_nb)}
                       >
                         <CardContent >
                           <Typography
@@ -172,52 +220,41 @@ handleMenuItemClick = (valueField) => {
 
                 <div >
                   <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                        출발지
+                    <Grid container alignItems="center" style={{marginBottom:"6px"}}>
+                      <Grid item xs={2} >
+                        출발지<br></br>
+                        상세주소
                       </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '5px', fontSize: '12px',marginBottom:"2px"  } }} />
-                      </Grid>
+                      <Grid item xs={10}>                      
+                        {/* 주행거리 검색 택스트필드!! */}
+                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.start_addr} />
+                        {/*  */}
+                      </Grid>                      
                     </Grid>                          
                   </Grid>
+                  
                   <Grid container item xs={12}>
-                    <Grid container>
+                    <Grid container style={{marginBottom:"6px"}}>
                       <Grid item xs={2}>
+                      도착지<br/>
                       상세주소
                       </Grid>
-                      <Grid item xs={10}>
-                        <TextField inputProps={{style: { height: '3px', fontSize: '12px' } }} />
+                      <Grid item xs={10}>                        
+                        {/* 주행거리 검색 택스트필드!! */}
+                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.end_addr} />
+                        {/*  */}
+
                       </Grid>
                     </Grid>                          
                   </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                      도착지
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '3px' } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                      상세주소
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '3px' } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
+                  
                   <Grid container item xs={12}>
                     <Grid container>
                       <Grid item xs={8}>
                       
                       </Grid>
-                      <Grid item xs={4}>
-                      <Button  variant="outlined">주행거리검색</Button>
+                      <Grid item xs={4} style={{marginTop : '5px'}}>
+                        <Button variant="outlined" style={{ width: '100px', height: '30px', padding: '2px 5px' }}>주행거리검색</Button>
                       </Grid>
                     </Grid>                          
                   </Grid>            
@@ -227,7 +264,11 @@ handleMenuItemClick = (valueField) => {
                   
                 </div>
                 <div>
-                  <MileageModal />
+                  
+                  {this.state.tableShow &&  <MileageTable></MileageTable>}
+                    
+                  
+                  
                 </div>
               </DialogContent>
             </div>
@@ -251,4 +292,4 @@ handleMenuItemClick = (valueField) => {
   }
 }
 
-export default Acd1012;
+export default MileageModal;

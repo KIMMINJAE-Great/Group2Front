@@ -44,14 +44,14 @@ class Ace1010Search extends Component {
       const queryString = `?car_cd=${car_cd || ""}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
       const carforabizperson = response.data;
-      console.log('=======================================')
-      console.log(carforabizperson)
-      console.log('=======================================')
-      if (this.props.searchcarforabizperson) {
-        console.log('있다')
-      } else {
-        console.log('없다')
-      }
+      // console.log('=======================================')
+      // console.log(carforabizperson)
+      // console.log('=======================================')
+      // if (this.props.searchcarforabizperson) {
+      //   console.log('있다')
+      // } else {
+      //   console.log('없다')
+      // }
 
       this.props.searchcarforabizperson(carforabizperson);
       // this.handleclearFields();
