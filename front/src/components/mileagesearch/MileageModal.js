@@ -5,7 +5,7 @@ import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Gri
 import SearchIcon from '@mui/icons-material/Search';
 import { get } from "../../components/api_url/API_URL";
 import MileageTable from "./MileageTable";
-import MileageSeachAddr from "./MileageSeachAddr";
+import MileageSeachTextBtn from "./MileageSeachTextBtn";
 
 class MileageModal extends Component {
   constructor(props){
@@ -222,75 +222,32 @@ handleSubmit = async () => {
                   <Grid container item xs={12}>
                     <Grid container alignItems="center" style={{marginBottom:"6px"}}>
                       <Grid item xs={2} >
-                        출발지
+                        출발지<br></br>
+                        상세주소
                       </Grid>
-                      <Grid item xs={8}>
-                        {/* <TextField 
-                        
-                        name="startFieldValue"
-                        value={this.state.startFieldValue}
-                        onChange={(e) => this.setState({ startFieldValue: selectedBookmark.start_addr })}
-                        inputProps={{style: { height: '5px', fontSize: '12px', marginBottom:"2px" }}}
-                        InputProps={{ 
-                          style: { height: '30px', width: '130px' },
-                          endAdornment: (
-                            <InputAdornment position="end" style={{ marginRight: 0 }}>
-                              <IconButton 
-                                color="black" 
-                                size="small" 
-                                sx={{ borderRadius: 0,  width: '30px', height: '30px' }}
-                                onClick={this.HandleSearchBtnClick}>
-                                <SearchIcon />
-                              </IconButton>
-                            </InputAdornment>
-                          )
-                        }}
-                        /> */}
-                        <MileageSeachAddr SearchKeyword={this.state.selectedBookmark.start_addr} />
-                      </Grid>
-                      
+                      <Grid item xs={10}>                      
+                        {/* 주행거리 검색 택스트필드!! */}
+                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.start_addr} />
+                        {/*  */}
+                      </Grid>                      
                     </Grid>                          
                   </Grid>
+                  
                   <Grid container item xs={12}>
                     <Grid container style={{marginBottom:"6px"}}>
                       <Grid item xs={2}>
+                      도착지<br/>
                       상세주소
                       </Grid>
-                      <Grid item xs={10}>
-                        <TextField 
-                        fullWidth
-                        inputProps={{style: { height: '5px', fontSize: '12px', marginBottom:"2px" }}}
-                        InputProps={{ style: { height: '30px' }}} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container style={{marginBottom:"6px"}}>
-                      <Grid item xs={2}>
-                      도착지
-                      </Grid>
-                      <Grid item xs={2}>
-                        
+                      <Grid item xs={10}>                        
                         {/* 주행거리 검색 택스트필드!! */}
-                        <MileageSeachAddr SearchKeyword={this.state.selectedBookmark.end_addr} />
+                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.end_addr} />
                         {/*  */}
 
                       </Grid>
                     </Grid>                          
                   </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container >
-                      <Grid item xs={2}>
-                      상세주소
-                      </Grid>
-                      <Grid item xs={10} >
-                        <TextField 
-                        fullWidth
-                        inputProps={{style: { height: '5px', fontSize: '12px', marginBottom:"2px" }}}
-                        InputProps={{ style: { height: '30px'}}} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
+                  
                   <Grid container item xs={12}>
                     <Grid container>
                       <Grid item xs={8}>
@@ -307,7 +264,7 @@ handleSubmit = async () => {
                   
                 </div>
                 <div>
-                  <MileageSeachAddr />
+                  
                   {this.state.tableShow &&  <MileageTable></MileageTable>}
                     
                   

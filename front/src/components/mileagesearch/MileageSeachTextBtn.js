@@ -4,7 +4,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 
-class MileageSeachAddr extends Component {
+class MileageSeachTextBtn extends Component {
   state = {
     query: '',
     results: null,
@@ -33,13 +33,12 @@ class MileageSeachAddr extends Component {
         const data = await response.json();
   
         if (data.result && data.result.place) {
-          const firstAddress = data.result.place.list.length > 0 ? data.result.place.list[0].address : null;
-          const firstBoundary = data.result.place.boundary ? data.result.place.boundary[0] : null;
-          this.setState({ 
-            addresses: firstAddress, 
-            boundary: firstBoundary, 
-            error: null 
-          });
+          const addresses = data.result.place.list.map(item => item.address);
+            this.setState({ 
+              addresses, 
+              boundary: data.result.place.boundary, 
+              error: null 
+            });
         } else {
             this.setState({ 
               error: 'Data not found', 
@@ -52,6 +51,7 @@ class MileageSeachAddr extends Component {
       }
     };
   
+    GetAddrAndBound
 
 
 
@@ -65,6 +65,7 @@ class MileageSeachAddr extends Component {
   
       return (
 
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
         <TextField 
           name="endFieldValue"
           value={this.state.query}
@@ -85,6 +86,15 @@ class MileageSeachAddr extends Component {
             )
           }}
         />
+         <ul>
+            {addresses.map((address, index) => <li key={index}>{address}</li>)}
+          </ul>
+        <TextField 
+          fullWidth
+          inputProps={{style: { height: '5px', fontSize: '12px', marginBottom:"2px"  }}}
+          InputProps={{ style: { height: '30px' ,marginTop:"3px"}}} 
+          value={addresses}/>
+        </div>
         // <div>
         //   <input
         //     type="text"
@@ -114,4 +124,4 @@ class MileageSeachAddr extends Component {
     }
   }
   
-  export default MileageSeachAddr;
+  export default MileageSeachTextBtn;
