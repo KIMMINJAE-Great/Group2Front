@@ -301,16 +301,65 @@ class Acc1013 extends Component {
     });
   };
 
-  
+
+  //강제로전송..
+  handleDataChange(value) {
+    this.setState({
+      co_cd: value.co_cd,
+      adr_zp: value.co_nm,
+      adr_inp: value.adr_inp,
+      adr_etc: value.adr_etc,
+    });
+
+  }
+
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (co_cd) => {
+    this.setState(
+      (prevState) => {
+        const updatedContent = prevState.content.map((item) =>
+          item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+        );
+        const selectedchecked = updatedContent.filter((item) => item.checked);
+
+        return { content: updatedContent, selectedchecked: selectedchecked };
+      })
+      }
+
   //onChange핸들함수
   handleCoCdChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
         co_cd: value,
+
       },
     }));
   };
+
   handleCoNmChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
