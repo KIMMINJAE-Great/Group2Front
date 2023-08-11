@@ -5,6 +5,7 @@ import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Gri
 import { get } from "../../components/api_url/API_URL";
 
 import MileageModal from "../../components/mileagesearch/MileageModal";
+import MileageTableView from "../../components/mileagesearch/MileageTableView";
 
 class Acd1012 extends Component {
   constructor(props){
@@ -100,136 +101,15 @@ handleMenuItemClick = (valueField) => {
             {/* div 두 영역으로 나눔 */}
             <div style={{ display: "flex", flexDirection: "row",}}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{width:"120px", maxHeight:"310px", overflow:"auto"}}>
-                <Grid container style={{ borderBottom: '1px solid #D3D3D3'}}>  
-                  {bookmarkCards.map((item, index) => (
-                    <Grid style={{height: '70px'}}  key={index}>
-                      <Card
-                        style={{width:"220px", height:"175px"}}
-                        sx={{
-                          borderRadius: "0px",
-                          border: "0.5px solid lightgrey",
-                         
-                          
-                        }}
-                       
-                        onClick={() => this.handleMenuItemClick(item.valueField)}
-                      >
-                        <CardContent >
-                          <Typography
-                            variant="body2"
-                            style={{
-                              marginLeft: "2px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              width: "90px",
-                              maxWidth: "90px",
-                              marginBottom: "10px",
-                              fontWeight: "bold",
-                              fontSize: "15px",
-                            }}
-                          >
-                            {item.start_fg} {'->'} {item.end_fg}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            style={{
-                              marginLeft: "0px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              width: "90px",
-                              maxWidth: "90px",
-                              
-                              
-                            }}
-                          >
-                            {item.start_addr} {'->'} {item.end_addr}
-                          </Typography>
-                          <div> </div>
-                        </CardContent>
-                        <CardContent
-                          style={{
-                            marginLeft: "190px",
-                            paddingLeft: "0",
-                            paddingRight: "0",
-                            minWidth: "100px",
-                            marginBottom: "200px",
-                          }}
-                        >
-                          <Typography variant="body2">
-                            {item.distance} {/* naverMap api에서 받아와야함 */}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </DialogContent>
-              {/* 출발지,상세주소,도착지,상세주소  */}
-              <DialogContent style={{ borderLeft:'1px solid black' }}>
+              
 
-                <div >
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                        출발지
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '5px', fontSize: '12px',marginBottom:"2px"  } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                      상세주소
-                      </Grid>
-                      <Grid item xs={10}>
-                        <TextField inputProps={{style: { height: '3px', fontSize: '12px' } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                      도착지
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '3px' } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={2}>
-                      상세주소
-                      </Grid>
-                      <Grid item xs={2}>
-                        <TextField inputProps={{style: { height: '3px' } }} />
-                      </Grid>
-                    </Grid>                          
-                  </Grid>
-                  <Grid container item xs={12}>
-                    <Grid container>
-                      <Grid item xs={8}>
-                      
-                      </Grid>
-                      <Grid item xs={4}>
-                      <Button  variant="outlined">주행거리검색</Button>
-                      </Grid>
-                    </Grid>                          
-                  </Grid>            
-
-                </div>
-                <div>
-                  
-                </div>
+                
+                
                 <div>
                   <MileageModal />
                 </div>
-              </DialogContent>
+                <div><MileageTableView></MileageTableView></div>
+              
             </div>
             <Grid container justifyContent="center" alignItems="center" mt={0} mb={0} ml={0} backgroundColor={"#f2f2f2"} height={'50px'}>
               <Grid item mb={0}>

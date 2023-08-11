@@ -55,7 +55,7 @@ const MyTextField = styled(TextField)(({ theme }) => ({
   padding: theme.spacing(0.5),
   '& input': {
     height: '8px',
-    fontSize: '10px',
+    fontSize: '12px',
     height: '0px',
   },
   '& .MuiOutlinedInput-root': { // TextField의 루트 요소에 스타일 적용

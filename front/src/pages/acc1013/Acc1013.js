@@ -121,19 +121,6 @@ class Acc1013 extends Component {
       });
   }
 
-  //  //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
-  //  fetchCompanyCards = async (co_cd) => {
-  //   try {
-  //     const response = await get("/company/cardlist");
-  //     this.setState({
-  //       companyCards: response.data,
-  //       selectedRead: "Y",
-  //       content: response.data,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   // 모달 열기
   handleOpenModal = () => {
@@ -159,11 +146,7 @@ class Acc1013 extends Component {
         selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
         readonly: true,
       });
-      // this.setState({
-      //   selectedCompanyCards: {
-      //     ...response.data,
-      //   }
-      // });
+
       console.log("!!companyCardData!!" + this.state.companyCardData);
 
     } catch (error) {
