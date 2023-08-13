@@ -1,6 +1,6 @@
 import CodePicker from "./CodePicker";
 import React from "react";
-import { get, post } from "../api_url/API_URL";
+import { get} from "../api_url/API_URL";
 
 class DeptCodePicker extends React.Component{
     constructor(props) {

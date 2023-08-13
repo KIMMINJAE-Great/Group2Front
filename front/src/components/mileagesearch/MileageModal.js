@@ -1,10 +1,6 @@
 import { Component } from "react";
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, TextField, Typography } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import { Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, TextField, Typography } from "@mui/material";
 import { get } from "../../components/api_url/API_URL";
-
 import MileageSeachTextField from "./MileageSeachTextField";
 import MileageSearchBtn from "./MileageSearchBtn";
 import MileageTableView from "./MileageTableView";
@@ -22,9 +18,7 @@ class MileageModal extends Component {
       selectedBookmark:'', //북마크 정보 저장할 상태변수
       content:[], //하위 컴포넌트로의 전달 등 여러기능함
       coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... bookmarkCards에서 충분할듯? 
-
       tableShow:false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!!
-
       data: null,// 검색api에 사용될것임
       distanceRealtime: '' ,
       distanceBased: '', 
@@ -92,11 +86,7 @@ class MileageModal extends Component {
     console.log("handleDistanceData이 실행됨");
   };
 
-
-
-
   render() {
-    
     console.log("++"+JSON.stringify(this.state.bookmarkCards));
     const { bookmarkCards, selectedBookmark } = this.state;
     const {distanceRealtime, distanceBased, distanceFree} = this.state;
@@ -115,12 +105,6 @@ class MileageModal extends Component {
             open={this.state.isModalOpen}
             onClose={this.closeModal}
             maxWidth="xl" 
-            PaperProps={{
-              style: {
-                width: '45.7%',
-                //heigth: '10%',
-              },
-            }}
           >
             {/* 최상단 */}
             <DialogTitle style={{ marginLeft: "2px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  marginBottom: "-23px",  fontWeight: "bold",  }}>
@@ -132,12 +116,12 @@ class MileageModal extends Component {
             {/* div 두 영역으로 나눔 */}
             <div style={{ display: "flex", flexDirection: "row",}}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{width:"120px", maxHeight:"310px", overflow:"auto"}}>
+              <DialogContent style={{width:"140px", maxHeight:"310px", overflow:"auto"}}>
                 <Grid container style={{ borderBottom: '1px solid #D3D3D3'}}>  
                   {bookmarkCards.map((item, index) => (
-                    <Grid style={{height: '70px'}}  key={index}>
+                    <Grid style={{height: '70px' ,}}  key={index}>
                       <Card
-                        style={{width:"220px", height:"175px"}}
+                        style={{width:"220px", height:"165px"}}
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
@@ -148,23 +132,17 @@ class MileageModal extends Component {
                         <CardContent >
                           <Typography
                             variant="body2"
-                            style={{  marginLeft: "2px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "90px",  maxWidth: "90px",  marginBottom: "10px",  fontWeight: "bold",  fontSize: "15px",}}
+                            style={{  marginLeft: "2px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "220px",  maxWidth: "220px",  marginBottom: "10px",  fontWeight: "bold",  fontSize: "15px",}}
                           >
                             {item.start_fg} {'->'} {item.end_fg}
                           </Typography>
-                          <Typography  variant="body2" style={{ marginLeft: "0px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "90px",  maxWidth: "90px",  }}
+                          <Typography  variant="body2" style={{ marginLeft: "0px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "220px",  maxWidth: "220px",  }}
                           >
                             {item.start_addr} {'->'} {item.end_addr}
                           </Typography>
                           <div> </div>
                         </CardContent>
-                        <CardContent
-                          style={{  marginLeft: "190px",  paddingLeft: "0",  paddingRight: "0",  minWidth: "100px",  marginBottom: "200px",  }}
-                        >
-                          <Typography variant="body2">
-                            {item.distance} {/* naverMap api에서 받아와야함 */}
-                          </Typography>
-                        </CardContent>
+                        
                       </Card>
                     </Grid>
                   ))}
@@ -250,14 +228,9 @@ class MileageModal extends Component {
                 <button onClick={this.saveModalCheckedItems} style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '14px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>확인</button>
               </Grid>
             </Grid>
-
           </Dialog>
-        </div>
-        
-
-      </div>
-      
-
+        </div>        
+      </div> 
     )
   }
 }

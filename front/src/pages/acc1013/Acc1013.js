@@ -99,8 +99,8 @@ class Acc1013 extends Component {
       content: [],
       mauth: [],
 
-      selectedchecked: [], /* 체크박스 선택한 배열의 정보 - 건우*/
-      selectAllCheckbox: false, /* 체크박스 모두 선택 - 건우 */
+      selectedchecked: [], // 체크박스 선택한 배열의 정보 
+      selectAllCheckbox: false, // 체크박스 모두 선택 
 
 
       selectedCardIndex: null, // 선택한 카드의 인덱스
@@ -112,15 +112,19 @@ class Acc1013 extends Component {
 
   //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
   componentDidMount() {
-    get(`/company/cardlist`)
-      .then((response) => {
-        this.setState({ companyCards: response.data, selectedRead: "Y", content: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getCardList();
   }
 
+  getCardList = async () => {
+    try {
+      const response = await get(`/company/cardlist`);
+      this.setState({ companyCards: response.data, selectedRead: "Y", content: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+
+
+  }
 
   // 모달 열기
   handleOpenModal = () => {
@@ -310,7 +314,6 @@ class Acc1013 extends Component {
 
 
   handleNewButtonClick = () => {
-    console.log('추가ㅓ 누르기')
     this.setState({
       selectedCompanyCards: '',
       selectedRead: "Y",
