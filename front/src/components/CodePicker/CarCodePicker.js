@@ -147,7 +147,7 @@ class CarCodePicker extends React.Component{
   //텍스트필드값 핸들러
   handleTextInputChange = (e) => {
     this.setState({ 
-      [e.target.name]: e.target.value, 
+      textFieldValue: e.target.value, 
     });
   };
   //popover 핸들러
@@ -164,7 +164,7 @@ class CarCodePicker extends React.Component{
       this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
       
         return (
-            // <CodePicker valueField='trNm' codeField='trCd' dispType='codeAndValue'></CodePicker>
+
             <CodePicker 
             //필수 전달 
             valueField='car_nm' 

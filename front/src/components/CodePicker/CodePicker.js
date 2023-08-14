@@ -41,7 +41,10 @@ class CodePicker extends React.Component {
   };
 
   handleClose1 = () => {
-    this.setState({ anchor1: null });
+    this.setState({ 
+      anchor1: null
+      
+    });
   };
 
   //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수
@@ -77,14 +80,24 @@ class CodePicker extends React.Component {
 
   // 모달 열기 함수
   openModal = () => {
+    const { selectAllCheckbox } = this.props;
     this.setState({
       isModalOpen: true,
-      modalTextFieldValue: '' // 모달 열때마다 모달안의 TextField를 초기화
+      modalTextFieldValue: '', // 모달 열때마다 모달안의 TextField를 초기화
+      
     });
   };
   // 모달 닫기 함수
   closeModal = () => {
-    this.setState({ isModalOpen: false, selectedchecked: '' });
+   // 체크박스 상태 초기화
+   const updatedMenuItems = this.state.menuItems.map(item => {
+    return { ...item, checked: false };
+  });
+
+  this.setState({ 
+    menuItems: updatedMenuItems,
+    isModalOpen: false 
+  });
   };
 
   handleMenuItemClick = (value) => {
@@ -103,7 +116,6 @@ class CodePicker extends React.Component {
 
     if (this.props.onHandleKeyDown) {
       this.props.onHandleKeyDown(e, value);
-
     }
 
   };
@@ -129,7 +141,6 @@ class CodePicker extends React.Component {
   }
 
   deleteMenuItem = (valueToDelete) => {
-    console.log("@@@@@@"+valueToDelete);
     const updatedMenuItems = this.state.menuItems.filter(
       item => item[this.props.codeField] !== valueToDelete
     );
@@ -146,7 +157,6 @@ class CodePicker extends React.Component {
     } = this.props;
     this.handleDropDown = this.handleDropDown.bind(this);
 
-    
 
     console.log("this.props.selectedIds[0].valueField"+this.props.selectedIds.valueField);
     
@@ -155,7 +165,7 @@ class CodePicker extends React.Component {
     console.log("length"+this.props.selectedIds.length);
     // 드롭다운
     const open1 = Boolean(anchor1);
-    // const { content } = this.props;
+
     
     return (
       <div>
@@ -166,7 +176,7 @@ class CodePicker extends React.Component {
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
             value={this.state.selectedValue || this.props.textFieldValue }
-            // onChange={this.props.onTextInputChange}
+            onChange={this.props.onTextInputChange}
             inputProps={{ style: { height: '2px' } }}
           />
 
@@ -199,6 +209,8 @@ class CodePicker extends React.Component {
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             style={{ marginLeft: '-135px' }}
           >
+
+            {/* popover 렌더링 */}
           {(this.state.menuItems || []).map((item, index) => (
             <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[valueField])}>
               {this.renderMenuItemContent(item)}
@@ -215,49 +227,6 @@ class CodePicker extends React.Component {
             </MenuItem>
           ))}
 
-
-
-
-
-
-
-            
-            {/* { this.props.selectedIds.length ===1 && 
-              menuItems?.map((item, index) => {
-                return (
-                  <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
-                    {this.props.dispType === 'codeAndValue' ?
-                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
-                      : this.props.dispType === 'codeAndValueAndValue' ?
-                        '[' + item[this.props.codeField] + ']' + ' ' + item[this.props.valueField] + ' ' + item[this.props.valueField2]
-                        : item[this.props.valueField]
-                    }
-                    </MenuItem>
-                  );               
-              })
-            }
-            { this.props.selectedIds.length >1 && 
-              menuItems?.map((item, index) => {
-                return (
-                  <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[this.props.valueField])}>
-                    {this.props.dispType === 'codeAndValue' ?
-                      '[' + item[this.props.codeField] + ']' + item[this.props.valueField]
-                      : this.props.dispType === 'codeAndValueAndValue' ?
-                        '[' + item[this.props.codeField] + ']' + ' ' + item[this.props.valueField] + ' ' + item[this.props.valueField2]
-                        : item[this.props.valueField]
-                    }
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        this.props.onDeleteMenuItem(item[codeField]); // 부모로부터 전달받은 삭제 함수 호출
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                    </MenuItem>
-                  );               
-              })
-            } */}
           </Popover>
         </div>
 
@@ -311,9 +280,7 @@ class CodePicker extends React.Component {
                     <FormControlLabel control={
                       <Checkbox
                         size="small"
-                        sx={{
-                          ml: 0.5,
-                        }}
+                        sx={{ ml: 0.5, }}
                       />
                     }
                     />
@@ -382,8 +349,6 @@ class CodePicker extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-
-
                     {menuItems?.map((item, index) => (
                       <tr key={index}
                         onClick={() => this.handleMenuItemClick(item[this.props.valueField])}
@@ -416,7 +381,6 @@ class CodePicker extends React.Component {
                   </tbody>
                 </table>
               </div>
-
             </DialogContent>
             <Grid container justifyContent="center" alignItems="center" mt={0} mb={0} ml={0} backgroundColor={"#f2f2f2"} height={'50px'}>
               <Grid item mb={0}>
@@ -427,10 +391,8 @@ class CodePicker extends React.Component {
               </Grid>
             </Grid>
           </Dialog>
-
         </div>
       </div>
-
     );
   }
 }

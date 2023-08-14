@@ -1,64 +1,69 @@
-import React from 'react';
+import React, { Component } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-class Acd1011Child extends React.Component {
+class Acd1011Child extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: ''
+      startDate: new Date(),
+      endDate: new Date(),
     };
   }
 
-  handleDateChange = (e) => {
-    this.setState({ date: e.target.value });
-  };
+  isWeekend(date) {
+    const day = date.getDay();
+    return day === 0 || day === 6;
+  }
+
+  getDatesWithoutWeekends(startDate, endDate) {
+    let currentDate = new Date(startDate);
+    const dateArray = [];
+
+    while (currentDate <= endDate) {
+      if (!this.isWeekend(currentDate)) {
+        dateArray.push(new Date(currentDate));
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dateArray;
+  }
+
+  handleCopy = () => {
+    const { startDate, endDate } = this.state;
+    const filteredDates = this.getDatesWithoutWeekends(startDate, endDate);
+    console.log('Copying data for:', filteredDates);
+
+    // 여기에서 실제 복사 로직을 구현합니다.
+  }
 
   render() {
-    const containerStyle = {
-      fontFamily: 'Roboto, sans-serif',
-      padding: '20px',
-      backgroundColor: '#f4f4f4',
-      borderRadius: '4px',
-      width: '240px',
-      boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.1)'
-    };
-
-    const labelStyle = {
-      fontSize: '0.875rem',
-      marginBottom: '8px',
-      fontWeight: '500',
-      color: '#333'
-    };
-
-    const inputStyle = {
-      width: '100%',
-      padding: '10px 12px',
-      fontSize: '0.875rem',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      boxSizing: 'border-box',
-      outline: 'none'
-    };
-
-    const selectedDateStyle = {
-      marginTop: '12px',
-      fontSize: '0.8em',
-      color: '#555'
-    };
-
+    const { startDate, endDate } = this.state;
     return (
-      <div style={containerStyle}>
-        <label htmlFor="birthday" style={labelStyle}>생일:</label>
-        <input 
-          type="date" 
-          id="birthday" 
-          name="birthday"
-          value={this.state.date}
-          onChange={this.handleDateChange} 
-          style={inputStyle}
-        />
-        {this.state.date && <div style={selectedDateStyle}>선택된 날짜: {this.state.date}</div>}
+      <div>
+        <h1>운행기록부 복사</h1>
+
+        <div>
+          <span>시작일: </span>
+          <DatePicker 
+            selected={startDate} 
+            onChange={date => this.setState({ startDate: date })} 
+          />
+        </div>
+
+        <div>
+          <span>종료일: </span>
+          <DatePicker 
+            selected={endDate} 
+            onChange={date => this.setState({ endDate: date })} 
+          />
+        </div>
+
+        <button onClick={this.handleCopy}>확인</button>
       </div>
     );
   }
 }
+
 export default Acd1011Child;
