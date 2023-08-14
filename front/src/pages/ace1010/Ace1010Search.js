@@ -14,10 +14,40 @@ import {
   TextField,
   Typography
 } from "@mui/material";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import dayjs from 'dayjs';
+// import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+
 import SearchIcon from '@mui/icons-material/Search';
-import { blue } from "@mui/material/colors";
 import { getByQueryString } from "../../components/api_url/API_URL";
 import { Component } from "react";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+const theme = createTheme({
+  components: {
+
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "&:hover $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          "&.Mui-focused $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          borderRadius: 0,
+          height: 30,
+          width: 170
+        },
+      },
+    },
+  },
+});
 
 class Ace1010Search extends Component {
   constructor(props) {
@@ -40,20 +70,23 @@ class Ace1010Search extends Component {
   searchcarforabizperson = async () => {
     const { car_cd } = this.state;
 
+    let carforabizperson
     try {
       const queryString = `?car_cd=${car_cd || ""}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
-      const carforabizperson = response.data;
-      // console.log('=======================================')
-      // console.log(carforabizperson)
-      // console.log('=======================================')
-      // if (this.props.searchcarforabizperson) {
-      //   console.log('있다')
-      // } else {
-      //   console.log('없다')
-      // }
 
-      this.props.searchcarforabizperson(carforabizperson);
+      console.log('검색직후 ')
+      console.log(response.data)
+      if (response.data === 'not found') {
+        this.props.searchcarforabizperson(null, car_cd);
+      } else if (response.data === 'not using') {
+        this.props.searchcarforabizperson('none');
+      }
+      else {
+        carforabizperson = response.data;
+        this.props.searchcarforabizperson(carforabizperson, car_cd);
+      }
+
       // this.handleclearFields();
     } catch (error) {
       console.log(error);
@@ -62,9 +95,15 @@ class Ace1010Search extends Component {
 
   render() {
     return (
+
       <div className="acc1010search_container" >
 
         <Grid container item sx={{ padding: '4px' }}>
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={['DateRangePicker']}>
+              <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} />
+            </DemoContainer>
+          </LocalizationProvider> */}
           {/* <Grid item xs={1.1} style={{ textAlign: "right" }}>
             <Typography>
               <h5 style={{ margin: "5px" }}>회사</h5>
@@ -115,13 +154,31 @@ class Ace1010Search extends Component {
               inputProps={{ style: { height: "12px" } }}
             />
           </Grid>
+          <Grid item xs={1.1} style={{ textAlign: "right" }}>
+            <Typography>
+              <h5 style={{ margin: "5px" }}>운행일</h5>
+            </Typography>
+          </Grid>
+          <ThemeProvider theme={theme}>
+            <Grid item xs={6} sx={{ backgroundColor: 'white', paddingLeft: '5px', display: 'flex' }} >
+
+              <LocalizationProvider dateAdapter={AdapterDayjs} >
+                <DatePicker />
+              </LocalizationProvider> &nbsp;&nbsp;&nbsp; ~ &nbsp;&nbsp;&nbsp;
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker />
+              </LocalizationProvider>
+            </Grid>
+          </ThemeProvider>
+
         </Grid>
-        <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
-          <SearchIcon onClick={this.searchcarforabizperson} />
+        <IconButton onClick={this.searchcarforabizperson} color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
+          <SearchIcon />
         </IconButton>
         <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
 
       </div>
+
     )
   }
 

@@ -534,7 +534,9 @@ class Acc1010Basic extends Component {
                     value={dayjs(selectedCard.emp_hrd ? selectedCard.emp_hrd : '')}
                     name="emp_hrd"
                     onChange={(value) => {
-                      this.props.handleEmpHrdChange(value);
+                      // dayjs 객체를 ISO 형식의 문자열로 변환
+                      const isoValue = value ? dayjs(value).format('YYYY-MM-DD') : '';
+                      this.props.handleEmpHrdChange(isoValue);
                     }} />
                 </LocalizationProvider>
               </Grid>
