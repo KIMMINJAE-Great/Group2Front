@@ -19,6 +19,7 @@ import { ThemeProvider } from "@emotion/react";
 import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
+import MileageModal from "../mileagesearch/MileageModal";
 
 
 
@@ -195,6 +196,7 @@ class DouzoneContainer extends Component {
                 >
                   <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
                   <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
+                  <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
                   <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
                 </Menu>
               </div>

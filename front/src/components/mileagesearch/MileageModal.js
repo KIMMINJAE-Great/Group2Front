@@ -1,11 +1,9 @@
 import { Component } from "react";
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import { Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, TextField, Typography } from "@mui/material";
 import { get } from "../../components/api_url/API_URL";
-import MileageTable from "./MileageTable";
-import MileageSeachTextBtn from "./MileageSeachTextBtn";
+import MileageSeachTextField from "./MileageSeachTextField";
+import MileageSearchBtn from "./MileageSearchBtn";
+import MileageTableView from "./MileageTableView";
 
 class MileageModal extends Component {
   constructor(props){
@@ -20,10 +18,12 @@ class MileageModal extends Component {
       selectedBookmark:'', //북마크 정보 저장할 상태변수
       content:[], //하위 컴포넌트로의 전달 등 여러기능함
       coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... bookmarkCards에서 충분할듯? 
-
       tableShow:false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!!
+      data: null,// 검색api에 사용될것임
+      distanceRealtime: '' ,
+      distanceBased: '', 
+      distanceFree: '',
 
-      data: null// 검색api에 사용될것임
     };
   }
 
@@ -40,107 +40,74 @@ class MileageModal extends Component {
     }
 
   
-// 모달의 열림/닫힘 상태를 관리하는 state 추가
-state = {
-  isModalOpen: false,
-};
-
-// 모달 열기 함수
-openModal = () => {
-  this.setState({ isModalOpen: true });
-};
-// 모달 닫기 함수
-closeModal = () => {
-  this.setState({ isModalOpen: false, });
-};
-
-handleCardClick = (seq_nb) => { 
-  const selectedCard = this.state.bookmarkCards.find(item => item.seq_nb === seq_nb);
-  
-  if (selectedCard) {
-    this.setState({
-      selectedBookmark: selectedCard,
-      startFieldValue: selectedCard.start_addr,  // 여기서 TextField에 보여질 값을 업데이트합니다.
-      endFieldValue: selectedCard.end_addr,
-    });
-  }
-};
-
-HandleSearchBtnClick  = async () => {
-  const { query } = this.state;
-  const API_ENDPOINT = 'https://map.naver.com/v5/api/search';
-  
-  try {
-    const response = await fetch(`${API_ENDPOINT}?caller=pcweb&query=${encodeURIComponent(query)}&page=1&displayCount=20&isPlaceRecommendationReplace=true&lang=ko`);
-    const data = await response.json();
-
-    if (data.result && data.result.place && data.result.place.boundary) {
-      this.setState({ boundary: data.result.place.boundary, error: null });
-    } else {
-      this.setState({ error: 'Boundary data not found', boundary: null });
-    }
-  } catch (error) {
-    this.setState({ error: 'Error fetching data', boundary: null });
-  }
-
-}
-handleSubmit = async () => {
-  const { query } = this.state;
-  const API_ENDPOINT = 'https://map.naver.com/v5/api/search';
-
-  try {
-      const response = await fetch(`${API_ENDPOINT}?caller=pcweb&query=${encodeURIComponent(query)}&page=1&displayCount=20&isPlaceRecommendationReplace=true&lang=ko`);
-      const data = await response.json();
-
-      if (data.result && data.result.place && data.result.place.boundary) {
-        this.setState({ boundary: data.result.place.boundary, error: null });
-      } else {
-        this.setState({ error: 'Boundary data not found', boundary: null });
-      }
-    } catch (error) {
-      this.setState({ error: 'Error fetching data', boundary: null });
+  // 모달의 열림/닫힘 상태를 관리하는 state 추가
+  state = {
+    isModalOpen: false,
+  };
+  // 모달 열기 함수
+  openModal = () => {
+    this.setState({ isModalOpen: true });
+  };
+  // 모달 닫기 함수
+  closeModal = () => {
+    this.setState({ isModalOpen: false, });
+  };
+  //카드 클릭
+  handleCardClick = (seq_nb) => { 
+    const selectedCard = this.state.bookmarkCards.find(item => item.seq_nb === seq_nb);
+    if (selectedCard) {
+      this.setState({
+        selectedBookmark: selectedCard,
+        startFieldValue: selectedCard.start_addr, //
+        endFieldValue: selectedCard.end_addr,
+      });
     }
   };
 
-  render() {
+  // startCoords와 endCoords를 각각 저장해야한다!
+  handleCoordData = (fieldType, longitude, latitude) => {
+    if (fieldType === 'start') {
+      this.setState({
+        startCoords: [longitude, latitude]
+      });
+    } else if (fieldType === 'end') {
+      this.setState({
+        endCoords: [longitude, latitude]
+      });
+    }
+  };
+  handleDistanceData = (Realtime , Based, free) => {
+    this.setState({
+      distanceRealtime: Realtime ,
+      distanceBased: Based, 
+      distanceFree: free,
+      tableShow: true
+    });
+    console.log("handleDistanceData이 실행됨");
+  };
 
+  render() {
     console.log("++"+JSON.stringify(this.state.bookmarkCards));
     const { bookmarkCards, selectedBookmark } = this.state;
+    const {distanceRealtime, distanceBased, distanceFree} = this.state;
+    console.log("스타트 위도경도"+this.state.startCoords);
+    console.log("엔드 위도경도"+this.state.endCoords);
+    console.log("distanceRealtime : "+distanceRealtime);
+    console.log("distanceBased : "+distanceBased);
+    console.log("distanceFree : "+distanceFree);
     return (
 
       <div>
-        <Button 
-          variant="outlined"
-          onClick={this.openModal}
+        <MenuItem onClick={this.openModal}>주행거리 검색</MenuItem>
         
-        >
-          gd
-        </Button>
         <div>
           <Dialog 
             open={this.state.isModalOpen}
             onClose={this.closeModal}
             maxWidth="xl" 
-            PaperProps={{
-              style: {
-                width: '45.7%',
-                //heigth: '10%',
-              },
-            }}
           >
             {/* 최상단 */}
-            <DialogTitle style={{
-                              marginLeft: "2px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              marginBottom: "-23px",
-                             
-                             
-                              
-                              fontWeight: "bold",
-                              
-                            }}>
+            <DialogTitle style={{ marginLeft: "2px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  marginBottom: "-23px",  fontWeight: "bold",  }}>
               주행거리 검색(참고용)
               <hr />
             </DialogTitle>
@@ -149,67 +116,33 @@ handleSubmit = async () => {
             {/* div 두 영역으로 나눔 */}
             <div style={{ display: "flex", flexDirection: "row",}}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{width:"120px", maxHeight:"310px", overflow:"auto"}}>
+              <DialogContent style={{width:"140px", maxHeight:"310px", overflow:"auto"}}>
                 <Grid container style={{ borderBottom: '1px solid #D3D3D3'}}>  
                   {bookmarkCards.map((item, index) => (
-                    <Grid style={{height: '70px'}}  key={index}>
+                    <Grid style={{height: '70px' ,}}  key={index}>
                       <Card
-                        style={{width:"220px", height:"175px"}}
+                        style={{width:"220px", height:"165px"}}
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
                         }}
-                       
                         onClick={() => 
                           this.handleCardClick(this.state.content[index].seq_nb)}
                       >
                         <CardContent >
                           <Typography
                             variant="body2"
-                            style={{
-                              marginLeft: "2px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              width: "90px",
-                              maxWidth: "90px",
-                              marginBottom: "10px",
-                              fontWeight: "bold",
-                              fontSize: "15px",
-                            }}
+                            style={{  marginLeft: "2px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "220px",  maxWidth: "220px",  marginBottom: "10px",  fontWeight: "bold",  fontSize: "15px",}}
                           >
                             {item.start_fg} {'->'} {item.end_fg}
                           </Typography>
-                          <Typography
-                            variant="body2"
-                            style={{
-                              marginLeft: "0px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              width: "90px",
-                              maxWidth: "90px",
-                              
-                              
-                            }}
+                          <Typography  variant="body2" style={{ marginLeft: "0px",  overflow: "hidden",  textOverflow: "ellipsis",  whiteSpace: "nowrap",  width: "220px",  maxWidth: "220px",  }}
                           >
                             {item.start_addr} {'->'} {item.end_addr}
                           </Typography>
                           <div> </div>
                         </CardContent>
-                        <CardContent
-                          style={{
-                            marginLeft: "190px",
-                            paddingLeft: "0",
-                            paddingRight: "0",
-                            minWidth: "100px",
-                            marginBottom: "200px",
-                          }}
-                        >
-                          <Typography variant="body2">
-                            {item.distance} {/* naverMap api에서 받아와야함 */}
-                          </Typography>
-                        </CardContent>
+                        
                       </Card>
                     </Grid>
                   ))}
@@ -227,7 +160,10 @@ handleSubmit = async () => {
                       </Grid>
                       <Grid item xs={10}>                      
                         {/* 주행거리 검색 택스트필드!! */}
-                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.start_addr} />
+                        <MileageSeachTextField  
+                          SearchKeyword={this.state.selectedBookmark.start_addr} 
+                          onSendCoordData={(longitude, latitude) => this.handleCoordData('start', longitude, latitude)}
+                        />
                         {/*  */}
                       </Grid>                      
                     </Grid>                          
@@ -235,13 +171,16 @@ handleSubmit = async () => {
                   
                   <Grid container item xs={12}>
                     <Grid container style={{marginBottom:"6px"}}>
-                      <Grid item xs={2}>
+                      <Grid item xs={2} st>
                       도착지<br/>
                       상세주소
                       </Grid>
                       <Grid item xs={10}>                        
                         {/* 주행거리 검색 택스트필드!! */}
-                        <MileageSeachTextBtn SearchKeyword={this.state.selectedBookmark.end_addr} />
+                        <MileageSeachTextField 
+                          SearchKeyword={this.state.selectedBookmark.end_addr} 
+                          onSendCoordData={(longitude, latitude) => this.handleCoordData('end', longitude, latitude)}
+                        />
                         {/*  */}
 
                       </Grid>
@@ -254,21 +193,30 @@ handleSubmit = async () => {
                       
                       </Grid>
                       <Grid item xs={4} style={{marginTop : '5px'}}>
-                        <Button variant="outlined" style={{ width: '100px', height: '30px', padding: '2px 5px' }}>주행거리검색</Button>
+                        {/* 주행거리 검색 버튼 */}
+                        <MileageSearchBtn 
+                          onSendDistanceData={this.handleDistanceData} 
+                          startCoordinate={this.state.startCoords}
+                          endCoordinate={this.state.endCoords}
+                          tableShow={this.state.tableShow}
+                        />
+                        {/*  */}
                       </Grid>
                     </Grid>                          
                   </Grid>            
-
                 </div>
                 <div>
-                  
-                </div>
-                <div>
-                  
-                  {this.state.tableShow &&  <MileageTable></MileageTable>}
-                    
-                  
-                  
+                <Grid container item xs={12}>
+                  <Grid container>
+                    {/* TABLE VIEW */}
+                    {this.state.tableShow && 
+                      <MileageTableView
+                        distanceRealtime={this.state.distanceRealtime}
+                        distanceBased={this.state.distanceBased}
+                        distanceFree={this.state.distanceFree}
+                        />}
+                  </Grid>
+                </Grid>
                 </div>
               </DialogContent>
             </div>
@@ -280,14 +228,9 @@ handleSubmit = async () => {
                 <button onClick={this.saveModalCheckedItems} style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '14px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>확인</button>
               </Grid>
             </Grid>
-
           </Dialog>
-        </div>
-        
-
-      </div>
-      
-
+        </div>        
+      </div> 
     )
   }
 }

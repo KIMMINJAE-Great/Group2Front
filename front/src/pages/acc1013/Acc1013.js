@@ -99,8 +99,8 @@ class Acc1013 extends Component {
       content: [],
       mauth: [],
 
-      selectedchecked: [], /* 체크박스 선택한 배열의 정보 - 건우*/
-      selectAllCheckbox: false, /* 체크박스 모두 선택 - 건우 */
+      selectedchecked: [], // 체크박스 선택한 배열의 정보 
+      selectAllCheckbox: false, // 체크박스 모두 선택 
 
 
       selectedCardIndex: null, // 선택한 카드의 인덱스
@@ -112,28 +112,19 @@ class Acc1013 extends Component {
 
   //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
   componentDidMount() {
-    get(`/company/cardlist`)
-      .then((response) => {
-        this.setState({ companyCards: response.data, selectedRead: "Y", content: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getCardList();
   }
 
-  //  //카드리스트(DB에 접근해서 가져오는것 계속 새로고침을 해야하기에..)
-  //  fetchCompanyCards = async (co_cd) => {
-  //   try {
-  //     const response = await get("/company/cardlist");
-  //     this.setState({
-  //       companyCards: response.data,
-  //       selectedRead: "Y",
-  //       content: response.data,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  getCardList = async () => {
+    try {
+      const response = await get(`/company/cardlist`);
+      this.setState({ companyCards: response.data, selectedRead: "Y", content: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+
+
+  }
 
   // 모달 열기
   handleOpenModal = () => {
@@ -159,11 +150,7 @@ class Acc1013 extends Component {
         selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
         readonly: true,
       });
-      // this.setState({
-      //   selectedCompanyCards: {
-      //     ...response.data,
-      //   }
-      // });
+
       console.log("!!companyCardData!!" + this.state.companyCardData);
 
     } catch (error) {
@@ -327,7 +314,6 @@ class Acc1013 extends Component {
 
 
   handleNewButtonClick = () => {
-    console.log('추가ㅓ 누르기')
     this.setState({
       selectedCompanyCards: '',
       selectedRead: "Y",
@@ -351,6 +337,43 @@ class Acc1013 extends Component {
 
   }
 
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+
+      const updatedContent = prevState.content.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        content: updatedContent,
+        selectedchecked: selectedchecked,
+      };
+    }, () => {
+      console.log(this.state.selectedchecked);
+    });
+  };
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (co_cd) => {
+    this.setState(
+      (prevState) => {
+        const updatedContent = prevState.content.map((item) =>
+          item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
+        );
+        const selectedchecked = updatedContent.filter((item) => item.checked);
+
+        return { content: updatedContent, selectedchecked: selectedchecked };
+      })
+      }
+
+  //onChange핸들함수
   handleCoCdChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -410,7 +433,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleBzItemChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -460,7 +482,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleCpNoChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -504,7 +525,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleOpnDtChange = (value) => {
     console.log('개업찍어보기.... : ' + value);
     this.setState((prevState) => ({
@@ -522,7 +542,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
   handleCeoNmChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
