@@ -116,396 +116,322 @@ class Ace1010 extends Component {
     });
   }
 
+
+
+  // 차량 조회 후 rows에 abizcar_person 데이터 입력
+  searchcarforabizperson = (carforabizperson, car_cd) => {
+    if (carforabizperson === 'none') {
+      this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 사용이 중지되었습니다', 'error');
+      this.setState({ rows: [] })
+      return
+    }
+    else if (carforabizperson === null) {
+      this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 존재하지 않습니다.', 'error');
+      this.setState({ rows: [] })
+      return
+
+    } //첫 기록이 없을 때 사원코드나 그런거 차에서 가져와도 못담네 야팔
+    else {
+      // emp_cd 로그인 사원코드 
+      const user = JSON.parse(sessionStorage.getItem('user'));
+
+      const insertid = user.emp_id;
+
+      const modifyid = user.emp_id;
+      const cocd = carforabizperson[0].co_cd;
+      const empcd = carforabizperson[0].emp_cd;
+      const carcd = carforabizperson[0].car_cd; // 빈 값으로 초기화
+      //let cocd = "";  // 빈 값으로 초기화
+
+      if (carforabizperson[0].seq_nb !== 0) {
+
+
+        const dataWithIds = carforabizperson.map((item, index) => {
+          return {
+            ...item,
+            use_dt: new Date(item.use_dt),
+            modify_id: modifyid,
+            co_cd: cocd,
+            emp_cd: empcd,
+            car_cd: carcd,
+            id: index + 1,
+            origin: 'Y',
+
+          };
+        });
+
+        const maxId = Math.max(...dataWithIds.map(item => item.id));
+
+        // 빈 행을 생성
+        const emptyRow = {
+          id: maxId + 1,
+          car_cd: carcd,
+          co_cd: cocd,
+          seq_nb: 0,
+          emp_cd: empcd,
+          send_yn: '2',
+          insert_id: insertid,
+          origin: 'N',
+          rmk_dc: '',
+          use_fg: '',
+
+        };
+
+        this.setState({ rows: [...dataWithIds, emptyRow] });
+
+
+      } else {
+        // 차량등 등록되어 있지만 운행기록이 없을 때
+        // 빈 행을 생성
+        const emptyRow = {
+          id: 1,
+          car_cd: carcd,
+          co_cd: cocd,
+          seq_nb: 0,
+          emp_cd: empcd,
+          insert_id: insertid,
+          send_yn: '2',
+          origin: 'N',
+          rmk_dc: '',
+          use_fg: '',
+        };
+        this.setState({ rows: [emptyRow] });
+      }
+    }
+
+  }
+
   // 행이 클릭되면 여러 요소를 저장 하여 활용
   handleRowClick = (params, event) => {
 
-    // 차량 조회 후 rows에 abizcar_person 데이터 입력
-    searchcarforabizperson = (carforabizperson, car_cd) => {
-      if (carforabizperson === 'none') {
-        this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 사용이 중지되었습니다', 'error');
-        this.setState({ rows: [] })
-        return
+    console.log(params.rmk_dc);
+    console.log(params.row.rmk_dc);
+    // 행 클릭시 필수 셀 빨간색 입히는 setState
+    this.setState({
+      selectedRowId: params.id,
+      selectedRowRmkdc: params.row.rmk_dc,
+      selectedRowUseFg: params.row.use_fg,
+      // editingCellName : 
+    })
+
+  }
+
+  cellkeydown = (params, event) => {
+    console.log('셀키다운')
+    console.log(params.field)
+    console.log(params.row.id)
+    console.log(params)
+    this.setState({
+      editedCell: params.field,
+      selectedRowIdFg: params.row.id,
+      selectedCellFg: params.field,
+
+    }, () => {
+      if (event.key === 'Enter' && params.field === 'after_km') {
+        this.saveCellKeyDown(params);
       }
-      else if (carforabizperson === null) {
-        this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 존재하지 않습니다.', 'error');
-        this.setState({ rows: [] })
-        return
+    })
 
-      } //첫 기록이 없을 때 사원코드나 그런거 차에서 가져와도 못담네 야팔
-      else {
-        // emp_cd 로그인 사원코드 
-        const user = JSON.parse(sessionStorage.getItem('user'));
+  }
+  handleCellClick = (params, event) => {
+    // console.log('셀 클릭')
+    // console.log(params.row.id)
+    // console.log(params.field)
 
-        const insertid = user.emp_id;
+    this.setState({
+      selectedRowIdFg: params.row.id,
+      selectedCellFg: params.field,
 
-        const modifyid = user.emp_id;
-        const cocd = carforabizperson[0].co_cd;
-        const empcd = carforabizperson[0].emp_cd;
-        const carcd = carforabizperson[0].car_cd; // 빈 값으로 초기화
-        //let cocd = "";  // 빈 값으로 초기화
-
-        if (carforabizperson[0].seq_nb !== 0) {
+    })
+  }
 
 
-          const dataWithIds = carforabizperson.map((item, index) => {
-            return {
-              ...item,
-              use_dt: new Date(item.use_dt),
-              modify_id: modifyid,
-              co_cd: cocd,
-              emp_cd: empcd,
-              car_cd: carcd,
-              id: index + 1,
-              origin: 'Y',
+  // 모달을 띄우기
+  showModalAndWait = () => {
+    return new Promise((resolve, reject) => {
+      this.resolveShowModal = resolve;  // resolve 함수를 저장
+      this.setState({ showModal: true });
+      console.log('모달이 생성되었음');
+    });
+  }
 
-            };
-          });
-
-          const maxId = Math.max(...dataWithIds.map(item => item.id));
-
-          // 빈 행을 생성
-          const emptyRow = {
-            id: maxId + 1,
-            car_cd: carcd,
-            co_cd: cocd,
-            seq_nb: 0,
-            emp_cd: empcd,
-            send_yn: '2',
-            insert_id: insertid,
-            origin: 'N',
-            rmk_dc: '',
-            use_fg: '',
-
-          };
-
-          this.setState({ rows: [...dataWithIds, emptyRow] });
-
-
-        } else {
-          // 차량등 등록되어 있지만 운행기록이 없을 때
-          // 빈 행을 생성
-          const emptyRow = {
-            id: 1,
-            car_cd: carcd,
-            co_cd: cocd,
-            seq_nb: 0,
-            emp_cd: empcd,
-            insert_id: insertid,
-            send_yn: '2',
-            origin: 'N',
-            rmk_dc: '',
-            use_fg: '',
-          };
-          this.setState({ rows: [emptyRow] });
-        }
+  //  모달 확인버튼 클릭 후 
+  handleModalConfirm = (inputValue) => {
+    this.setState({
+      showModal: false,
+      inputValueforfg: inputValue,
+    }, () => {
+      if (this.resolveShowModal) {
+        this.resolveShowModal(); // 저장된 resolve 함수 실행
+        this.resolveShowModal = null; // resolve 함수 초기화
+        console.log('모달에서 입력 끝남')
       }
+    });
+  };
 
-    }
+  handleModalNotConfirm = () => {
+    this.setState({
+      showModal: false,
+      inputValueforfg: '',
+    }, () => {
+      if (this.resolveShowModal) {
+        this.resolveShowModal();
+        this.resolveShowModal = null;
+        console.log('모달에서 입력 끝남')
+      }
+    });
 
-    // 행이 클릭되면 여러 요소를 저장 하여 활용
-    handleRowClick = (params, event) => {
+  }
+  handleRmkDcChange = (value) => {
+    // 현재 상태의 rows 배열을 복사
+    const updatedRows = [...this.state.rows];
 
-      console.log(params.rmk_dc);
-      console.log(params.row.rmk_dc);
-      // 행 클릭시 필수 셀 빨간색 입히는 setState
+    // 선택된 행의 인덱스 찾기
+    const rowIndex = updatedRows.findIndex(item => item.id === this.state.selectedRowId);
+
+    // 해당 행이 배열 내에 있으면
+    if (rowIndex !== -1) {
+      // 해당 행의 rmk_dc를 업데이트
+      updatedRows[rowIndex].rmk_dc = value;
+
+      // 상태 업데이트
       this.setState({
-        selectedRowId: params.id,
-        selectedRowRmkdc: params.row.rmk_dc,
-        selectedRowUseFg: params.row.use_fg,
-        // editingCellName : 
-      })
-
-    }
-
-    cellkeydown = (params, event) => {
-      console.log('셀키다운')
-      console.log(params.field)
-      console.log(params.row.id)
-      console.log(params)
-      this.setState({
-        editedCell: params.field,
-        selectedRowIdFg: params.row.id,
-        selectedCellFg: params.field,
-
-      }, () => {
-        if (event.key === 'Enter' && params.field === 'after_km') {
-          this.saveCellKeyDown(params);
-        }
-      })
-
-    }
-    handleCellClick = (params, event) => {
-      // console.log('셀 클릭')
-      // console.log(params.row.id)
-      // console.log(params.field)
-
-      this.setState({
-        selectedRowIdFg: params.row.id,
-        selectedCellFg: params.field,
-
-      })
-    }
-
-
-    // 모달을 띄우기
-    showModalAndWait = () => {
-      return new Promise((resolve, reject) => {
-        this.resolveShowModal = resolve;  // resolve 함수를 저장
-        this.setState({ showModal: true });
-        console.log('모달이 생성되었음');
+        rows: updatedRows,
+        selectedRowRmkdc: value
       });
     }
+  }
 
-    //  모달 확인버튼 클릭 후 
-    handleModalConfirm = (inputValue) => {
-      this.setState({
-        showModal: false,
-        inputValueforfg: inputValue,
-      }, () => {
-        if (this.resolveShowModal) {
-          this.resolveShowModal(); // 저장된 resolve 함수 실행
-          this.resolveShowModal = null; // resolve 함수 초기화
-          console.log('모달에서 입력 끝남')
-        }
-      });
-    };
+  processRowUpdatefunc = async (updatedRow) => {
+    console.log('프로세스 실행')
+    console.log(updatedRow.id)
 
-    handleModalNotConfirm = () => {
-      this.setState({
-        showModal: false,
-        inputValueforfg: '',
-      }, () => {
-        if (this.resolveShowModal) {
-          this.resolveShowModal();
-          this.resolveShowModal = null;
-          console.log('모달에서 입력 끝남')
-        }
-      });
 
-    }
-    handleRmkDcChange = (value) => {
-      // 현재 상태의 rows 배열을 복사
-      const updatedRows = [...this.state.rows];
+    // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
+    const cellFieldName = this.state.editedCell;
 
-      // 선택된 행의 인덱스 찾기
-      const rowIndex = updatedRows.findIndex(item => item.id === this.state.selectedRowId);
+    console.log('updatedRow.id : ' + updatedRow.id)
+    console.log('this.state.selectedRowIdFg  : ' + this.state.selectedRowIdFg)
+    console.log('this.state.selectedCellFg  : ' + this.state.selectedCellFg)
 
-      // 해당 행이 배열 내에 있으면
-      if (rowIndex !== -1) {
-        // 해당 행의 rmk_dc를 업데이트
-        updatedRows[rowIndex].rmk_dc = value;
+    // 출발구분, 도착구분
+    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'start_fg') {
 
-        // 상태 업데이트
-        this.setState({
-          rows: updatedRows,
-          selectedRowRmkdc: value
-        });
+      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '즐겨찾기') {
+        console.log('모달뜨기 직전= 출발구분')
+        await this.showModalAndWait();
+
+        updatedRow.start_fg = this.state.inputValueforfg;
+
       }
     }
 
-    processRowUpdatefunc = async (updatedRow) => {
-      console.log('프로세스 실행')
-      console.log(updatedRow.id)
+    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
 
+      if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '즐겨찾기') {
+        console.log('모달뜨기 직전 도착구분')
+        await this.showModalAndWait();
 
-      // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
-      const cellFieldName = this.state.editedCell;
-
-      console.log('updatedRow.id : ' + updatedRow.id)
-      console.log('this.state.selectedRowIdFg  : ' + this.state.selectedRowIdFg)
-      console.log('this.state.selectedCellFg  : ' + this.state.selectedCellFg)
-
-      // 출발구분, 도착구분
-      if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'start_fg') {
-
-        if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '즐겨찾기') {
-          console.log('모달뜨기 직전= 출발구분')
-          await this.showModalAndWait();
-
-          updatedRow.start_fg = this.state.inputValueforfg;
-
-        }
-      }
-
-      if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
-
-        if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '즐겨찾기') {
-          console.log('모달뜨기 직전 도착구분')
-          await this.showModalAndWait();
-
-          updatedRow.end_fg = this.state.inputValueforfg;
-
-        }
-      }
-
-
-      const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
-
-      //  주행전, 후 자동 입력
-      if (cellFieldName === 'mileage_km') {
-
-        const rowWithId2 = this.state.rows.find((row) => row.id === updatedRow.id - 1);
-
-        const mileageKmValue = Number(updatedRow.mileage_km);
-        if (rowWithId2) {
-          const afterKmValueOfId2 = Number(rowWithId2.after_km);
-
-          updatedRow.after_km = mileageKmValue + afterKmValueOfId2;
-
-          updatedRow.before_km = afterKmValueOfId2;
-        } else {
-          //운행기록부 데이터가 없을 때는 기초거리에서 가져와야 하는데 현재 없으니 일단 0으로 시작
-          updatedRow.before_km = 0;
-
-          updatedRow.after_km = mileageKmValue + updatedRow.before_km;
-        }
+        updatedRow.end_fg = this.state.inputValueforfg;
 
       }
-
-
-      const updatedRows = [...this.state.rows];
-      updatedRows[rowIndex] = updatedRow;
-
-
-      this.setState({
-        // rows: updatedRows,
-        inputValueforfg: ''
-      })
-
-      return updatedRow;
     }
 
-    toLocalISOString = (date) => {
-      const off = date.getTimezoneOffset();
-      const offset = (off < 0 ? '+' : '-') + String(Math.abs(off / 60)).padStart(2, '0');
-      return (new Date(date.getTime() - off * 60 * 1000).toISOString().substring(0, 23) + offset + ':00');
-    }
 
-    // 1. 주행후에서 엔터가 쳐졌을 때만 저장이 실행이 된다.
-    // 2. 값들 중 운행일자, 출발구분, 도착 구분이 없다면 스낵바를 띄운다.
-    // 3. 신규 저장이면 빈 행을 띄운다. seq를 rows에서 max를 찾아 1증가 시켜 수정이 가능하도록 한다.
-    // 4. 신규 저장시 seq_nb를 0에서 1로 바꾼다.
-    // 5. 
-    saveCellKeyDown = async (params) => {
-      console.log(' 저장 시작 ')
-      console.log(params)
-      console.log(params.row)
-      console.log(params.field)
-      const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
+    const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
 
-      const allFieldsHaveValue = fieldsToCheck.every(field => {
+    //  주행전, 후 자동 입력
+    if (cellFieldName === 'mileage_km') {
 
-        const value = params.row[field];
-        return value !== undefined && value !== null && value !== "";
-      });
+      const rowWithId2 = this.state.rows.find((row) => row.id === updatedRow.id - 1);
 
-      if (!allFieldsHaveValue) {
-        this.DouzoneContainer.current.handleSnackbarOpen('운행일자, 출발구분, 도착구분은 필수입력란 입니다.', 'error');
-        return
+      const mileageKmValue = Number(updatedRow.mileage_km);
+      if (rowWithId2) {
+        const afterKmValueOfId2 = Number(rowWithId2.after_km);
+
+        updatedRow.after_km = mileageKmValue + afterKmValueOfId2;
+
+        updatedRow.before_km = afterKmValueOfId2;
+      } else {
+        //운행기록부 데이터가 없을 때는 기초거리에서 가져와야 하는데 현재 없으니 일단 0으로 시작
+        updatedRow.before_km = 0;
+
+        updatedRow.after_km = mileageKmValue + updatedRow.before_km;
       }
 
+    }
 
 
-      if (params.row.origin == 'N') {
-        console.log('신규 저장 시작')
-        const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
-        const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
-        params.row.insert_dt = mysqlDate;
-
-        if (params.row.use_dt !== null) {
-          const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
-          const isoDate2 = this.toLocalISOString(selectedDate);
-          const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-          params.row.use_dt = mysqlDate2;
-        }
-        params.row.rmk_dc = this.state.selectedRowRmkdc;
-        try {
-          const response = await post("/ace1010/insert", params.row)
+    const updatedRows = [...this.state.rows];
+    updatedRows[rowIndex] = updatedRow;
 
 
+    this.setState({
+      // rows: updatedRows,
+      inputValueforfg: ''
+    })
 
-          if (response.data === 'insert success') {
-            this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 새롭게 저장되었습니다.', 'success');
+    return updatedRow;
+  }
 
-            // origin을 'Y'로 변경합니다.
-            if (params.row.seq_nb === 0) {
-              params.row.seq_nb = 1;
-            }
+  toLocalISOString = (date) => {
+    const off = date.getTimezoneOffset();
+    const offset = (off < 0 ? '+' : '-') + String(Math.abs(off / 60)).padStart(2, '0');
+    return (new Date(date.getTime() - off * 60 * 1000).toISOString().substring(0, 23) + offset + ':00');
+  }
 
-            params.row.origin = 'Y';
+  // 1. 주행후에서 엔터가 쳐졌을 때만 저장이 실행이 된다.
+  // 2. 값들 중 운행일자, 출발구분, 도착 구분이 없다면 스낵바를 띄운다.
+  // 3. 신규 저장이면 빈 행을 띄운다. seq를 rows에서 max를 찾아 1증가 시켜 수정이 가능하도록 한다.
+  // 4. 신규 저장시 seq_nb를 0에서 1로 바꾼다.
+  // 5. 
+  saveCellKeyDown = async (params) => {
+    console.log(' 저장 시작 ')
+    console.log(params)
+    console.log(params.row)
+    console.log(params.field)
+    const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
 
-            // 상태를 업데이트합니다.
-            const updatedRows = this.state.rows.map(row => {
-              if (row.id === params.row.id) {
-                return params.row;
-              }
-              return row;
-            });
+    const allFieldsHaveValue = fieldsToCheck.every(field => {
 
-            this.setState({
-              rows: updatedRows
-            });
+      const value = params.row[field];
+      return value !== undefined && value !== null && value !== "";
+    });
+
+    if (!allFieldsHaveValue) {
+      this.DouzoneContainer.current.handleSnackbarOpen('운행일자, 출발구분, 도착구분은 필수입력란 입니다.', 'error');
+      return
+    }
+
+
+
+    if (params.row.origin == 'N') {
+      console.log('신규 저장 시작')
+      const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
+      const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
+      params.row.insert_dt = mysqlDate;
+
+      if (params.row.use_dt !== null) {
+        const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
+        const isoDate2 = this.toLocalISOString(selectedDate);
+        const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+        params.row.use_dt = mysqlDate2;
+      }
+      params.row.rmk_dc = this.state.selectedRowRmkdc;
+      try {
+        const response = await post("/ace1010/insert", params.row)
+
+
+
+        if (response.data === 'insert success') {
+          this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 새롭게 저장되었습니다.', 'success');
+
+          // origin을 'Y'로 변경합니다.
+          if (params.row.seq_nb === 0) {
+            params.row.seq_nb = 1;
           }
-          // 새로운 운행기록부 저장시 빈행 추가
-          const lastRow = this.state.rows[this.state.rows.length - 1];
-          const newId = lastRow.id + 1;
-          const seqnb = lastRow.seq_nb + 1;
-          const user = JSON.parse(sessionStorage.getItem('user'));
-          const empid = user.emp_id;
-          const carcd = params.row.car_cd;
-          const cocd = params.row.co_cd;
 
-          const emptyRow = {
-            id: newId,
-            car_cd: carcd,
-            co_cd: cocd,
-            seq_nb: seqnb,
-            insert_id: empid,
-            emp_cd: params.row.emp_cd,
-            send_yn: '2',
-            origin: 'N',
-            use_fg: '',
-            rmk_dc: '',
-            // 기타 필요한 초기화 값들...
-          };
-
-          this.setState(prevState => ({
-            rows: [...prevState.rows, emptyRow]
-          }));
-
-
-        } catch (error) {
-          console.error(error);
-          this.DouzoneContainer.current.handleSnackbarOpen('신규 저장중 서버로 요청 보내기 실패.', 'error');
-        }
-
-      } else if (params.row.origin === 'Y') {
-        console.log('수정 시작')
-        console.log(params.row)
-        if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
-          const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
-          const isoDate2 = this.toLocalISOString(selectedDate);
-          const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-          params.row.use_dt = mysqlDate2;
-        }
-        const isoDate2 = this.toLocalISOString(new Date());
-        const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
-        params.row.modify_dt = mysqlDate;
-
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        const modifyid = user.emp_id;
-        params.row.modify_id = modifyid
-
-        params.row.rmk_dc = this.state.selectedRowRmkdc;
-
-        try {
-          const response = await update("/ace1010/update", params.row)
-
-          if (response.data === 'update success') {
-            this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 수정되었습니다.', 'success');
-          } else if (response.data === 'update failed') {
-            this.DouzoneContainer.current.handleSnackbarOpen('운행기록부 수정에 실패하였습니다.', 'error');
-          }
+          params.row.origin = 'Y';
 
           // 상태를 업데이트합니다.
           const updatedRows = this.state.rows.map(row => {
@@ -518,16 +444,89 @@ class Ace1010 extends Component {
           this.setState({
             rows: updatedRows
           });
-
-        } catch (error) {
-          console.error(error);
-          this.DouzoneContainer.current.handleSnackbarOpen('업데이트 중 서버로 요청 보내기 실패.', 'error');
         }
+        // 새로운 운행기록부 저장시 빈행 추가
+        const lastRow = this.state.rows[this.state.rows.length - 1];
+        const newId = lastRow.id + 1;
+        const seqnb = lastRow.seq_nb + 1;
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        const empid = user.emp_id;
+        const carcd = params.row.car_cd;
+        const cocd = params.row.co_cd;
+
+        const emptyRow = {
+          id: newId,
+          car_cd: carcd,
+          co_cd: cocd,
+          seq_nb: seqnb,
+          insert_id: empid,
+          emp_cd: params.row.emp_cd,
+          send_yn: '2',
+          origin: 'N',
+          use_fg: '',
+          rmk_dc: '',
+          // 기타 필요한 초기화 값들...
+        };
+
+        this.setState(prevState => ({
+          rows: [...prevState.rows, emptyRow]
+        }));
+
+
+      } catch (error) {
+        console.error(error);
+        this.DouzoneContainer.current.handleSnackbarOpen('신규 저장중 서버로 요청 보내기 실패.', 'error');
       }
 
+    } else if (params.row.origin === 'Y') {
+      console.log('수정 시작')
+      console.log(params.row)
+      if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
+        const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
+        const isoDate2 = this.toLocalISOString(selectedDate);
+        const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+        params.row.use_dt = mysqlDate2;
+      }
+      const isoDate2 = this.toLocalISOString(new Date());
+      const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
+      params.row.modify_dt = mysqlDate;
+
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      const modifyid = user.emp_id;
+      params.row.modify_id = modifyid
+
+      params.row.rmk_dc = this.state.selectedRowRmkdc;
+
+      try {
+        const response = await update("/ace1010/update", params.row)
+
+        if (response.data === 'update success') {
+          this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 수정되었습니다.', 'success');
+        } else if (response.data === 'update failed') {
+          this.DouzoneContainer.current.handleSnackbarOpen('운행기록부 수정에 실패하였습니다.', 'error');
+        }
+
+        // 상태를 업데이트합니다.
+        const updatedRows = this.state.rows.map(row => {
+          if (row.id === params.row.id) {
+            return params.row;
+          }
+          return row;
+        });
+
+        this.setState({
+          rows: updatedRows
+        });
+
+      } catch (error) {
+        console.error(error);
+        this.DouzoneContainer.current.handleSnackbarOpen('업데이트 중 서버로 요청 보내기 실패.', 'error');
+      }
     }
 
   }
+
+
 
 
 
