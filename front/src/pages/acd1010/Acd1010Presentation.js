@@ -19,7 +19,7 @@ import { style } from "@mui/system";
 
 class Acd1010Presentation extends Component {
   render() {
-    const { selectedregcar,selectedRead } = this.props;
+    const { selectedregcar, selectedRead } = this.props;
     var readonly = selectedRead === "N";
 
     return (
@@ -42,12 +42,12 @@ class Acd1010Presentation extends Component {
                 backgroundColor: "#FBFBFB",
                 color: "black",
               }}
-              // onClick={this.handleSaveClick} // "저장" 버튼 클릭 시 handleSaveClick 함수 호출
+            // onClick={this.handleSaveClick} // "저장" 버튼 클릭 시 handleSaveClick 함수 호출
             >
               저장
             </Button>
 
-            
+
           </div>
         </div>
         <div className="acd1010-input-container">
@@ -83,10 +83,10 @@ class Acd1010Presentation extends Component {
                   variant="outlined"
                   size="small"
                   sx={{ width: "100%", backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
-                  
+
                   inputProps={{ style: { height: "15px" }, readOnly: readonly }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
-                  value={selectedregcar?.car_cd ||""}
+                  value={selectedregcar?.car_cd || ""}
                   onChange={(e) => this.props.handleCarCdChange(e.target.value)}
                   required
                 />
@@ -104,13 +104,13 @@ class Acd1010Presentation extends Component {
                   variant="outlined"
                   size="small"
                   sx={{ width: "100%", backgroundColor: readonly ? 'white' : '#FEF4F4' }}
-                  
+
                   inputProps={{ style: { height: "15px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
-                  value={selectedregcar?.car_nb ||""}
-                    onChange={(e) =>
-                  this.props.handleCarNbChange(e.target.value)
-                    }
+                  value={selectedregcar?.car_nb || ""}
+                  onChange={(e) =>
+                    this.props.handleCarNbChange(e.target.value)
+                  }
                   required
                 />
               </Grid>
@@ -135,37 +135,36 @@ class Acd1010Presentation extends Component {
                   variant="outlined"
                   size="small"
                   sx={{ width: "100%", backgroundColor: readonly ? 'white' : '#FEF4F4' }}
-                
-                  inputProps={{ style: { height: "15px" }}}
+
+                  inputProps={{ style: { height: "15px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
-                  value={selectedregcar?.car_nm ||""}
+                  value={selectedregcar?.car_nm || ""}
                   onChange={(e) => this.props.handleCarNmChange(e.target.value)}
                   required
                 />
               </Grid>
 
-              {/*  */}
-              <Grid item xs={6} style={{ textAlign: "right" }}>
+              {/* 사원번호 */}
+              <Grid item xs={1} style={{ textAlign: "right" }}>
                 <Typography>
-                  {/* <h5 style={{ margin: "5px" }}>차량번호</h5> */}
+                  <h5 style={{ margin: "5px" }}>사원번호</h5>
                 </Typography>
               </Grid>
-              {/* <Grid item xs={5}>
+              <Grid item xs={5}>
                 <TextField
                   fullWidth
                   variant="outlined"
                   size="small"
-                  sx={{ width: "100%", backgroundColor: "white" }}
-                  style={{ background: "#FEF4F4" }}
+                  sx={{ width: "100%", backgroundColor: readonly ? 'white' : '#FEF4F4' }}
+
                   inputProps={{ style: { height: "15px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
-                  //   value={selectedDept?.dept_cd || ""}
-                  //   onChange={(e) =>
-                  // this.props.handleDeptCdChange(e.target.value)
-                  //   }
+                  value={selectedregcar?.emp_cd || ""}
+                  onChange={(e) => this.props.handleEmpCdChange(e.target.value)}
                   required
                 />
-              </Grid> */}
+              </Grid>
+
             </Grid>
 
             {/* 3째줄 */}
@@ -193,10 +192,10 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.get_dt ? selectedregcar.get_dt: '')}
+                    value={dayjs(selectedregcar.get_dt ? selectedregcar.get_dt : '')}
                     name="get_dt"
-                    onChange={(value) => {this.props.handleGetDtChange(value); }} 
-                  
+                    onChange={(value) => { this.props.handleGetDtChange(value); }}
+
                   />
                 </LocalizationProvider>
               </Grid>
@@ -219,12 +218,12 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.disposal_dt ? selectedregcar.disposal_dt: '')}
+                    value={dayjs(selectedregcar.disposal_dt ? selectedregcar.disposal_dt : '')}
 
                     name="disposal_dt"
-                    
-                    onChange={(value) => {this.props.handleDisposalDtChange(value); }} 
-                    
+
+                    onChange={(value) => { this.props.handleDisposalDtChange(value); }}
+
                   />
                 </LocalizationProvider>
               </Grid>
@@ -254,12 +253,12 @@ class Acd1010Presentation extends Component {
                   sx={{ width: "100%", backgroundColor: readonly ? 'white' : '#FEF4F4' }}
                   label="부서"
                   required
-                  value={selectedregcar?.lease_yn ||""}
+                  value={selectedregcar?.lease_yn || ""}
                   inputProps={{ style: { height: "15px" } }}
                   onChange={(e) =>
                     this.props.handleLeaseynChange(e.target.value)
                   }
-                  
+
                 >
                   <MenuItem value="1">1. 자가</MenuItem>
                   <MenuItem value="2">2. 렌트</MenuItem>
@@ -278,9 +277,9 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.lfr_dt ? selectedregcar.lfr_dt: '')}
+                    value={dayjs(selectedregcar.lfr_dt ? selectedregcar.lfr_dt : '')}
                     name="lfr_dt"
-                    onChange={(value) => {this.props.handleLfrChange(value); }}
+                    onChange={(value) => { this.props.handleLfrChange(value); }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -289,9 +288,9 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.lto_dt ? selectedregcar.lto_dt: '')}
+                    value={dayjs(selectedregcar.lto_dt ? selectedregcar.lto_dt : '')}
                     name="lto_dt"
-                    onChange={(value) => {this.props.handleLtoChange(value); }}
+                    onChange={(value) => { this.props.handleLtoChange(value); }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -315,7 +314,7 @@ class Acd1010Presentation extends Component {
                   variant="outlined"
                   size="small"
                   sx={{ width: "100%", backgroundColor: "white" }}
-                  value={selectedregcar?.insur_tr_cd ||""}
+                  value={selectedregcar?.insur_tr_cd || ""}
                   inputProps={{ style: { height: "15px" } }}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
                   onChange={(e) => this.props.handleInsurChange(e.target.value)}
@@ -333,9 +332,9 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.ifr_dt ? selectedregcar.ifr_dt: '')}
+                    value={dayjs(selectedregcar.ifr_dt ? selectedregcar.ifr_dt : '')}
                     name="ifr_dt"
-                    onChange={(value) => {this.props.handleIfrChange(value); }}
+                    onChange={(value) => { this.props.handleIfrChange(value); }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -344,9 +343,9 @@ class Acd1010Presentation extends Component {
                   <DatePicker
                     variant="outlined"
                     slotProps={{ textField: { size: "small" } }}
-                    value={dayjs(selectedregcar.ito_dt ? selectedregcar.ito_dt: '')}
+                    value={dayjs(selectedregcar.ito_dt ? selectedregcar.ito_dt : '')}
                     name="ito_dt"
-                    onChange={(value) => {this.props.handleItoChange(value); }}
+                    onChange={(value) => { this.props.handleItoChange(value); }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -372,7 +371,7 @@ class Acd1010Presentation extends Component {
                   style={{ width: "25%" }}
                   sx={{ width: "100%", backgroundColor: "white" }}
                   label="차량사용"
-                  value={selectedregcar?.use_yn ||"Y"}
+                  value={selectedregcar?.use_yn || "Y"}
                   inputProps={{ style: { height: "15px" } }}
                   onChange={(e) =>
                     this.props.handleUseynChange(e.target.value)

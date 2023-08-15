@@ -342,6 +342,15 @@ class Ace1010 extends Component {
 
     //  주행전, 후 자동 입력
     if (cellFieldName === 'mileage_km') {
+      //만약 해당 행의 다음행이 존재한다면 주행을 바꾸는 순간 그 뒤에 오는 행들을 모두 수정해줘야하며
+      // 바꿔주기만 하면 일일히 만약 100라면 다 하나하나 저장을 해야하니 일제히 저장을 돌려버린다.
+      // 1.  해당 행 이후에 행이 있는지 체크
+      // 2. 있다면 모든 행들을 가져오기
+      // 3. 모든 행이 직전의 행의 after_km를 가져와 before_km에 담고 다시 mileage_km랑 더하여 after_km를 변환
+      // 4. 다 끝나면 saveCellKeyDown을 강제로 모든 행을 차례대로 실행
+      // 그런데 안분을 사용하게 되면 일제히 바뀌게 되는데 그러면 어떻게 하지?
+      // 해당행들을 배열로 다시 받아와서 첫번째 행에 안분된 거리를 입력하고 주행후를 바꾸고 
+      // 그게 끝나면 그 다음 행 그리고 순차적으로 저장
 
       const rowWithId2 = this.state.rows.find((row) => row.id === updatedRow.id - 1);
 
@@ -410,17 +419,28 @@ class Ace1010 extends Component {
       const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
       const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
       params.row.insert_dt = mysqlDate;
-
+      console.log('운행일자가 어떻게 바뀌는지 보는')
+      console.log(params.row.use_dt)
       if (params.row.use_dt !== null) {
-        const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
-        const isoDate2 = this.toLocalISOString(selectedDate);
-        const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-        params.row.use_dt = mysqlDate2;
+        // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
+        const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
+
+        if (!isAlreadyFormatted) {
+          const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
+          const isoDate2 = this.toLocalISOString(selectedDate);
+          const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+          params.row.use_dt = mysqlDate2;
+        }
       }
       params.row.rmk_dc = this.state.selectedRowRmkdc;
       try {
         const response = await post("/ace1010/insert", params.row)
-
+        if (response.data === 'before data exist') {
+          this.DouzoneContainer.current.handleSnackbarOpen('입력일 이후에 데이터가 존재하여 입력이불가능합니다', 'error');
+        }
+        if (response.data === 'same time data exist') {
+          this.DouzoneContainer.current.handleSnackbarOpen('입력일의 같은 시간대와 이전 시간대의 운행이 존재하여 입력이 불가능합니다', 'error');
+        }
 
 
         if (response.data === 'insert success') {
@@ -444,33 +464,35 @@ class Ace1010 extends Component {
           this.setState({
             rows: updatedRows
           });
+
+          // 새로운 운행기록부 저장시 빈행 추가
+          const lastRow = this.state.rows[this.state.rows.length - 1];
+          const newId = lastRow.id + 1;
+          const seqnb = lastRow.seq_nb + 1;
+          const user = JSON.parse(sessionStorage.getItem('user'));
+          const empid = user.emp_id;
+          const carcd = params.row.car_cd;
+          const cocd = params.row.co_cd;
+
+          const emptyRow = {
+            id: newId,
+            car_cd: carcd,
+            co_cd: cocd,
+            seq_nb: seqnb,
+            insert_id: empid,
+            emp_cd: params.row.emp_cd,
+            send_yn: '2',
+            origin: 'N',
+            use_fg: '',
+            rmk_dc: '',
+            // 기타 필요한 초기화 값들...
+          };
+
+          this.setState(prevState => ({
+            rows: [...prevState.rows, emptyRow]
+          }));
+
         }
-        // 새로운 운행기록부 저장시 빈행 추가
-        const lastRow = this.state.rows[this.state.rows.length - 1];
-        const newId = lastRow.id + 1;
-        const seqnb = lastRow.seq_nb + 1;
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        const empid = user.emp_id;
-        const carcd = params.row.car_cd;
-        const cocd = params.row.co_cd;
-
-        const emptyRow = {
-          id: newId,
-          car_cd: carcd,
-          co_cd: cocd,
-          seq_nb: seqnb,
-          insert_id: empid,
-          emp_cd: params.row.emp_cd,
-          send_yn: '2',
-          origin: 'N',
-          use_fg: '',
-          rmk_dc: '',
-          // 기타 필요한 초기화 값들...
-        };
-
-        this.setState(prevState => ({
-          rows: [...prevState.rows, emptyRow]
-        }));
 
 
       } catch (error) {
@@ -481,12 +503,23 @@ class Ace1010 extends Component {
     } else if (params.row.origin === 'Y') {
       console.log('수정 시작')
       console.log(params.row)
-      if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
-        const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
-        const isoDate2 = this.toLocalISOString(selectedDate);
-        const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-        params.row.use_dt = mysqlDate2;
+      if (params.row.use_dt !== null) {
+        // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
+        const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
+
+        if (!isAlreadyFormatted) {
+          const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
+          const isoDate2 = this.toLocalISOString(selectedDate);
+          const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+          params.row.use_dt = mysqlDate2;
+        }
       }
+      // if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
+      //   const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
+      //   const isoDate2 = this.toLocalISOString(selectedDate);
+      //   const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+      //   params.row.use_dt = mysqlDate2;
+      // }
       const isoDate2 = this.toLocalISOString(new Date());
       const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
       params.row.modify_dt = mysqlDate;
@@ -499,7 +532,15 @@ class Ace1010 extends Component {
 
       try {
         const response = await update("/ace1010/update", params.row)
-
+        if (response.data === 'same time exist at working row') {
+          this.DouzoneContainer.current.handleSnackbarOpen('해당 시간은 같은 운행일자의 중복되는 시간입니다.', 'error');
+        }
+        if (response.data === 'before data exist') {
+          this.DouzoneContainer.current.handleSnackbarOpen('입력일 이후에 데이터가 존재하여 입력이불가능합니다', 'error');
+        }
+        if (response.data === 'same time data exist') {
+          this.DouzoneContainer.current.handleSnackbarOpen('입력일의 같은 시간대와 이전 시간대의 운행이 존재하여 입력이 불가능합니다', 'error');
+        }
         if (response.data === 'update success') {
           this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 수정되었습니다.', 'success');
         } else if (response.data === 'update failed') {
