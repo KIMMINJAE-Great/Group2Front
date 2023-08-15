@@ -12,20 +12,60 @@ import {
   RadioGroup,
   Select,
   TextField,
-  Typography
+  Typography,
+  Alert,
+  Snackbar,
+  Slide
 } from "@mui/material";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+// import dayjs from 'dayjs';
+// import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+
 import SearchIcon from '@mui/icons-material/Search';
-import { blue } from "@mui/material/colors";
 import { getByQueryString } from "../../components/api_url/API_URL";
 import { Component } from "react";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import dayjs from "dayjs";
+const theme = createTheme({
+  components: {
+
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "&:hover $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          "&.Mui-focused $notchedOutline": {
+            borderColor: "rgba(0, 0, 0, 0.23)", // 기본 테두리 색상으로 유지
+          },
+          borderRadius: 0,
+          height: 30,
+          width: 170
+        },
+      },
+    },
+  },
+});
 
 class Ace1010Search extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       car_cd: "",
 
-      carinfo: ""
+      carinfo: "",
+
+      firstUse_dt: dayjs().startOf('month'),   // 해당 달의 첫째날
+      LastUse_dt: dayjs().endOf('month'),     // 해당 달의 말일
+      openSnackBar: false,
     };
   }
   handleclearFields = () => {
@@ -36,24 +76,47 @@ class Ace1010Search extends Component {
     });
   };
 
+  // Snackbar 표시 함수
+  showErrorSnackbar = () => {
+    this.setState({ openSnackBar: true });
+  };
 
-  searchcarforabizperson = async () => {
-    const { car_cd } = this.state;
+  // Snackbar 숨기기 함수
+  handleCloseSnackbar = () => {
+    this.setState({ openSnackBar: false });
+  };
 
+
+
+  searchcarforabizperson = async (event) => {
+    event.preventDefault();
+    const { car_cd, firstUse_dt, LastUse_dt } = this.state;
+
+    if (!this.state.firstUse_dt || !this.state.LastUse_dt) {
+      this.showErrorSnackbar();
+      return;
+    }
+
+    const formattedFirstUse = firstUse_dt.format('YYYY-MM-DD');
+    const formattedLastUse = LastUse_dt.format('YYYY-MM-DD');
+
+    let carforabizperson
     try {
-      const queryString = `?car_cd=${car_cd || ""}`;
+      const queryString = `?car_cd=${car_cd}&startDate=${formattedFirstUse}&endDate=${formattedLastUse}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
-      const carforabizperson = response.data;
-      // console.log('=======================================')
-      // console.log(carforabizperson)
-      // console.log('=======================================')
-      // if (this.props.searchcarforabizperson) {
-      //   console.log('있다')
-      // } else {
-      //   console.log('없다')
-      // }
 
-      this.props.searchcarforabizperson(carforabizperson);
+      console.log('검색직후 ')
+      console.log(response.data)
+      if (response.data === 'not found') {
+        this.props.searchcarforabizperson(null, car_cd);
+      } else if (response.data === 'not using') {
+        this.props.searchcarforabizperson('none');
+      }
+      else {
+        carforabizperson = response.data;
+        this.props.searchcarforabizperson(carforabizperson, car_cd);
+      }
+
       // this.handleclearFields();
     } catch (error) {
       console.log(error);
@@ -62,66 +125,87 @@ class Ace1010Search extends Component {
 
   render() {
     return (
-      <div className="acc1010search_container" >
+      <form onSubmit={this.searchcarforabizperson}>
+        <div className="acc1010search_container" >
 
-        <Grid container item sx={{ padding: '4px' }}>
-          {/* <Grid item xs={1.1} style={{ textAlign: "right" }}>
-            <Typography>
-              <h5 style={{ margin: "5px" }}>회사</h5>
-            </Typography>
-          </Grid> */}
-          {/* <Grid item xs={1} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-            <Select
-              value={this.state.company}
-              onChange={event => this.setState({ company: event.target.value })}
-              variant="outlined"
-              style={{ width: "100%", height: '28px' }}
+          <Grid container item sx={{ padding: '4px' }}>
+
+
+            <Grid item xs={1.1} style={{ textAlign: "right" }}>
+              <Typography>
+                <h5 style={{ margin: "5px" }}>차량</h5>
+              </Typography>
+            </Grid>
+            <Grid item xs={2} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
+              <TextField
+                fullWidth
+                required
+                variant="outlined"
+                size="small"
+                value={this.state.car_cd}
+                onChange={event => this.setState({ car_cd: event.target.value })}
+                inputProps={{ style: { height: "12px" } }}
+                sx={{ backgroundColor: '#FEF4F4' }}
+              />
+            </Grid>
+            <Grid item xs={1.1} style={{ textAlign: "right" }}>
+              <Typography>
+                <h5 style={{ margin: "5px" }}>운행일</h5>
+              </Typography>
+            </Grid>
+            <ThemeProvider theme={theme}>
+              <Grid item xs={6} sx={{ backgroundColor: 'white', paddingLeft: '5px', display: 'flex' }} >
+
+                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                  <DatePicker
+                    value={this.state.firstUse_dt}
+                    onChange={(date) => this.setState({ firstUse_dt: date })}
+                    sx={{ backgroundColor: '#FEF4F4' }}
+                  />
+                </LocalizationProvider> &nbsp;&nbsp;&nbsp; ~ &nbsp;&nbsp;&nbsp;
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    value={this.state.LastUse_dt}
+                    onChange={(date) => this.setState({ LastUse_dt: date })}
+                    sx={{ backgroundColor: '#FEF4F4' }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </ThemeProvider>
+
+          </Grid>
+
+          <IconButton type="submit" color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
+            <SearchIcon />
+          </IconButton>
+          <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
+
+          <Snackbar
+            open={this.state.openSnackBar}
+            autoHideDuration={2000}
+            onClose={this.handleCloseSnackbar}
+            TransitionComponent={Slide}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <Alert
+
+              severity="error"
+              sx={{
+                width: "100%",
+                bgcolor: "error.main",
+                ".MuiAlert-icon": {
+                  color: "#ffffff",
+                },
+                color: "white",
+                fontWeight: "bold",
+              }}
+
             >
-              <MenuItem value="1000">1000 </MenuItem>
-              <MenuItem value="2000">2000</MenuItem>
-            </Select>
-          </Grid>
-
-          <Grid item xs={1.1} style={{ textAlign: "right" }}>
-            <Typography>
-              <h5 style={{ margin: "5px" }}>재직구분</h5>
-            </Typography>
-          </Grid>
-          <Grid item xs={1} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-            <Select
-              value={this.state.status}
-              onChange={event => this.setState({ status: event.target.value })}
-              variant="outlined"
-              style={{ width: "100%", height: '28px' }}
-            >
-              <MenuItem value="ing">재직 </MenuItem>
-              <MenuItem value="done">퇴사</MenuItem>
-            </Select>
-          </Grid> */}
-
-          <Grid item xs={1.1} style={{ textAlign: "right" }}>
-            <Typography>
-              <h5 style={{ margin: "5px" }}>차량</h5>
-            </Typography>
-          </Grid>
-          <Grid item xs={1} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-            <TextField
-              fullWidth
-              require
-              variant="outlined"
-              size="small"
-              value={this.state.car_cd}
-              onChange={event => this.setState({ car_cd: event.target.value })}
-              inputProps={{ style: { height: "12px" } }}
-            />
-          </Grid>
-        </Grid>
-        <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
-          <SearchIcon onClick={this.searchcarforabizperson} />
-        </IconButton>
-        <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
-
-      </div>
+              운행일자를 선택해 주세요
+            </Alert>
+          </Snackbar>
+        </div>
+      </form >
     )
   }
 

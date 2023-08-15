@@ -8,7 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Postcode from "../../components/commons/Postcode";
-import CodePickerManager from '../../components/CodePicker/CodePickerManager';
+import CodePickerManager from '../../components/codepicker/CodePickerManager';
 
 import {
   Button,
@@ -122,19 +122,19 @@ class Acc1013Search extends React.Component {
             </Grid>
             <Grid
               item
-              xs={1.3}
+              xs={1.7}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                height: "40px",
+                height: "39px",
               }}
             >
               <Select
                 value={this.props.defaultUse}
                 onChange={this.props.onInputChange}
                 variant="outlined"
-                style={{ width: "100%", height: "28px" }}
+                style={{ width: "100%", height: "36px" }}
               >
                 <MenuItem value="use">사용</MenuItem>
                 <MenuItem value="unused">미사용</MenuItem>

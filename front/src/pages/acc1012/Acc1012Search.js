@@ -7,7 +7,7 @@ import { IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Select from '@mui/material/Select';
-import CodePickerManager from '../../components/CodePicker/CodePickerManager';
+import CodePickerManager from '../../components/codepicker/CodePickerManager';
 
 
 
@@ -82,7 +82,9 @@ class Acc1012Search extends Component {
 
             <Grid item xs={12} display="flex" alignItems="center">
               <Typography variant="subtitle1" sx={{ marginLeft: 4, marginRight: 0, fontSize: '13px', fontWeight: 'bold', width: "5%" }}  >거래처분류</Typography>
-              <CodePickerManager helpId={'TradeCodePicker'} variant="outlined" />
+              
+              <CodePickerManager helpId={'TradeCodePicker'} variant="outlined" sendData={this.props.sendData} handleToAcc1012FromCodePicker={this.props.handleToAcc1012FromCodePicker}/>
+              
               <Typography variant="subtitle1" sx={{ marginLeft: 8.5, fontSize: '13px', fontWeight: 'bold' }} >사용여부</Typography>
               <Select
                 sx={{ width: '10%', ml: 4.8, height: '75%' }}

@@ -1,66 +1,69 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+// import React, { Component } from 'react';
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker.css';
 
-class Acd1011Child extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: null
-        };
-    }
+// class Acd1011Child extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       startDate: new Date(),
+//       endDate: new Date(),
+//     };
+//   }
 
-    componentDidMount() {
-        this.MapData();
-    }
+//   isWeekend(date) {
+//     const day = date.getDay();
+//     return day === 0 || day === 6;
+//   }
 
-    MapData = async () => {
-        try {
-            const response = await axios.get('https://map.naver.com/v5/api/dir/findcar', {
-                params: {
-                    start: this.props.startCoordinate,//start
-                    name: this.props.startName,  //start
-                    address: '1',
-                    goal: this.props.endCoordinate, //end
-                    placeid: this.props.placeIdNum,
-                    name: this.props.endName, //end
-                    output: 'json',
-                    crs: 'EPSG:4326',
-                    // mainoption: 'traoptimal,avoidhipassonly:traoptimal,multiroute,avoidhipassonly:traoptimal,avoidtoll,avoidhipassonly:traoptdist,avoidhipassonly',
-                },
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json',
-                    
-                },
-            });
-            this.setState({ data: response.data });
-        } catch (error) {
-            console.error("에러발생", error);
-        }
-    };
+//   getDatesWithoutWeekends(startDate, endDate) {
+//     let currentDate = new Date(startDate);
+//     const dateArray = [];
 
-    render() {
-      const { data } = this.state;
+//     while (currentDate <= endDate) {
+//       if (!this.isWeekend(currentDate)) {
+//         dateArray.push(new Date(currentDate));
+//       }
+//       currentDate.setDate(currentDate.getDate() + 1);
+//     }
 
-      const distance = data && Math.round(data.route["3,0,0,0,0,0"][0].summary.distance / 1000); //km
-      const duration = data && Math.round(data.route["3,0,0,0,0,0"][0].summary.duration / 1000 / 60); //분
+//     return dateArray;
+//   }
 
-      
-      return (
-          <div>
-              {data ? (
-                  <div>
-                      <p>Distance: {distance} km</p>
-                      <p>Duration: {duration} minutes</p>
-                      <br></br>
-                      
-                        {data ? <div>{JSON.stringify(data)}</div> : <p>Loading...</p>}
-                    
-                  </div>
-              ) : <p>검색 실패</p>}
-          </div>
-      );
-    }
-}
+//   handleCopy = () => {
+//     const { startDate, endDate } = this.state;
+//     const filteredDates = this.getDatesWithoutWeekends(startDate, endDate);
+//     console.log('Copying data for:', filteredDates);
 
-export default Acd1011Child;
+//     // 여기에서 실제 복사 로직을 구현합니다.
+//   }
+
+//   render() {
+//     const { startDate, endDate } = this.state;
+//     return (
+//       <div>
+//         <h1>운행기록부 복사</h1>
+
+//         <div>
+//           <span>시작일: </span>
+//           <DatePicker
+//             selected={startDate}
+//             onChange={date => this.setState({ startDate: date })}
+//           />
+//         </div>
+
+//         <div>
+//           <span>종료일: </span>
+//           <DatePicker
+//             selected={endDate}
+//             onChange={date => this.setState({ endDate: date })}
+//           />
+//         </div>
+
+//         <button onClick={this.handleCopy}>확인</button>
+//       </div>
+//     );
+//   }
+// }
+
+// export default Acd1011Child;

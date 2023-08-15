@@ -279,7 +279,7 @@ class Acc1011Presentation extends Component {
                 <RadioGroup
                   aria-label="usageStatus"
                   style={{ flexDirection: "row" }}
-                  value={selectedDept?.dept_fg || ""}
+                  value={selectedDept?.dept_fg || "Y"}
                   onChange={(e) =>
                     this.props.handleDeptFgChange(e.target.value)
                   }

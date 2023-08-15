@@ -70,6 +70,9 @@ class Acc1010 extends Component {
 
             selectAllCheckbox : false,
 
+            selectedCardIndex: null, // 선택한 카드의 인덱스
+            newSelectAllCheckbox:"",
+
         };
         this.DouzoneContainer = React.createRef();
     }
@@ -214,7 +217,7 @@ deleteEmp = async (e) => {
 
 
     // 카드클릭
-    handleCardClick = async (emp_cd) => {
+    handleCardClick = async (emp_cd, index) => {
         try {
             const response = await post(`/emp/getEmpCard`, {
                 emp_cd: emp_cd,
@@ -228,6 +231,7 @@ deleteEmp = async (e) => {
                 complete: '',
                 errorMessage: '',
                 //mauth: Array.isArray(response.data) ? response.data : [],
+                selectedCardIndex: index, // 클릭한 카드의 인덱스 저장
 
             });
 
@@ -506,12 +510,13 @@ deleteEmp = async (e) => {
                                 <Card
                                     sx={{
                                         borderRadius: "5px",
-                                        border: "0.5px solid lightgrey",
+
+                                        border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                                         marginRight: "2px",
                                         display: "flex",
                                     }}
                                     onClick={() =>
-                                        this.handleCardClick(this.state.content[index].emp_cd)
+                                        this.handleCardClick(this.state.content[index].emp_cd, index)
                                     }
                                 >
                                      {/* 체크박스 */}
