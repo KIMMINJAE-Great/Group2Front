@@ -5,6 +5,7 @@ import CompanyCodePicker from "./CompanyCodePicker";
 import DeptCodePicker from "./DeptCodePicker";
 import CarCodePicker from "./CarCodePicker";
 import TradeCodePicker from "./TradeCodePicker";
+import DrivingCodePicker from "./DrivingCodePicker";
 
 class CodePickerManager extends React.Component {
     render() {
@@ -14,7 +15,8 @@ class CodePickerManager extends React.Component {
         : this.props.helpId === 'DeptCodePicker' ? <DeptCodePicker></DeptCodePicker> //부서코드도움
         : this.props.helpId === 'EmpCodePicker' ? <EmpCodePicker></EmpCodePicker> //사원코드도움 
         : this.props.helpId === 'CarCodePicker' ? <CarCodePicker></CarCodePicker> //차량코드도움 
-        : this.props.helpId === 'TradeCodePicker' ? <TradeCodePicker handleToAcc1012FromCodePicker={this.props.handleToAcc1012FromCodePicker}></TradeCodePicker> //거래처코드도움 
+        : this.props.helpId === 'TradeCodePicker' ? <TradeCodePicker></TradeCodePicker> //거래처코드도움 
+        : this.props.helpId === 'DrivingCodePicker' ? <DrivingCodePicker helpId={this.props.helpId}></DrivingCodePicker> //사원코드도움 
         : null
       );
     }

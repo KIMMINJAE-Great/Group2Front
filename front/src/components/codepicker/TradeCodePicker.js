@@ -151,7 +151,7 @@ handleKeyDown = async (e, textFieldValue) => {
       textFieldValue: value, 
       selectedValue: value,
     });
-    this.props.handleToAcc1012FromCodePicker(value);  //acc1012까지 보내기...
+    
   };
 
 

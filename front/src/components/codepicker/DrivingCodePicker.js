@@ -2,7 +2,7 @@ import CodePicker from "./CodePicker";
 import React from "react";
 import { get} from "../api_url/API_URL";
 
-class CarCodePicker extends React.Component{
+class DrivingCodePicker extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -21,21 +21,21 @@ class CarCodePicker extends React.Component{
   
 
 
-// 엔터쳤을때,
-handleKeyDown = async (e, textFieldValue) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    this.setState({
-      textFieldValue: textFieldValue
-    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-      try {
-        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-        this.state.menuItems = response.data;
-        this.setState({
-          menuItems: response.data,
-          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+// 엔터쳤을때, (정상작동확인)
+  handleKeyDown = async (e, textFieldValue) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.setState({
+        textFieldValue: textFieldValue
+      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+        try {
+          const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+          this.state.menuItems = response.data;
+          this.setState({
+            menuItems: response.data,
+            selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
 
-        });
+          });
           if(this.state.menuItems.length === 1 ){
             this.setState({
               selectedIds: response.data,
@@ -48,6 +48,8 @@ handleKeyDown = async (e, textFieldValue) => {
       });
     }
   };
+
+  //모달에서 엔터쳤을때.(정상작동확인)
   handleKeyDownModal = async (e ,textFieldValue) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -55,7 +57,7 @@ handleKeyDown = async (e, textFieldValue) => {
         modalTextFieldValue: textFieldValue
       });
       try {
-        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
         
         this.setState({ 
           menuItems: response.data,
@@ -68,14 +70,16 @@ handleKeyDown = async (e, textFieldValue) => {
     }
   };
 
+
+  // 검색아이콘 눌렀을때. (정상작동확인)
   handleOnClick = async (e, textFieldValue) => {
     e.preventDefault();
-    console.log("textFieldValue의 현재 값: "+textFieldValue)
+    
     this.setState({
       modalTextFieldValue: textFieldValue
     }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
       try {
-        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
         this.state.menuItems = response.data;
         this.setState({
           menuItems: response.data,
@@ -94,55 +98,56 @@ handleKeyDown = async (e, textFieldValue) => {
       }
     );
   };
-  
 
-    // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
-    handleToggleAllCheckboxes = () => {
-      this.setState((prevState) => {
-        const newSelectAllCheckbox = !prevState.selectAllCheckbox;
-  
-        const updatedContent = prevState.menuItems.map((item) => ({
-          ...item,
-          checked: newSelectAllCheckbox,
-        }));
-  
-        const selectedchecked = newSelectAllCheckbox
-          ? [...updatedContent]
-          : [];
-  
+
+
+  // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
+  handleToggleAllCheckboxes = () => {
+    this.setState((prevState) => {
+      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
+
+      const updatedContent = prevState.menuItems.map((item) => ({
+        ...item,
+        checked: newSelectAllCheckbox,
+      }));
+
+      const selectedchecked = newSelectAllCheckbox
+        ? [...updatedContent]
+        : [];
+
+      return {
+        selectAllCheckbox: newSelectAllCheckbox,
+        menuItems: updatedContent,
+        selectedIds: selectedchecked,
+      };
+    });
+  };
+  // 체크박스 토글 처리하는 함수
+  handleToggleCheckbox = (id) => {
+    this.setState(prevState => {
+        // 체크박스 상태 업데이트
+        const updatedContent = prevState.menuItems.map(item =>
+            item.car_cd === id ? { ...item, checked: !item.checked } : item
+        );
+
+        const item = prevState.menuItems.find(item => item.car_cd === id);
+        const updatedSelectedIds = item && item.checked
+          ? prevState.selectedIds.filter(selectedItem => selectedItem.car_cd !== id)
+          : [...prevState.selectedIds, item];
+
         return {
-          selectAllCheckbox: newSelectAllCheckbox,
-          menuItems: updatedContent,
-          selectedIds: selectedchecked,
+            menuItems: updatedContent,
+            selectedIds: updatedSelectedIds
         };
-      });
-    };
-    // 체크박스 토글 처리하는 함수
-    handleToggleCheckbox = (id) => {
-      this.setState(prevState => {
-          // 체크박스 상태 업데이트
-          const updatedContent = prevState.menuItems.map(item =>
-              item.tr_cd === id ? { ...item, checked: !item.checked } : item
-          );
-  
-          const item = prevState.menuItems.find(item => item.tr_cd === id);
-          const updatedSelectedIds = item && item.checked
-            ? prevState.selectedIds.filter(selectedItem => selectedItem.tr_cd !== id)
-            : [...prevState.selectedIds, item];
-  
-          return {
-              menuItems: updatedContent,
-              selectedIds: updatedSelectedIds
-          };
-      });
-    }
+    });
+  }
 
- 
+  
 
   //텍스트필드값 핸들러
   handleTextInputChange = (e) => {
     this.setState({ 
-      [e.target.name]: e.target.value, 
+      textFieldValue: e.target.value, 
     });
   };
   //popover 핸들러
@@ -151,26 +156,26 @@ handleKeyDown = async (e, textFieldValue) => {
       textFieldValue: value, 
       selectedValue: value,
     });
-    
   };
 
 
     render(){
-      
       this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
-      console.log("muenuItems"+JSON.stringify(this.state.menuItems));
+      
         return (
-            // <CodePicker valueField='trNm' codeField='trCd' dispType='codeAndValue'></CodePicker>
+
             <CodePicker 
             //필수 전달 
-            valueField='tr_nm' 
-            codeField='tr_cd' 
-
-            dispType='codeAndValue'
-            pickerTitle='거래처 코드 검색'
-            pickerCodeName='거래처코드'
-            pickerName='거래처명'
-
+            valueField='car_nm' 
+            codeField='car_cd' 
+            valueField2='car_nb'
+            dispType='codeAndValueAndValue'
+            dispPriority='codePriority'
+            pickerTitle='차량코드 검색'
+            pickerCodeName='차량코드'
+            pickerName='차량명'
+            pickerName2='차량번호'
+            helpId={this.props.helpId}
             //필수 전달 함수!!
             onHandleKeyDown={this.handleKeyDown}
             onhandleKeyDownModal={this.handleKeyDownModal}
@@ -186,10 +191,9 @@ handleKeyDown = async (e, textFieldValue) => {
             handleToggleCheckbox={this.handleToggleCheckbox}
             handleToggleAllCheckboxes={this.handleToggleAllCheckboxes}
             selectAllCheckbox={this.state.selectAllCheckbox}
-
             />
         )
     }
 }
 
-export default CarCodePicker;
+export default DrivingCodePicker;

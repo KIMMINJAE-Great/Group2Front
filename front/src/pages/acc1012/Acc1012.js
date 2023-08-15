@@ -320,15 +320,7 @@ class Acc1012 extends Component {
     this.handleCloseModal();
   };
 
-  //Acc1012에서 출발.. TradeCodePicker에서 호출..!!
-  handleToAcc1012FromCodePicker = (data) => {
-    this.setState((inputState) => ({
-      searchSt: {
-        ...inputState.searchSt,
-        tr_nm: data,
-      },
-    }));
-  }
+  
 
   /* 변경된 값 필드에 저장 => 거래처구분 */
   handleTr_fgChange = (value) => {
@@ -709,7 +701,7 @@ class Acc1012 extends Component {
               handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
               handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
               handleSc_Tr_nmChange={this.handleSc_Tr_nmChange}
-              handleToAcc1012FromCodePicker={this.handleToAcc1012FromCodePicker}
+              
               handleUwChange={this.handleUwChange}
 
               handleSearch={this.handleSearch}
