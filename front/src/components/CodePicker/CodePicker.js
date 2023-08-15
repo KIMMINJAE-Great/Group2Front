@@ -47,8 +47,8 @@ class CodePicker extends React.Component {
     });
   };
 
-  //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수
-  saveModalCheckedItems = () => {
+  //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수 =>이름으로.
+  saveModalCheckedItemsValue = () => {
     let displayValue;
     const valueField = this.props.valueField;
     if (this.props.selectedIds.length > 0) {
@@ -62,16 +62,35 @@ class CodePicker extends React.Component {
           }
       } else {
           console.error('첫번째 아이템에 valueField 속성이 없습니다.');
-      }
-  } 
-
+    }} 
     this.setState({
       selectedValue: displayValue,
       menuItems : this.props.selectedIds,
       isModalOpen: false,
-      
     });
-
+  }
+  //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수 =>코드로.
+  saveModalCheckedItemsCode = () => {
+    let displayValue;
+    const codeField = this.props.codeField;
+    const valueField = this.props.valueField;
+    if (this.props.selectedIds.length > 0) {
+      const firstItem = this.props.selectedIds[0];
+      
+      if (firstItem && firstItem.hasOwnProperty(codeField)) {
+          if (this.props.selectedIds.length === 1) {
+              displayValue = firstItem[codeField]; // 첫번째 아이템의 값
+          } else {
+              displayValue = `${firstItem[valueField]} 외 ...${this.props.selectedIds.length - 1}건`;
+          }
+      } else {
+          console.error('첫번째 아이템에 valueField 속성이 없습니다.');
+    }} 
+    this.setState({
+      selectedValue: displayValue,
+      menuItems : this.props.selectedIds,
+      isModalOpen: false,
+    });
   }
   // 모달의 열림/닫힘 상태를 관리하는 state 추가
   state = {
@@ -103,7 +122,9 @@ class CodePicker extends React.Component {
   handleMenuItemClick = (value) => {
     this.setState({ selectedValue: value });
     this.props.onTextFieldChange(value);
+    sessionStorage.setItem('searchCarResult', value);
   };
+  
 
 
   handleKeyDown = (e, value) => {
@@ -175,7 +196,7 @@ class CodePicker extends React.Component {
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
-            value={this.state.selectedValue || this.props.textFieldValue }
+            value={this.state.selectedValue || this.props.textFieldValue}
             onChange={this.props.onTextInputChange}
             inputProps={{ style: { height: '2px' } }}
           />
@@ -207,25 +228,43 @@ class CodePicker extends React.Component {
             onClose={this.handleClose1}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-            style={{ marginLeft: '-135px' }}
+            style={{ marginLeft: '-159px' }}
           >
 
             {/* popover 렌더링 */}
-          {(this.state.menuItems || []).map((item, index) => (
-            <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[valueField])}>
-              {this.renderMenuItemContent(item)}
-              {selectedIds.length > 1 && (
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    this.deleteMenuItem(item[codeField]);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </MenuItem>
-          ))}
+            {/* 운행기록부의 경우에는 차량의 코드가 필요하므로 ... */}
+          { this.props.dispPriority === 'codePriority' 
+            ? (this.state.menuItems || []).map((item, index) => (
+                <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[codeField])}>
+                  {this.renderMenuItemContent(item)}
+                  {selectedIds.length > 1 && (
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        this.deleteMenuItem(item[codeField]);
+                      }}
+                    >
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+                </MenuItem>
+              ))
+              // 텍스트필드 값에 이름을 넣어야 하는 경우.
+            : (this.state.menuItems || []).map((item, index) => (
+              <MenuItem key={index} onClick={() => this.handleMenuItemClick(item[valueField])}>
+                {this.renderMenuItemContent(item)}
+                {selectedIds.length > 1 && (
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      this.deleteMenuItem(item[codeField]);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+              </MenuItem>
+            ))}
 
           </Popover>
         </div>
@@ -267,7 +306,7 @@ class CodePicker extends React.Component {
                       name="modalTextFieldValue"
                       value={this.state.modalTextFieldValue}
                       onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
-                      variant="outlined" size="small"
+                      variant="outlined" size="small" 
                       inputProps={{ style: { height: '12px' } }} />
                     <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 26, width: '30px', height: '30px' }}
                       onClick={(e) => this.props.onHandleOnClick(e, this.props.textFieldValue)}>
@@ -349,7 +388,40 @@ class CodePicker extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {menuItems?.map((item, index) => (
+                    {/* 운행기록부의 경우 코드로 텍스트필드값에 넣어야한다. */}
+                    { this.props.dispPriority === 'codePriority'  
+                      ? menuItems?.map((item, index) => (
+                        <tr key={index}
+                          onClick={() => this.handleMenuItemClick(item[this.props.codeField])}
+                          style={{ borderBottom: '1px solid #D3D3D3' }}
+                        >
+                          <td style={{ width: 8, padding: '4px', textAlign: 'center', borderLeft: '1px solid #D3D3D3', borderRight: '1px solid #D3D3D3' }}>
+                            {/* 체크박스 */}
+                            <input
+                              type="checkbox"
+                              checked={item.checked} 
+                              onChange={() => this.props.handleToggleCheckbox(item[this.props.codeField])}
+                            />
+                          </td>
+                          <td style={{ width: 130, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
+                            {/* 코드 */}
+                            {item[this.props.codeField]}
+                          </td>
+                          <td style={{ width: 170, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
+                            {/* 이름 */}
+                            {item[this.props.valueField]}
+                          </td>
+                            {/* 조건부 렌더링 : 이름 2 */}
+                          {
+                            this.props.dispType === 'codeAndValueAndValue' &&
+                            <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
+                              {item[this.props.valueField2]}
+                            </td>
+                          }
+                        </tr>
+                      ))
+                      // 텍스트필드 값에 이름을 넣어야 하는 경우.
+                    : menuItems?.map((item, index) => (
                       <tr key={index}
                         onClick={() => this.handleMenuItemClick(item[this.props.valueField])}
                         style={{ borderBottom: '1px solid #D3D3D3' }}
@@ -363,13 +435,14 @@ class CodePicker extends React.Component {
                           />
                         </td>
                         <td style={{ width: 130, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
-                          {/* 회사 코드 */}
+                          {/* 코드 */}
                           {item[this.props.codeField]}
                         </td>
                         <td style={{ width: 170, textAlign: 'center', borderRight: '1px solid #D3D3D3' }}>
-                          {/* 회사명 */}
+                          {/* 이름 */}
                           {item[this.props.valueField]}
                         </td>
+                        {/* 조건부 렌더링 : 이름 2 */}
                         {
                           this.props.dispType === 'codeAndValueAndValue' &&
                           <td style={{ width: 150, padding: '8px', textAlign: 'center' }}>
@@ -387,7 +460,11 @@ class CodePicker extends React.Component {
                 <button onClick={this.closeModal} style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '14px', fontWeight: 'bold' }}>취소</button>
               </Grid>
               <Grid item mb={0} ml={1}>
-                <button onClick={this.saveModalCheckedItems} style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '14px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>확인</button>
+                <button 
+                  onClick={this.props.helpId === 'DrivingCodePicker' ? this.saveModalCheckedItemsCode : this.saveModalCheckedItemsValue } 
+                  style={{ background: '#00d2ff', border: '1px solid #D3D3D3', height: '30px', width: '60px', fontSize: '14px', fontWeight: 'bold', color: 'white', backgroundColor: '#0095ff' }}>
+                    확인
+                </button>
               </Grid>
             </Grid>
           </Dialog>

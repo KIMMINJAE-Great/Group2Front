@@ -84,11 +84,9 @@ class MileageModal extends Component {
       distanceFree: free,
       tableShow: true
     });
-    console.log("handleDistanceData이 실행됨");
   };
 
   render() {
-    console.log("++" + JSON.stringify(this.state.bookmarkCards));
     const { bookmarkCards, selectedBookmark } = this.state;
     const { distanceRealtime, distanceBased, distanceFree } = this.state;
     console.log("스타트 위도경도" + this.state.startCoords);
