@@ -33,6 +33,7 @@ import { getByQueryString } from "../../components/api_url/API_URL";
 import { Component } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dayjs from "dayjs";
+import CodePickerManager from "../../components/codepicker/CodePickerManager";
 const theme = createTheme({
   components: {
 
@@ -68,6 +69,16 @@ class Ace1010Search extends Component {
       openSnackBar: false,
     };
   }
+
+
+  componentDidMount() {
+    const searchCarResult = JSON.parse(sessionStorage.getItem('searchCarResult')); //세션스토리지에 있는 현재 로그인 정보
+    if (searchCarResult) {
+      this.setState({ car_cd: searchCarResult });
+    }
+  }
+
+
   handleclearFields = () => {
     this.setState({
       car_cd: "",
@@ -87,24 +98,24 @@ class Ace1010Search extends Component {
   };
 
 
-
+  /*수 정 전 코 드  */
   searchcarforabizperson = async (event) => {
     event.preventDefault();
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
-
+    const searchCarResult = JSON.parse(sessionStorage.getItem('searchCarResult')); //세션스토리지에 있는 현재 로그인 정보
+    if (searchCarResult) {
+      this.setState({ car_cd: searchCarResult });
+    }
     if (!this.state.firstUse_dt || !this.state.LastUse_dt) {
       this.showErrorSnackbar();
       return;
     }
-
     const formattedFirstUse = firstUse_dt.format('YYYY-MM-DD');
     const formattedLastUse = LastUse_dt.format('YYYY-MM-DD');
-
     let carforabizperson
     try {
       const queryString = `?car_cd=${car_cd}&startDate=${formattedFirstUse}&endDate=${formattedLastUse}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
-
       console.log('검색직후 ')
       console.log(response.data)
       if (response.data === 'not found') {
@@ -116,14 +127,16 @@ class Ace1010Search extends Component {
         carforabizperson = response.data;
         this.props.searchcarforabizperson(carforabizperson, car_cd);
       }
-
       // this.handleclearFields();
     } catch (error) {
       console.log(error);
     }
   };
 
+
   render() {
+
+
     return (
       <form onSubmit={this.searchcarforabizperson}>
         <div className="acc1010search_container" >
@@ -137,7 +150,8 @@ class Ace1010Search extends Component {
               </Typography>
             </Grid>
             <Grid item xs={2} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-              <TextField
+              <CodePickerManager helpId={"DrivingCodePicker"} variant="outlined" />
+              {/* <TextField
                 fullWidth
                 required
                 variant="outlined"
@@ -146,7 +160,7 @@ class Ace1010Search extends Component {
                 onChange={event => this.setState({ car_cd: event.target.value })}
                 inputProps={{ style: { height: "12px" } }}
                 sx={{ backgroundColor: '#FEF4F4' }}
-              />
+              /> */}
             </Grid>
             <Grid item xs={1.1} style={{ textAlign: "right" }}>
               <Typography>
