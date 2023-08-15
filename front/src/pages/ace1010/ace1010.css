@@ -3,3 +3,9 @@
   background-color: #fef4f4;
   color: black;
 }
+
+
+/* react-datepicker ->DrivingRecordCopy사용 */
+.react-datepicker__input-container input {
+  width: 75px;
+}

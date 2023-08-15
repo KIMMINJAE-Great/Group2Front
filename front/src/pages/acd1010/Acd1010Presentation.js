@@ -144,28 +144,27 @@ class Acd1010Presentation extends Component {
                 />
               </Grid>
 
-              {/*  */}
-              <Grid item xs={6} style={{ textAlign: "right" }}>
+               {/* 사원번호 */}
+               <Grid item xs={1} style={{ textAlign: "right" }}>
                 <Typography>
-                  {/* <h5 style={{ margin: "5px" }}>차량번호</h5> */}
+                  <h5 style={{ margin: "5px" }}>사원번호</h5>
                 </Typography>
               </Grid>
-              {/* <Grid item xs={5}>
+              <Grid item xs={5}>
                 <TextField
                   fullWidth
                   variant="outlined"
                   size="small"
-                  sx={{ width: "100%", backgroundColor: "white" }}
-                  style={{ background: "#FEF4F4" }}
-                  inputProps={{ style: { height: "15px" } }}
+                  sx={{ width: "100%", backgroundColor: readonly ? 'white' : '#FEF4F4' }}
+                
+                  inputProps={{ style: { height: "15px" }}}
                   InputLabelProps={{ style: { fontSize: "12px" } }}
-                  //   value={selectedDept?.dept_cd || ""}
-                  //   onChange={(e) =>
-                  // this.props.handleDeptCdChange(e.target.value)
-                  //   }
+                  value={selectedregcar?.emp_cd ||""}
+                  onChange={(e) => this.props.handleEmpCdChange(e.target.value)}
                   required
                 />
-              </Grid> */}
+              </Grid>
+
             </Grid>
 
             {/* 3째줄 */}

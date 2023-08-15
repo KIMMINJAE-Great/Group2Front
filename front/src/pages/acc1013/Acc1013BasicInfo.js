@@ -70,6 +70,37 @@ const FieldName = styled(Typography)(({ theme }) => ({
 
 class Acc1013BasicInfo extends React.Component {
 
+/*  사업자번호 포맷 형식 */
+cleanUpInputReg(input) {
+  if (input) {
+    return input.replace(/[^0-9]/g, "").slice(0, 10);
+  }
+  return "";
+}
+
+formatRegistrationNumber(input) {
+  const cleanUpInputReg = this.cleanUpInputReg(input);
+
+  let formattedReg = cleanUpInputReg;
+
+  if (cleanUpInputReg.length > 3) {
+    formattedReg = formattedReg.slice(0, 3) + "-" + formattedReg.slice(3);
+  }
+  if (cleanUpInputReg.length > 5) {
+    formattedReg = formattedReg.slice(0, 6) + "-" + formattedReg.slice(6);
+  }
+
+  return formattedReg;
+}
+handleReg_nbChange = (input) => {
+  const formattedValue = this.formatPhoneNumber(input);
+  this.setState({
+    selectedSt: {
+      ...this.state.selectedSt,
+      tr_pn: formattedValue  // Update 'tr_pn' instead of 'reg_nb'
+    }
+  });
+};
 
 
 
@@ -79,7 +110,7 @@ class Acc1013BasicInfo extends React.Component {
     const { selectedCompanyCards, selectedRead } = this.props;
     var readonly = selectedRead === "N";
     console.log("자식 콘솔 :co_cd:" + this.props.co_cd);
-
+    console.log("emp_nm: "+this.props.emp_nm);
 
 
 
@@ -123,10 +154,10 @@ class Acc1013BasicInfo extends React.Component {
                       </GridItem1>
                       <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField onChange={(e) => this.props.handleCoCdChange(e.target.value)}
+                        <MyTextField onChange={(e) => this.props.handleCoCdChange(e.target.value , this.props.emp_nm)}
                           value={selectedCompanyCards?.co_cd || ""}
                           variant="outlined"
-                          inputProps={{ readOnly: this.props.readonly }}
+                          inputProps={{ readOnly: this.props.readonly, style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
                         />
 
                       </Grid>
@@ -141,11 +172,9 @@ class Acc1013BasicInfo extends React.Component {
                           <RadioGroup
                             row
                             aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="use"
+                            defaultValue="Y"
                             onChange={(e) => this.props.handleUseYnChange(e.target.value)}
-                            value={selectedCompanyCards?.use_yn || ""}
-
-
+                            value={selectedCompanyCards?.use_yn || "Y"|| ""}
                           >
                             <FormControlLabel value="Y" control={<Radio />} label="사용" />
                             <FormControlLabel value="N" control={<Radio />} label="미사용" />
@@ -169,7 +198,7 @@ class Acc1013BasicInfo extends React.Component {
                           value={selectedCompanyCards?.co_nm || ""}
                           sx={{ width: '60%', ml: 1, mt: 0, mb: 0, padding: "-15px", }}
                           variant="outlined"
-                          inputProps={{ readOnly: this.props.readonly, style: { backgroundColor: '#FFF0F5' } }} />
+                          inputProps={{ readOnly: this.props.readonly, style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }} />
 
                       </Grid>
                     </Grid>
@@ -241,7 +270,7 @@ class Acc1013BasicInfo extends React.Component {
                         <MyTextField
                           value={selectedCompanyCards?.bz_type || ""}
                           onChange={(e) => this.props.handleBzTypeChange(e.target.value)} variant="outlined"
-                          inputProps={{ style: { backgroundColor: '#FFF0F5' } }} />
+                          inputProps={{ style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }} />
                       </Grid>
                       <GridItem3 item xs={2}  >
                         <FieldName variant="subtitle1">종목</FieldName>
@@ -251,7 +280,7 @@ class Acc1013BasicInfo extends React.Component {
                         <MyTextField
                           onChange={(e) => this.props.handleBzItemChange(e.target.value)}
                           value={selectedCompanyCards?.bz_item || ""}
-                          inputProps={{ style: { backgroundColor: '#FFF0F5' } }}
+                          inputProps={{ style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
                           variant="outlined" />
                       </Grid>
                     </Grid>
@@ -263,17 +292,12 @@ class Acc1013BasicInfo extends React.Component {
                         <FieldName variant="subtitle1">대표전화</FieldName>
                       </GridItem1>
                       <Grid
-                        item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
+                        item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
                         <MyTextField onChange={(e) => this.props.handleCoTelChange(e.target.value)}
                           value={selectedCompanyCards?.co_tel || ""}
                           variant="outlined" />
                       </Grid>
-                      <Grid
-                        item xs={3} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField onChange={(e) => this.props.handleCoTel2Change(e.target.value)}
-                          value={selectedCompanyCards?.co_tel2 || ""}
-                          variant="outlined" />
-                      </Grid>
+                      
                       <GridItem3 item xs={2} >
                         <FieldName variant="subtitle1">대표팩스</FieldName>
                       </GridItem3>
@@ -297,7 +321,7 @@ class Acc1013BasicInfo extends React.Component {
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
                         <MyTextField onChange={(e) => this.props.handleRegNbChange(e.target.value)}
                           value={selectedCompanyCards?.reg_nb || ""}
-                          inputProps={{ style: { backgroundColor: '#FFF0F5' } }}
+                          inputProps={{ style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
                           variant="outlined" />
                       </Grid>
                       <GridItem3 item xs={2} >
@@ -311,9 +335,10 @@ class Acc1013BasicInfo extends React.Component {
                           value={selectedCompanyCards?.cp_ct || ""}
                           variant="outlined"
                           style={{ width: "100%", height: "33px", marginLeft: "10px" }}
+                          
                         >
-                          <MenuItem value="personal">개인</MenuItem>
-                          <MenuItem value="company">법인</MenuItem>
+                          <MenuItem value="개인">개인</MenuItem>
+                          <MenuItem value="법인">법인</MenuItem>
                           <MenuItem value="etc">기타</MenuItem>
                         </Select>
                       </Grid>
@@ -404,17 +429,12 @@ class Acc1013BasicInfo extends React.Component {
                         <FieldName variant="subtitle1">주민등록번호</FieldName>
                       </GridItem3>
                       <Grid
-                        item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
+                        item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
                         <MyTextField onChange={(e) => this.props.handleResNbChange(e.target.value)}
                           value={selectedCompanyCards?.res_nb || ""}
                           variant="outlined" />
                       </Grid>
-                      <Grid
-                        item xs={1} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField onChange={(e) => this.props.handleResNb2Change(e.target.value)}
-                          value={selectedCompanyCards?.res_nb2 || ""}
-                          variant="outlined" />
-                      </Grid>
+                      
 
 
                     </Grid>

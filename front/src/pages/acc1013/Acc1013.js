@@ -106,13 +106,19 @@ class Acc1013 extends Component {
       selectedCardIndex: null, // 선택한 카드의 인덱스
       newSelectAllCheckbox: "",
 
+      emp_nm: null,
     };
     this.DouzoneContainer = React.createRef();
   }
 
   //카드리스트 가져오기위해 componentDidMount로 시작하면 바로 미리 가져온다.
   componentDidMount() {
-    this.getCardList();
+    const user = JSON.parse(sessionStorage.getItem('user')); //세션스토리지에 있는 현재 로그인 정보
+    if (user && user.emp_nm) {
+      this.setState({ emp_nm: user.emp_nm });
+    }
+
+    this.getCardList(); //카드리스트 가져오기
   }
 
   getCardList = async () => {
@@ -122,8 +128,6 @@ class Acc1013 extends Component {
     } catch (error) {
       console.log(error);
     }
-
-
   }
 
   // 모달 열기
@@ -188,10 +192,7 @@ class Acc1013 extends Component {
       return;
     }
 
-
-
     if (selectedRead === "Y") {
-
       try {
         const response = await post("/company/save", selectedCompanyCards);
         console.log("post이후" + JSON.stringify(selectedCompanyCards));
@@ -208,7 +209,6 @@ class Acc1013 extends Component {
           selectedCompanyCards: updatedSelectedCompanyCards,
         }));
         this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 등록이 완료됐습니다', 'success');
-
 
         console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
       } catch (error) {
@@ -233,7 +233,6 @@ class Acc1013 extends Component {
     const { selectedCompanyCards, companyCards, selectedchecked } = this.state;
     //필드데이터 // 회사 코드만 있으면 된다.
 
-    // Send data to server
     try {
       if (selectedchecked.length > 1) {
         // const response = await del("/company/delete/${selectedCompanyCards.co_cd}");
@@ -259,12 +258,9 @@ class Acc1013 extends Component {
 
       } else if (selectedchecked.length == 1) {
         // 서버에 DELETE 요청 보내기
-        const response = await del(
-          `/company/delete/${selectedCompanyCards.co_cd}`
-        );
+        const response = await del(`/company/delete/${selectedCompanyCards.co_cd}`);
         console.log("서버 응답", response.data);
 
-        // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
         const newCardList = companyCards.filter(
           (item) => item.co_cd !== selectedCompanyCards.co_cd
         );
@@ -310,9 +306,6 @@ class Acc1013 extends Component {
     });
   };
 
-
-
-
   handleNewButtonClick = () => {
     this.setState({
       selectedCompanyCards: '',
@@ -334,7 +327,6 @@ class Acc1013 extends Component {
       adr_inp: value.adr_inp,
       adr_etc: value.adr_etc,
     });
-
   }
 
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
@@ -350,7 +342,6 @@ class Acc1013 extends Component {
       const selectedchecked = newSelectAllCheckbox
         ? [...updatedContent]
         : [];
-
       return {
         selectAllCheckbox: newSelectAllCheckbox,
         content: updatedContent,
@@ -368,21 +359,20 @@ class Acc1013 extends Component {
           item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
         );
         const selectedchecked = updatedContent.filter((item) => item.checked);
-
         return { content: updatedContent, selectedchecked: selectedchecked };
       })
       }
 
   //onChange핸들함수
-  handleCoCdChange = (value) => {
+  handleCoCdChange = (value , emp) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
         co_cd: value,
+        emp_nm: emp,
       },
     }));
   };
-
   handleCoNmChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -399,8 +389,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
-
   handleUseYnChange = (value) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
@@ -590,47 +578,6 @@ class Acc1013 extends Component {
       },
     }));
   };
-
-  // @@@@@@@@@@@@@@@ 체크 박스 - 건우@@@@@@@@@@@@@@@@@@@@@@
-  handleToggleAllCheckboxes = () => {
-    this.setState((prevState) => {
-      const newSelectAllCheckbox = !prevState.selectAllCheckbox;
-
-      const updatedContent = prevState.content.map((item) => ({
-        ...item,
-        checked: newSelectAllCheckbox,
-      }));
-
-      const selectedchecked = newSelectAllCheckbox
-        ? [...updatedContent]
-        : [];
-
-      return {
-        selectAllCheckbox: newSelectAllCheckbox,
-        content: updatedContent,
-        selectedchecked: selectedchecked,
-      };
-    }, () => {
-      console.log(this.state.selectedchecked);
-    });
-  };
-  // 체크박스 토글 처리하는 함수
-  handleToggleCheckbox = (co_cd) => {
-    this.setState(
-      (prevState) => {
-        const updatedContent = prevState.content.map((item) =>
-          item.co_cd === co_cd ? { ...item, checked: !item.checked } : item
-        );
-        const selectedchecked = updatedContent.filter((item) => item.checked);
-
-        return { content: updatedContent, selectedchecked: selectedchecked };
-      },
-      () => {
-        console.log(this.state.selectedchecked);
-      }
-    );
-  };
-
 
   handleCoNmChange = (value) => {
     this.setState((prevState) => ({
@@ -865,6 +812,7 @@ class Acc1013 extends Component {
                     border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
+                    
                   }}
                   onClick={() =>
                     this.handleCardClick(this.state.content[index].co_cd, index)
@@ -875,7 +823,7 @@ class Acc1013 extends Component {
                     onChange={() => this.handleToggleCheckbox(item.co_cd)}
                   />
 
-                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px" }}>
+                  <CardContent sx={{ paddingLeft: "3px", paddingRight: "1px", }}>
                     {/* item1,item2 */}
                     <Typography
                       variant="body2"
@@ -907,15 +855,15 @@ class Acc1013 extends Component {
                   </CardContent>
                   <CardContent
                     style={{
-                      marginLeft: "90px",
+                      marginLeft: "50px",
                       paddingLeft: "0",
                       paddingRight: "0",
-                      minWidth: "100px",
+                      width: "80px",
                     }}
                   >
                     {/* item3 */}
                     <Typography variant="body2">
-                      username
+                      {item.emp_nm}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -927,7 +875,7 @@ class Acc1013 extends Component {
                         maxWidth: "90px",
                       }}
                     >
-                      개인/법인
+                      {item.cp_ct}
                     </Typography>
                   </CardContent>
 
@@ -942,9 +890,8 @@ class Acc1013 extends Component {
 
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
-    // const user = JSON.parse(sessionStorage.getItem('user'));
-    // console.log("user!@!@!@!@" + JSON.stringify(user));
-    // const mauthList = user.mauthList;
+
+    
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
@@ -991,6 +938,7 @@ class Acc1013 extends Component {
                   handleDeleteButton={this.handleDeleteButton}
                   handleCardClick={this.handleCardClick}
                   co_cd={this.state.co_cd}
+                  emp_nm={this.state.emp_nm}
                   handleInputChangeReadOnly={this.handleInputChangeReadOnly}
                   // sco={this.state.companyCards} //카드리스트 sco
                   onComplete={this.handlePostComplete}

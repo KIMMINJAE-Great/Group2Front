@@ -71,6 +71,9 @@ class MileageSearchBtn extends Component {
     //실시간, 거리우선, 무료 를 부모로 보내는 코드!
     SendDistanceData = () => {
         const { distanceRealTime, distanceBased, distanceFree } = this.state;
+        sessionStorage.setItem('distanceRealTime', distanceRealTime);
+        sessionStorage.setItem('distanceBased', distanceBased);
+        sessionStorage.setItem('distanceFree', distanceFree);
         this.props.onSendDistanceData(distanceRealTime, distanceBased, distanceFree);
         
     };
@@ -104,19 +107,7 @@ class MileageSearchBtn extends Component {
                     주행거리검색
                     </Button>}
         </div>
-            // // <div>
-            // //     {isLoading ? (
-            // //         <p>경로를 탐색중입니다...</p>  // 로딩 중일 때 표시할 메시지
-            // //     ) : data ? (
-            //         <Button
-            //         variant="outlined" 
-            //         style={{ width: '100px', height: '30px', padding: '2px 5px' }}
-            //         onClick={this.MapData}        
-            //         >
-            //         주행거리검색
-            //         </Button>
-            // //     ) : <p>검색 실패</p>}
-            // // </div>
+            
       );
     }
 }

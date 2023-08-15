@@ -179,6 +179,11 @@ class Acd1010 extends Component {
       console.log("차량명을 입력해주세요.");
       return;
     }
+    // 사원코드가 비어있는지 확인합니다.
+    if (!selectedregcar.emp_cd) {
+      console.log("사원코드를 입력해주세요.");
+      return;
+    }
     // 임차구분 비엉있는지 확인합니다.
     if (!selectedregcar.lease_yn) {
       console.log("임차구분을 입력해주세요.");
@@ -384,6 +389,16 @@ class Acd1010 extends Component {
       selectedregcar: {
         ...prevState.selectedregcar,
         car_nm: value,
+      },
+    }));
+  };
+
+  // 입력된 값을 emp_cd 필드에 저장(사원번호)
+  handleEmpCdChange = (value) => {
+    this.setState((prevState) => ({
+      selectedregcar: {
+        ...prevState.selectedregcar,
+        emp_cd: value,
       },
     }));
   };
@@ -615,6 +630,7 @@ class Acd1010 extends Component {
                   handleCarCdChange={this.handleCarCdChange}
                   handleCarNbChange={this.handleCarNbChange}
                   handleCarNmChange={this.handleCarNmChange}
+                  handleEmpCdChange={this.handleEmpCdChange}
                   handleGetDtChange={this.handleGetDtChange}
                   handleDisposalDtChange={this.handleDisposalDtChange}
                   handleLeaseynChange={this.handleLeaseynChange}
