@@ -130,7 +130,7 @@ class Ace1010 extends Component {
       this.setState({ rows: [] })
       return
 
-    } //첫 기록이 없을 때 사원코드나 그런거 차에서 가져와도 못담네 야팔
+    }
     else {
       // emp_cd 로그인 사원코드 
       const user = JSON.parse(sessionStorage.getItem('user'));
@@ -302,17 +302,14 @@ class Ace1010 extends Component {
     }
   }
 
-  processRowUpdatefunc = async (updatedRow) => {
+  processRowUpdatefunc = async (updatedRow, originalRow) => {
     console.log('프로세스 실행')
     console.log(updatedRow.id)
+    console.log(updatedRow.seq_nb)
 
 
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
     const cellFieldName = this.state.editedCell;
-
-    console.log('updatedRow.id : ' + updatedRow.id)
-    console.log('this.state.selectedRowIdFg  : ' + this.state.selectedRowIdFg)
-    console.log('this.state.selectedCellFg  : ' + this.state.selectedCellFg)
 
     // 출발구분, 도착구분
     if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'start_fg') {
@@ -338,45 +335,51 @@ class Ace1010 extends Component {
     }
 
 
-    const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
-
+    //const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
+    const mileageKm = Number(updatedRow.mileage_km);
+    const updatedRows = [...this.state.rows];
+    console.log('updatedRows의 row의 id 타입')
+    console.log(typeof updatedRows[0].id) // row의 id는 number이다. 
     //  주행전, 후 자동 입력
     if (cellFieldName === 'mileage_km') {
-      //만약 해당 행의 다음행이 존재한다면 주행을 바꾸는 순간 그 뒤에 오는 행들을 모두 수정해줘야하며
-      // 바꿔주기만 하면 일일히 만약 100라면 다 하나하나 저장을 해야하니 일제히 저장을 돌려버린다.
-      // 1.  해당 행 이후에 행이 있는지 체크
-      // 2. 있다면 모든 행들을 가져오기
-      // 3. 모든 행이 직전의 행의 after_km를 가져와 before_km에 담고 다시 mileage_km랑 더하여 after_km를 변환
-      // 4. 다 끝나면 saveCellKeyDown을 강제로 모든 행을 차례대로 실행
-      // 그런데 안분을 사용하게 되면 일제히 바뀌게 되는데 그러면 어떻게 하지?
-      // 해당행들을 배열로 다시 받아와서 첫번째 행에 안분된 거리를 입력하고 주행후를 바꾸고 
-      // 그게 끝나면 그 다음 행 그리고 순차적으로 저장
+      //가정 1 첫 빈행일 때 즉 id가 1일때
+      //가정 2 id가 1이상일때
 
-      const rowWithId2 = this.state.rows.find((row) => row.id === updatedRow.id - 1);
-
-      const mileageKmValue = Number(updatedRow.mileage_km);
-      if (rowWithId2) {
-        const afterKmValueOfId2 = Number(rowWithId2.after_km);
-
-        updatedRow.after_km = mileageKmValue + afterKmValueOfId2;
-
-        updatedRow.before_km = afterKmValueOfId2;
+      // 운행기록부 첫 주행 등록
+      if (updatedRow.id === 1 && updatedRow.seq_nb === 0) {
+        console.log('운행기록부 첫 주행 등록')
+        updatedRow.mileage_km = mileageKm;
+        if (!updatedRow.before_km) {
+          updatedRow.before_km = 0;
+          updatedRow.after_km = mileageKm + Number(updatedRow.before_km);
+        } else {
+          updatedRow.after_km = mileageKm + Number(updatedRow.before_km)
+        }
+        // 운행기록부 첫 주행 이후 등록
+      } else if (updatedRow.id > 1 && updatedRow.seq_nb === 0) {
+        console.log('운행기록부 첫 주행 이후 등록')
+        updatedRow.mileage_km = mileageKm;
+        updatedRow.before_km = updatedRows[updatedRow.id - 2].after_km;
+        updatedRow.after_km = Number(updatedRow.before_km) + mileageKm;
+        // 운행기록부 한행의 주행 변경시 이후의 행들의 주행전,주행후 변경
       } else {
-        //운행기록부 데이터가 없을 때는 기초거리에서 가져와야 하는데 현재 없으니 일단 0으로 시작
-        updatedRow.before_km = 0;
+        console.log('그 이후 한행 이 변한뒤 하위 행들 주행전, 주행 후 변경')
+        let i = updatedRow.id
+        updatedRows[i - 1].mileage_km = mileageKm;
+        updatedRow.after_km = Number(updatedRows[i - 1].before_km) + mileageKm;
+        updatedRows[i - 1].after_km = updatedRow.after_km
+        // updatedRows[i - 1].after_km = Number(updatedRows[i - 1].before_km) + mileageKm;을 하였을 때 updatedRows[i - 1].after_km이 부분이 인식이 안돼, 적용이 불가하여 분리 하였습니다.
+        for (let i = updatedRow.id; i < updatedRows.length - 1; i++) {
 
-        updatedRow.after_km = mileageKmValue + updatedRow.before_km;
+          updatedRows[i].before_km = updatedRows[i - 1].after_km;
+          updatedRows[i].after_km = Number(updatedRows[i].before_km) + Number(updatedRows[i].mileage_km)
+        }
       }
 
     }
 
-
-    const updatedRows = [...this.state.rows];
-    updatedRows[rowIndex] = updatedRow;
-
-
     this.setState({
-      // rows: updatedRows,
+      //rows: updatedRows,
       inputValueforfg: ''
     })
 
@@ -396,9 +399,10 @@ class Ace1010 extends Component {
   // 5. 
   saveCellKeyDown = async (params) => {
     console.log(' 저장 시작 ')
-    console.log(params)
+    console.log(params)//<- 여이가 undefined가 뜨니깐 반복저장할 때 잘 못 넘겨준거
     console.log(params.row)
     console.log(params.field)
+
     const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
 
     const allFieldsHaveValue = fieldsToCheck.every(field => {
@@ -412,9 +416,7 @@ class Ace1010 extends Component {
       return
     }
 
-
-
-    if (params.row.origin == 'N') {
+    if (params.row.origin === 'N') {
       console.log('신규 저장 시작')
       const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
       const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
@@ -468,7 +470,8 @@ class Ace1010 extends Component {
           // 새로운 운행기록부 저장시 빈행 추가
           const lastRow = this.state.rows[this.state.rows.length - 1];
           const newId = lastRow.id + 1;
-          const seqnb = lastRow.seq_nb + 1;
+          const seqnb = lastRow.seq_nb;
+          // const seqnb = lastRow.seq_nb + 1; 왜 1로 해놨는데 잘 됐을까 무섭네
           const user = JSON.parse(sessionStorage.getItem('user'));
           const empid = user.emp_id;
           const carcd = params.row.car_cd;
@@ -818,6 +821,7 @@ class Ace1010 extends Component {
         width: 120,
         align: 'center',
         headerAlign: 'center',
+        editable: "true",
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
