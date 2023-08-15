@@ -169,9 +169,9 @@ class CodePicker extends React.Component {
     
     return (
       <div>
-        <div style={{ position: 'relative', width: '194px', height: '42px' }}>
+        <div style={{ position: 'relative', width: '219px', height: '39px' }}>
           <TextField
-            style={{ display: "flex", boxSizing: 'border-box', width: '190px' }}
+            style={{ display: "flex", boxSizing: 'border-box', width: '215px' }}
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"

@@ -20,6 +20,7 @@ import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
 import MileageModal from "../mileagesearch/MileageModal";
+import DrivingRecordCopy from "../../pages/ace1010/DrivingRecordCopy";
 
 
 
@@ -175,30 +176,35 @@ class DouzoneContainer extends Component {
             <div className="container-header-left">{this.props.title}</div>
             <div className="container-header-right">
             {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
-              <div className="functionButton">
-                <Button
-                  id="basic-button"
-                  // aria-controls={open ? 'basic-menu' : undefined}
-                  // aria-haspopup="true"
-                  // aria-expanded={open ? 'true' : undefined}
-                  onClick={this.handleClick}
-                >
-                  기능모음
-                </Button>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={this.state.funcVowel}
-                  open={Boolean(this.state.funcVowel)}
-                  onClose={this.handleClose}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}
-                >
-                  <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
-                  <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
-                  <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
-                  <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
-                </Menu>
+              <div style={{ display: 'flex'}}>
+                  {/* 복사 TEST  위치 이동하여도 됨! */}
+                  <DrivingRecordCopy>
+                    
+                  </DrivingRecordCopy>
+                  <Button
+                    id="basic-button"
+                    // aria-controls={open ? 'basic-menu' : undefined}
+                    // aria-haspopup="true"
+                    // aria-expanded={open ? 'true' : undefined}
+                    onClick={this.handleClick}
+                  >
+                    기능모음
+                  </Button>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={this.state.funcVowel}
+                    open={Boolean(this.state.funcVowel)}
+                    onClose={this.handleClose}
+                    MenuListProps={{
+                      "aria-labelledby": "basic-button",
+                    }}
+                  >
+                    <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
+                    <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
+                    <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
+                    <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
+                  </Menu>
+                
               </div>
                )} 
               <span style={{ color: "lightgrey" }}>|</span>
