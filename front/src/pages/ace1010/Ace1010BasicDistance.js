@@ -22,10 +22,13 @@ class Ace1010BasicDistance extends React.Component {
     this.state = {
       isModalOpen: '',
       abizcarNBNM: '',
+      car_cd: '10001',
+      showError: false,
     };
   }
 
 handleOpenBd = async () =>  {
+  this.setState({ showError: false });
     try {
       const response ="";
       console.log(response);
@@ -46,10 +49,32 @@ handleOpenBd = async () =>  {
   closeModal = () => {
     this.setState({ isModalOpen: false });
   };
+  /* INSERT 기초거리 입력  */
+  insertDistance = async () => {
+    console.log('insertDistance 실행 @@@');
 
-  saveModalCheckedItems = () => {
-    console.log('확인 버튼이 클릭되었습니다.');
-    // 디비로 값 전달
+    
+    try {
+      const { car_cd, startacc_km } = this.state;
+      console.log('insertDistance 저장 됨@@@@@@');
+      console.log('car_cd : ', car_cd);
+      console.log('startacc_km : ', startacc_km);
+
+      if (!startacc_km || startacc_km.trim() === '') {
+        console.log('insertDistance 에러에러 @@@');
+        this.setState({ showError: true });
+        return;
+      }
+
+      const response = await post('/ace1010/insertStartAcc', { car_cd, startacc_km});
+
+      console.log('서버 응답:', response);
+
+      this.setState({ startacc_km: '' });
+      this.closeModal();
+    } catch (error) {
+      console.error('에러:', error);
+    }
   };
 
   /* 변경된 값 필드에 저장 => 차량 정보 (차량 번호, 차량명)  */
@@ -59,8 +84,15 @@ handleOpenBd = async () =>  {
     }));
   };
 
+  /* 변경된 값 필드에 저장 => 기초거리  */
+  startacc_kmChange = (value) => {
+    this.setState(() => ({
+      startacc_km: value,
+    }));
+  };
+
   render() {
-    const { isModalOpen } = this.state;
+    const { isModalOpen, showError } = this.state;
 
     return (
       <div>
@@ -110,8 +142,17 @@ handleOpenBd = async () =>  {
                 <TextField
                       sx={{ width: '50%', ml: 1 }}
                       variant="outlined" size="small"
-                      inputProps={{ style: { height: '12px' } }} />
+                      inputProps={{ style: { height: '12px' } }} 
+                      value={this.state.startacc_km}
+                      onChange={(e) => this.startacc_kmChange(e.target.value)}
+                      />
             </Grid>
+
+            {showError && (
+              <Grid item xs={12} display="flex" alignItems="center">
+                <Typography variant="caption" sx={{ color: 'red', marginLeft: 22, marginBottom: -3, fontSize: '11px', alignItems: "center" }}>값을 입력해주세요.</Typography>
+              </Grid>
+            )}
 
             <Box>
             <Grid item xs={12} display="flex" alignItems="center" mt={2}>
@@ -128,7 +169,7 @@ handleOpenBd = async () =>  {
       >
         !
       </Avatar>
-            <Typography variant="subtitle1" sx={{ marginLeft: 1, fontSize: '13px' }}> 기초거리는 주행전(km), 주행후(km)를 계산하기 위해 최초 한번만 입력을 해주시면 됩니다. </Typography>
+            <Typography variant="subtitle1" sx={{ marginLeft: 1, marginTop: 0.5, fontSize: '13px' }}> 기초거리는 주행전(km), 주행후(km)를 계산하기 위해 최초 한번만 입력을 해주시면 됩니다. </Typography>
                 </Grid>
             </Box>
 
@@ -137,7 +178,7 @@ handleOpenBd = async () =>  {
               <button onClick={this.closeModal} style={{ backgroundColor: '#f2f2f2', border: '1px solid #D3D3D3', height: '25px', width: '60px', fontSize: '12px' }}>취소</button>
             </Grid>
             <Grid item mb={0} ml={1}>
-              <button onClick={this.saveModalCheckedItems} style={{ background: '#f2f2f2', border: '1px solid #D3D3D3', height: '25px', width: '60px', fontSize: '12px' }}>확인</button>
+              <button onClick={this.insertDistance} style={{ background: '#f2f2f2', border: '1px solid #D3D3D3', height: '25px', width: '60px', fontSize: '12px' }}>확인</button>
             </Grid>
           </Grid>
 
