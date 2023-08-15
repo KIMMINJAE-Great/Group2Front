@@ -3,7 +3,8 @@ import { Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton
 import { get } from "../../components/api_url/API_URL";
 import MileageSeachTextField from "./MileageSeachTextField";
 import MileageSearchBtn from "./MileageSearchBtn";
-import MileageTableView from "./MileageTableView";
+// import MileageTableView from "./MileageTableView";
+import MileageTableViewTest from "./MileageTableViewTest";
 
 class MileageModal extends Component {
   constructor(props) {
@@ -104,7 +105,12 @@ class MileageModal extends Component {
           <Dialog
             open={this.state.isModalOpen}
             onClose={this.closeModal}
-            maxWidth="xl"
+            PaperProps={{
+              style: {
+                width: '120%', // 원하는 너비
+                
+              },
+            }}
           >
             {/* 최상단 */}
             <DialogTitle style={{ marginLeft: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "-23px", fontWeight: "bold", }}>
@@ -114,14 +120,14 @@ class MileageModal extends Component {
 
 
             {/* div 두 영역으로 나눔 */}
-            <div style={{ display: "flex", flexDirection: "row", }}>
+            <div style={{ display: "flex", flexDirection: "row"}}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{ width: "140px", maxHeight: "310px", overflow: "auto" }}>
+              <DialogContent style={{ width: "110px", maxHeight: "310px", overflow: "auto" }}>
                 <Grid container style={{ borderBottom: '1px solid #D3D3D3' }}>
                   {bookmarkCards.map((item, index) => (
                     <Grid style={{ height: '70px', }} key={index}>
                       <Card
-                        style={{ width: "220px", height: "165px" }}
+                        style={{ width: "175px", height: "105px" }}
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
@@ -154,11 +160,11 @@ class MileageModal extends Component {
                 <div >
                   <Grid container item xs={12}>
                     <Grid container alignItems="center" style={{ marginBottom: "6px" }}>
-                      <Grid item xs={2} >
+                      <Grid item xs={2.5} >
                         출발지<br></br>
                         상세주소
                       </Grid>
-                      <Grid item xs={10}>
+                      <Grid item xs={9.5}>
                         {/* 주행거리 검색 택스트필드!! */}
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedBookmark.start_addr}
@@ -171,11 +177,11 @@ class MileageModal extends Component {
 
                   <Grid container item xs={12}>
                     <Grid container style={{ marginBottom: "6px" }}>
-                      <Grid item xs={2} st>
+                      <Grid item xs={2.5} style={{marginTop:'5px'}}>
                         도착지<br />
                         상세주소
                       </Grid>
-                      <Grid item xs={10}>
+                      <Grid item xs={9.5}>
                         {/* 주행거리 검색 택스트필드!! */}
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedBookmark.end_addr}
@@ -210,7 +216,7 @@ class MileageModal extends Component {
                     <Grid container>
                       {/* TABLE VIEW */}
                       {this.state.tableShow &&
-                        <MileageTableView
+                        <MileageTableViewTest
                           distanceRealtime={this.state.distanceRealtime}
                           distanceBased={this.state.distanceBased}
                           distanceFree={this.state.distanceFree}
