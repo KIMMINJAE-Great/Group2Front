@@ -582,7 +582,11 @@ class Ace1010 extends Component {
 
 
 
-
+  processRowUpdatefunc=(e)=>{
+    if(this.props.processRowUpdatefunc){
+      this.props.processRowUpdatefunc(e)
+    }
+  }
 
   render() {
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -591,6 +595,18 @@ class Ace1010 extends Component {
 
 
 
+    class douzoneDataGrid{
+      render(){
+        <dataGrid 
+        
+          processRowUpdate={this.processRowUpdatefunc}
+          //processRowUpdate={this.testProceess}
+          onCellKeyDown={this.cellkeydown}
+          onRowClick={this.handleRowClick}
+          onCellClick={this.handleCellClick}
+         />
+      }
+    }
     const columns = [
       {
         field: 'id', headerName: 'No', width: 30, editable: true, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
@@ -821,7 +837,6 @@ class Ace1010 extends Component {
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
-
       },
       {
         field: 'after_km',
@@ -868,9 +883,6 @@ class Ace1010 extends Component {
         <Ace1010Search
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
-
-
-
         </Ace1010Search>
         <DataGrid
           ref={this.dataGridRef}

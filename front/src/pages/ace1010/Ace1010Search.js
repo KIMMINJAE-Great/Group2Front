@@ -71,12 +71,7 @@ class Ace1010Search extends Component {
   }
 
 
-  componentDidMount() {
-    const searchCarResult = JSON.parse(sessionStorage.getItem('searchCarResult')); //세션스토리지에 있는 현재 로그인 정보
-    if (searchCarResult) {
-      this.setState({ car_cd: searchCarResult });
-    }
-  }
+  
 
 
   handleclearFields = () => {
@@ -98,14 +93,14 @@ class Ace1010Search extends Component {
   };
 
 
-    /*수 정 전 코 드  */
+  
   searchcarforabizperson = async (event) => {
     event.preventDefault();
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
-    const searchCarResult = JSON.parse(sessionStorage.getItem('searchCarResult')); //세션스토리지에 있는 현재 로그인 정보
-    if (searchCarResult) {
-      this.setState({ car_cd: searchCarResult });
-    }
+    
+    // if (searchCarResult) {
+    //   this.setState({ car_cd: searchCarResult });
+    // }
     if (!this.state.firstUse_dt || !this.state.LastUse_dt) {
       this.showErrorSnackbar();
       return;
@@ -133,6 +128,15 @@ class Ace1010Search extends Component {
     }
   };
 
+  //서치 콜백  
+  searchCallback = {
+    handleCallBackData : (e) => {
+      this.setState({car_cd: e}, () => 
+      console.log("@@@car_cd :car_cdcar_cdcar_cd"+this.state.car_cd));
+    },
+    
+  }
+
 
   render() {
 
@@ -150,17 +154,14 @@ class Ace1010Search extends Component {
               </Typography>
             </Grid>
             <Grid item xs={2} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-              <CodePickerManager helpId={"DrivingCodePicker"} variant="outlined" />
-              {/* <TextField
-                fullWidth
-                required
-                variant="outlined"
-                size="small"
-                value={this.state.car_cd}
-                onChange={event => this.setState({ car_cd: event.target.value })}
-                inputProps={{ style: { height: "12px" } }}
-                sx={{ backgroundColor: '#FEF4F4' }}
-              /> */}
+              {/* 코드피커 */}
+              <CodePickerManager helpId={"DrivingCodePicker"} callback={this.searchCallback} variant="outlined" 
+              onChange={(e) => {
+                const carInfo = (e || []).length > 0 ? e[0] : undefined
+                this.setState({ car_cd: carInfo.carCd })
+              }}
+              />
+              
             </Grid>
             <Grid item xs={1.1} style={{ textAlign: "right" }}>
               <Typography>
