@@ -33,6 +33,7 @@ import { getByQueryString } from "../../components/api_url/API_URL";
 import { Component } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dayjs from "dayjs";
+import Ace1010BasicDistance from "./Ace1010BasicDistance";
 const theme = createTheme({
   components: {
 

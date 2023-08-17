@@ -19,6 +19,7 @@ import { ThemeProvider } from "@emotion/react";
 import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
+import Ace1010 from "../../pages/ace1010/Ace1010";
 import MileageModal from "../mileagesearch/MileageModal";
 import DrivingRecordCopy from "../../pages/ace1010/DrivingRecordCopy";
 
@@ -97,6 +98,7 @@ class DouzoneContainer extends Component {
       snackBarMessage: "",
       severity: "success",
       isModalOpen: '',
+      receivedBeforeKm: '',
     };
   }
   // 기능 모음 열기 닫기
@@ -120,11 +122,14 @@ class DouzoneContainer extends Component {
     this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
   };
 
+  handleBeforeKmChange = (beforeKm) => {
+    this.setState({
+      receivedBeforeKm: beforeKm,
+    });
 
-
-
-
-
+    // 부모 컴포넌트로 값 전달
+    this.props.onBeforeKmChange(beforeKm);
+  };
 
 
   //  스낵바 닫기
@@ -167,6 +172,8 @@ class DouzoneContainer extends Component {
       iconColor = "#ffffff"; // 아이콘 색상
     }
     //const showDelete = this.props.onDelete
+    const {car_cd, co_cd} = this.props;
+
     return (
       <ThemeProvider theme={douzonecontainertheme}>
 
@@ -199,7 +206,11 @@ class DouzoneContainer extends Component {
                       "aria-labelledby": "basic-button",
                     }}
                   >
-                    <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
+                    <MenuItem><Ace1010BasicDistance
+                      car_cd={car_cd}
+                      co_cd={co_cd}
+                      onBeforeKmChange={this.handleBeforeKmChange}
+                    >기초거리입력</Ace1010BasicDistance></MenuItem>
                     <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
                     <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
                     <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>

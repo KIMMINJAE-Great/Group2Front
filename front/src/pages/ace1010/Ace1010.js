@@ -35,6 +35,7 @@ class Ace1010 extends Component {
       hour: '',
       minute: '',
       car_cd: '',
+      co_cd: '',
       rows: [],
       selectAllCheckbox: false,
       // 출발구분 위해
@@ -48,6 +49,7 @@ class Ace1010 extends Component {
       selectedRowRmkdcmodi: '',//수정비고
       // 일단 플래그
       flag: false,
+      beforeKm: '',
     }
     this.DouzoneContainer = React.createRef();
     this.ace1010SearchRef = React.createRef();
@@ -58,7 +60,14 @@ class Ace1010 extends Component {
     this.getsendyn();
     this.getusefg();
   }
-
+  handleBeforeKmChange = (beforeKm) => {
+    const updatedRows = [...this.state.rows]
+    updatedRows[0].before_km = beforeKm
+    
+    this.setState({
+      beforeKm: beforeKm,
+    });
+  };
 
 
   getstartendfg = async () => {
@@ -117,9 +126,13 @@ class Ace1010 extends Component {
   }
 
 
-
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
   searchcarforabizperson = (carforabizperson, car_cd) => {
+
+    this.setState({car_cd : carforabizperson[0].car_cd})
+    this.setState({co_cd : carforabizperson[0].co_cd})
+
+
     if (carforabizperson === 'none') {
       this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 사용이 중지되었습니다', 'error');
       this.setState({ rows: [] })
@@ -587,7 +600,8 @@ class Ace1010 extends Component {
   render() {
     const user = JSON.parse(sessionStorage.getItem('user'));
 
-    const authority = user.authorities[0].authority
+    const authority = user.authorities[0].authority;
+    const { beforeKm } = this.state;
 
 
 
@@ -818,6 +832,7 @@ class Ace1010 extends Component {
         width: 120,
         align: 'center',
         headerAlign: 'center',
+        editable: 'true',
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
@@ -861,15 +876,16 @@ class Ace1010 extends Component {
     return (
 
       <DouzoneContainer
+        car_cd={this.state.car_cd}
+        co_cd={this.state.co_cd}
         ref={this.DouzoneContainer}
         title={this.state.title}
         isAce1010Open={this.state.isAce1010Open}
+        onBeforeKmChange={this.handleBeforeKmChange}
       >
         <Ace1010Search
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
-
-
 
         </Ace1010Search>
         <DataGrid

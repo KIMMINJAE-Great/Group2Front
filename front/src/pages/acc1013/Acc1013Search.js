@@ -8,7 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Postcode from "../../components/commons/Postcode";
-import CodePickerManager from '../../components/codepicker/CodePickerManager';
+import CodePickerManager from '../../components/CodePicker/CodePickerManager';
 
 import {
   Button,

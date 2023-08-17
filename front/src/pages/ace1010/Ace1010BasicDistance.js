@@ -22,26 +22,37 @@ class Ace1010BasicDistance extends React.Component {
     this.state = {
       isModalOpen: '',
       abizcarNBNM: '',
-      car_cd: '10001',
       showError: false,
+      car_cd : this.props.car_cd,
+      co_cd : this.props.co_cd,
+      before_km: '',
     };
   }
 
 handleOpenBd = async () =>  {
   this.setState({ showError: false });
+    const { car_cd } = this.props;
+    console.log("car_cd : ", car_cd);
     try {
-      const response ="";
-      console.log(response);
+      const response = await post('/regcar/getCarsInfo', { car_cd } ); // 서버의 API 엔드포인트에 맞게 수정
+      const abizcarNBNM = response.data;
+      console.log("car_cd : ", car_cd);
+      console.log("abizcarNBNM : ", abizcarNBNM);
+      console.log("response : ", response);
+      console.log("response.data : ", response.data);
+      console.log("response.data.abizcarNBNM : ", response.data.abizcarNBNM);
+  
       const test = !this.state.isModalOpen;
       this.setState({
         isModalOpen: test,
         abizcarNBNM: response.data,
-    });
-      if(response.data) {
+      });
+  
+      if (response.data) {
         console.log(this.state);
       }
     } catch (error) {
-      console.log(error);
+      console.error('에러:', error);
     }
   };
   
@@ -51,30 +62,40 @@ handleOpenBd = async () =>  {
   };
   /* INSERT 기초거리 입력  */
   insertDistance = async () => {
-    console.log('insertDistance 실행 @@@');
-
-    
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const emp_id = user.emp_id;
     try {
-      const { car_cd, startacc_km } = this.state;
-      console.log('insertDistance 저장 됨@@@@@@');
-      console.log('car_cd : ', car_cd);
-      console.log('startacc_km : ', startacc_km);
+      // const { before_km } = this.state; // 필요한 상태값 가져오기
+      const { before_km, car_cd, co_cd } = this.state;
 
-      if (!startacc_km || startacc_km.trim() === '') {
-        console.log('insertDistance 에러에러 @@@');
-        this.setState({ showError: true });
-        return;
-      }
+      const requestData = {
+        startacc_km: before_km,
+        co_cd: co_cd,
+        car_cd: car_cd,
+        insert_id: emp_id,
+        modify_id: emp_id,
+    };
+    console.log('requestData', requestData);
 
-      const response = await post('/ace1010/insertStartAcc', { car_cd, startacc_km});
+    // 서버로 POST 요청 전송
+    const response = await post('/ace1010/insertStartaccKm', requestData); // 서버의 API 엔드포인트에 맞게 수정
 
-      console.log('서버 응답:', response);
-
-      this.setState({ startacc_km: '' });
-      this.closeModal();
-    } catch (error) {
-      console.error('에러:', error);
+    if (response.data === 'insert success') {
+        // 성공적으로 저장되었을 때 처리
+        console.log('Insert successful.');
+    } else {
+        console.log('Insert failed.');
     }
+
+    // 콜백 함수 호출하여 값 전달
+    if (this.props.onBeforeKmChange) {
+      this.props.onBeforeKmChange(before_km);
+    }
+
+    this.closeModal();
+} catch (error) {
+    console.error('Error:', error);
+}
   };
 
   /* 변경된 값 필드에 저장 => 차량 정보 (차량 번호, 차량명)  */
@@ -85,9 +106,9 @@ handleOpenBd = async () =>  {
   };
 
   /* 변경된 값 필드에 저장 => 기초거리  */
-  startacc_kmChange = (value) => {
+  before_kmChange = (value) => {
     this.setState(() => ({
-      startacc_km: value,
+      before_km: value,
     }));
   };
 
@@ -143,8 +164,8 @@ handleOpenBd = async () =>  {
                       sx={{ width: '50%', ml: 1 }}
                       variant="outlined" size="small"
                       inputProps={{ style: { height: '12px' } }} 
-                      value={this.state.startacc_km}
-                      onChange={(e) => this.startacc_kmChange(e.target.value)}
+                      value={this.state.before_km}
+                      onChange={(e) => this.before_kmChange(e.target.value)}
                       />
             </Grid>
 
