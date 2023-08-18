@@ -102,6 +102,9 @@ class DouzoneContainer extends Component {
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
+    if(this.props.callback.handleCallBackMileageData){
+      
+    }
   };
 
   handleClose = () => {
@@ -158,7 +161,7 @@ class DouzoneContainer extends Component {
       handleOpenBd,
     } = this.props;
 
-    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open , functionCollection } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
@@ -201,9 +204,10 @@ class DouzoneContainer extends Component {
                   >
                     <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
                     <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
-                    <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
+                    <MenuItem><MileageModal callback={this.props.callback} content={this.props.content}>주행거리 검색</MileageModal></MenuItem>
                     <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
                   </Menu>
+                  
                 
               </div>
                )} 

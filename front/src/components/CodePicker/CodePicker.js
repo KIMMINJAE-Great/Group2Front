@@ -12,7 +12,7 @@ import { LocalizationProvider } from '@mui/lab';
 import AdapterDayjs from '@mui/lab/AdapterDayjs';
 import DatePicker from '@mui/lab/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 
 class CodePicker extends React.Component {
   constructor(props) {
@@ -189,11 +189,6 @@ class CodePicker extends React.Component {
     this.handleDropDown = this.handleDropDown.bind(this);
 
 
-    console.log("this.props.selectedIds[0].valueField"+this.props.selectedIds.valueField);
-    
-    console.log("Selected IDs:", JSON.stringify(this.props.selectedIds));
-    console.log("Item value:", this.props.valueField);
-    console.log("length"+this.props.selectedIds.length);
     // 드롭다운
     const open1 = Boolean(anchor1);
 
@@ -223,7 +218,7 @@ class CodePicker extends React.Component {
 
             </ExpandMoreIcon>
             {/* 여러개데이터가 검색되면 이게 먼저 실행되어야함 */}
-            <InsertInvitationIcon
+            <EventNoteOutlinedIcon
               aria-controls="codepicker2"
               aria-haspopup="true"
               onClick={this.openModal}

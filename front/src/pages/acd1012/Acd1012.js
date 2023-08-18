@@ -5,6 +5,7 @@ import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Gri
 import { get } from "../../components/api_url/API_URL";
 
 import MileageModal from "../../components/mileagesearch/MileageModal";
+
 import MileageTableView from "../../components/mileagesearch/MileageTableView";
 
 class Acd1012 extends Component {
@@ -25,14 +26,14 @@ class Acd1012 extends Component {
 
 
 componentDidMount() {
-    //abizcar_person의 정보를 가져오는코드임
-    get(`/ace1010/getallcars`)
-      .then((response) => {
-        this.setState({ bookmarkCards: response.data, content: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // //abizcar_person의 정보를 가져오는코드임
+    // get(`/ace1010/getallcars`)
+    //   .then((response) => {
+    //     this.setState({ bookmarkCards: response.data, content: response.data });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   }
 
 // 모달의 열림/닫힘 상태를 관리하는 state 추가
@@ -108,7 +109,7 @@ handleMenuItemClick = (valueField) => {
                 <div>
                   <MileageModal />
                 </div>
-                <div><MileageTableView></MileageTableView></div>
+                <div><MileageTableView /></div>
               
             </div>
             <Grid container justifyContent="center" alignItems="center" mt={0} mb={0} ml={0} backgroundColor={"#f2f2f2"} height={'50px'}>

@@ -157,7 +157,6 @@ class CompanyCodePicker extends React.Component{
   };
 
   render(){
-    console.log("muenuItems"+JSON.stringify(this.state.menuItems));
       return (
           // <CodePicker valueField='trNm' codeField='trCd' dispType='codeAndValue'></CodePicker>
           <CodePicker 
