@@ -1,17 +1,15 @@
 import React from "react";
 import { Component } from "react";
-
-
-import CardList from "../../components/commons/CardList";
-
+import { get, post, update, del } from "../../components/api_url/API_URL";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { createTheme, Card, CardContent, Checkbox, Typography, Box, Grid } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
-import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
-import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import { get, post, update, del } from "../../components/api_url/API_URL";
+import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acc1013Search from "./Acc1013Search";
 import Acc1013BasicInfo from "./Acc1013BasicInfo";
+import CardList from "../../components/commons/CardList";
+
 const acc1013theme = createTheme({
   components: {
     MuiListItemText: {
@@ -181,10 +179,18 @@ class Acc1013 extends Component {
   handleSaveButton = async (e) => {
     e.preventDefault();
 
-    const { selectedCompanyCards, selectedRead } = this.state;
+    const { selectedCompanyCards, selectedRead,companyCards } = this.state;
     /* 필수값 유효성 검사 */
     if (!selectedCompanyCards.co_cd) {
       alert("회사 코드를 입력해주세요.");
+      return;
+    }
+    if (selectedCompanyCards.co_cd.length <= 3 || selectedCompanyCards.co_cd.length >= 5) {
+      alert("회사코드는 4자이어야 합니다. ex) 1000");
+      return;
+    }
+    if (companyCards.includes(selectedCompanyCards.co_cd)) {
+      alert("이미 존재합니다.");
       return;
     }
     if (!selectedCompanyCards.co_nm) {
@@ -287,25 +293,24 @@ class Acc1013 extends Component {
 
   //우편주소 코드
   handlePostComplete = (data) => {
-    let extraAddress = "";
-    if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-      extraAddress += data.bname;
-    }
-    if (data.buildingName !== "" && data.apartment === "Y") {
-      extraAddress +=
-        extraAddress !== "" ? ", " + data.buildingName : data.buildingName;
-    }
-    if (extraAddress !== "") {
-      extraAddress = " (" + extraAddress + ")";
-    }
-    this.setState({
-      postcode: data.zonecode,
-      roadAddress: data.roadAddress,
-      jibunAddress: data.jibunAddress,
-      extraAddress,
-    });
-  };
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        adr_zp: data.zonecode,
+        adr_inp: data.roadAddress,
+        adr_inp: data.jibunAddress,
 
+      },
+    }));
+  };
+  handleCoNkChange = (value) => {
+    this.setState((prevState) => ({
+      selectedCompanyCards: {
+        ...prevState.selectedCompanyCards,
+        co_nk: value,
+      },
+    }));
+  };
   handleNewButtonClick = () => {
     this.setState({
       selectedCompanyCards: '',
@@ -323,9 +328,9 @@ class Acc1013 extends Component {
   handleDataChange(value) {
     this.setState({
       co_cd: value.co_cd,
-      adr_zp: value.co_nm,
-      adr_inp: value.adr_inp,
-      adr_etc: value.adr_etc,
+      // adr_zp: value.adr_zp,
+      // adr_inp: value.adr_inp,
+      // adr_etc: value.adr_etc,
     });
   }
 
@@ -579,208 +584,6 @@ class Acc1013 extends Component {
     }));
   };
 
-  handleCoNmChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        co_nm: value,
-      },
-    }));
-  };
-  handleCoNkChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        co_nk: value,
-      },
-    }));
-  };
-  handleUseYnChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        use_yn: value,
-      },
-    }));
-  };
-  handleLngChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        lng: value,
-      },
-    }));
-  };
-  handleAdmCdChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        adm_cd: value,
-      },
-    }));
-  };
-  handleBzTypeChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        bz_type: value,
-      },
-    }));
-  };
-  handleBzItemChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        bz_item: value,
-      },
-    }));
-  };
-  handleCoTelChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        co_tel: value,
-      },
-    }));
-  };
-  handleCoTel2Change = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        co_tel2: value,
-      },
-    }));
-  };
-  handleCoFaxChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        co_fax: value,
-      },
-    }));
-  };
-  handleRegNbChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        reg_nb: value,
-      },
-    }));
-  };
-  handleCpCtChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        cp_ct: value,
-      },
-    }));
-  };
-  handleCpNoChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        cp_no: value,
-      },
-    }));
-  };
-  handleAdrZpChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        adr_zp: value,
-      },
-    }));
-  };
-  handleAdrInpChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        adr_inp: value,
-      },
-    }));
-  };
-  handleAdrEtcChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        adr_etc: value,
-      },
-    }));
-  };
-  handleEstDtChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        est_dt: value,
-      },
-    }));
-  };
-  handleOpnDtChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        opn_dt: value,
-      },
-    }));
-  };
-  handleClsDtChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        cls_dt: value,
-      },
-    }));
-  };
-  handleCeoNmChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        ceo_nm: value,
-      },
-    }));
-  };
-  handleResNbChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        res_nb: value,
-      },
-    }));
-  };
-  handleResNb2Change = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        res_nb2: value,
-      },
-    }));
-  };
-  handleAcPerChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        ac_per: value,
-      },
-    }));
-  };
-  handleAcDtChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        ac_dt: value,
-      },
-    }));
-  };
-  handleAccTypeChange = (value) => {
-    this.setState((prevState) => ({
-      selectedCompanyCards: {
-        ...prevState.selectedCompanyCards,
-        acc_type: value,
-      },
-    }));
-  };
-
-
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -941,7 +744,7 @@ class Acc1013 extends Component {
                   emp_nm={this.state.emp_nm}
                   handleInputChangeReadOnly={this.handleInputChangeReadOnly}
                   // sco={this.state.companyCards} //카드리스트 sco
-                  onComplete={this.handlePostComplete}
+                  onPostComplete={this.handlePostComplete}
                   // addOrUpdate={this.addOrUpdate} 사용X
                   onDataChange={this.handleDataChange}
                   readonly={this.state.readonly}

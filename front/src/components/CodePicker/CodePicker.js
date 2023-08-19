@@ -60,10 +60,6 @@ class CodePicker extends React.Component {
           if (this.props.selectedIds.length === 1) {
             displayValue = `${firstItem[codeField]}.${firstItem[valueField]}`; // 첫번째 아이템의 값
           }
-          else if (this.props.selectedIds.length === 0) {
-
-          }
-          
           else {
               displayValue = `${firstItem[valueField]} 외 ...${this.props.selectedIds.length - 1}건`;
           }
@@ -88,6 +84,7 @@ class CodePicker extends React.Component {
           if (this.props.selectedIds.length === 1) {
             displayValue = `${firstItem[codeField]}.${firstItem[valueField]}`; // 첫번째 아이템의 값
           } else {
+              console.log("this.props.selectedIds"+JSON.stringify(this.props.selectedIds));
               displayValue = `${firstItem[valueField]} 외 ...${this.props.selectedIds.length - 1}건`;
           }
       } else {
@@ -99,6 +96,19 @@ class CodePicker extends React.Component {
       isModalOpen: false,
     });
   }
+  //검색된게 하나일때 실행됨
+  handleSearchDataIsItemOne = async () => {
+    let displayValue;
+    const { codeField, valueField } = this.props;
+    
+    const firstItem = this.props.menuItems[0];  
+
+    displayValue = `${firstItem[codeField]}.${firstItem[valueField]}`; // 첫번째 아이템의 값
+    
+    this.setState({selectedValue : displayValue,}, () => {
+    });
+  }
+
   // 모달 열기 함수
   openModal = () => {
     const { selectAllCheckbox } = this.props;
@@ -130,23 +140,42 @@ class CodePicker extends React.Component {
     
   };
   
-
-
-  handleKeyDown = (e, value) => {
+  handleKeyDown = async (e, value) => {
     // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
     if (e.key === 'F2' || e.key === 'Enter') {
-      this.props.onHandleKeyDown(e, value);
-      if (this.props.callback && this.props.callback.handleCallBackData) {
-        this.props.callback.handleCallBackData(value);
-      }
-      this.openModal();
-    }
-    
-    
-     // 키 조작이 끝나면 selectedValue를 초기화
-     this.setState({ selectedValue: null });
+      await this.props.onHandleKeyDown(e, value);
 
+      if (this.props.callback && this.props.callback.handleCallBackData) {
+        await this.props.callback.handleCallBackData(value);
+      }
+      if (this.props.menuItems.length === 1 ) {
+        this.handleSearchDataIsItemOne();
+        console.log("너 실행돔?")
+        
+      } else if( this.props.menuItems.length >= 2){
+        this.openModal();// 검색된 결과가 2개 이상일 때만 openModal() 실행
+      }
+    }
+     // 키 조작이 끝나면 selectedValue를 초기화
+    //  this.setState({ selectedValue: null });
   };
+
+
+  // handleKeyDown = (e, value) => {
+  //   // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
+  //   if (e.key === 'F2' || e.key === 'Enter') {
+  //     this.props.onHandleKeyDown(e, value);
+  //     if (this.props.callback && this.props.callback.handleCallBackData) {
+  //       this.props.callback.handleCallBackData(value);
+  //     }
+  //     this.openModal();
+  //   }
+    
+    
+  //    // 키 조작이 끝나면 selectedValue를 초기화
+  //    this.setState({ selectedValue: null });
+
+  // };
 
   // 모달 내에서 엔터를 치면 해당 코드피커의 ModalTextValue 전달..
   handleKeyDownModal = (e, value) => {
@@ -176,7 +205,11 @@ class CodePicker extends React.Component {
     this.setState({ menuItems: updatedMenuItems });
   };
 
-
+  handleOnChange = (event) => {
+    this.props.onTextInputChange(event);
+    this.setState({ selectedValue: event.target.value });
+  }
+  
   render() {
     const { anchor1, } = this.state;
     const { 
@@ -202,7 +235,7 @@ class CodePicker extends React.Component {
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
             value={this.state.selectedValue || this.props.textFieldValue}
-            onChange={this.props.onTextInputChange}
+            onChange={this.handleOnChange}
             inputProps={{ style: { height: '2px' } }}
           />
 

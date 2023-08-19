@@ -8,7 +8,7 @@ import './ace1010.css'
 import ModalInput from './ModalInput';
 import Ace1010BasicDistance from './Ace1010BasicDistance';
 import Ace1010DivisionDistance from './Ace1010DivisionDistance';
-import MileageModal from '../../components/mileagesearch/MileageModal';
+import MileageModal from './mileagesearch/MileageModal';
 import Ace1010Bookmark from './Ace1010Bookmark';
 
 // //기능모음

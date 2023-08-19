@@ -1,27 +1,11 @@
 import React from "react";
-import { get, post } from "../../components/api_url/API_URL";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Postcode from "../../components/commons/Postcode";
 import CodePickerManager from '../../components/codepicker/CodePickerManager';
 
 import {
   Button,
-  Card,
-  CardContent,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  IconButton,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,

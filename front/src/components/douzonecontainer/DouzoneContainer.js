@@ -19,7 +19,7 @@ import { ThemeProvider } from "@emotion/react";
 import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
-import MileageModal from "../mileagesearch/MileageModal";
+import MileageModal from "../../pages/ace1010/mileagesearch/MileageModal";
 import DrivingRecordCopy from "../../pages/ace1010/DrivingRecordCopy";
 
 

@@ -14,15 +14,20 @@ class MileageModal extends Component {
       endName: '',
       startCoords: '',
       endCoords: '',
-      mileageCards: [], // 체크박스를 통해 저장된 배열
-      selectedItems: '', //북마크 정보 저장할 상태변수
-      content: [], //하위 컴포넌트로의 전달 등 여러기능함
-      coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... mileageCards에서 충분할듯? 
-      tableShow: false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!!
-      data: null,// 검색api에 사용될것임
       distanceRealtime: '',
       distanceBased: '',
       distanceFree: '',
+      
+      mileageCards: [], // 체크박스를 통해 저장된 카드리스트에 들어갈 배열
+      selectedItems: '', //선택된 카드리스트의 정보 저장할 상태변수
+      // content: [], //하위 컴포넌트로의 전달 등 여러기능함
+      coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... mileageCards에서 충분할듯? 
+
+      tableShow: false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!! 스피너!
+
+      data: null,// 검색api에 사용될것임
+
+      
     };
   }
 

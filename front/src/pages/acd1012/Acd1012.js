@@ -4,9 +4,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { Box, Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
 import { get } from "../../components/api_url/API_URL";
 
-import MileageModal from "../../components/mileagesearch/MileageModal";
+import MileageModal from "../ace1010/mileagesearch/MileageModal";
 
-import MileageTableView from "../../components/mileagesearch/MileageTableView";
+import MileageTableView from "../ace1010/mileagesearch/MileageTableView";
 
 class Acd1012 extends Component {
   constructor(props){

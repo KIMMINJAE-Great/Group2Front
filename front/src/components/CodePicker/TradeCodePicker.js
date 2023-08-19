@@ -23,30 +23,29 @@ class CarCodePicker extends React.Component{
 
   // 엔터쳤을때,
   handleKeyDown = async (e, textFieldValue) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
+    e.preventDefault();
+    return new Promise(async (resolve, reject) => { //Promise반환하도록,, 함수내의 모든 비동기 작업들이 완료될때까지 대기시키려고
       this.setState({
         textFieldValue: textFieldValue
       }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
         try {
           const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-          this.state.menuItems = response.data;
-          this.setState({
-            menuItems: response.data,
-            selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
-
-          });
-          if(this.state.menuItems.length === 1 ){
+          if (response.data.length === 1) {
             this.setState({
-              selectedIds: response.data,
-            });
+              menuItems: response.data,
+              selectedIds: response.data
+            }, resolve);
+          } else {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
+            }, resolve);
           }
-            console.log(response.data);
-          } catch (error) {
-            console.log(error);
-          }
+        } catch (error) {
+          console.log(error);
+        }
       });
-    }
+    });
   };
 
   handleKeyDownModal = async (e ,textFieldValue) => {
