@@ -5,16 +5,11 @@ import { del, get, post, update } from '../../components/api_url/API_URL';
 import { Box, Checkbox, Menu, MenuItem, Select } from '@mui/material';
 import Ace1010Search from './Ace1010Search';
 import './ace1010.css'
-import ModalInput from './ModalInput';
 import Spinner from '../../components/commons/Spinner/Spinner';
-import Ace1010BasicDistance from './Ace1010BasicDistance';
-import Ace1010DivisionDistance from './Ace1010DivisionDistance';
-import MileageModal from '../../components/mileagesearch/MileageModal';
 import Ace1010Bookmark from './Ace1010Bookmark';
 import Ace1010BasicDistance from './Ace1010BasicDistance';
 import Ace1010DivisionDistance from './Ace1010DivisionDistance';
 import MileageModal from './mileagesearch/MileageModal';
-import Ace1010Bookmark from './Ace1010Bookmark';
 
 // //기능모음
 // const functionCollection = [
@@ -103,7 +98,9 @@ class Ace1010 extends Component {
         updateLoadingStateTrue={this.updateLoadingStateTrue}
         updateLoadingStateFalse={this.updateLoadingStateFalse}
       >안분</Ace1010DivisionDistance>,
-      <MileageModal>주행거리 검색</MileageModal>,
+      <MileageModal
+        callback={this.MileageFunction}
+        content={this.state.selectedCheckedRows}>주행거리 검색</MileageModal>,
       <Ace1010Bookmark>즐겨찾기</Ace1010Bookmark>
     ]
   }
@@ -1030,9 +1027,8 @@ class Ace1010 extends Component {
         showDelete={''}
         //title="사원 삭제 확인"
         message="정말로 운행기록 정보를 삭제하시겠습니까?"
-        // menu={}
-        callback={this.MileageFunction} //콜백함수 전달 (주행거리)
-        content={this.state.selectedCheckedRows} //체크박스 선택된 배열 (주행거리)
+      // menu={}
+
       >
 
         <Ace1010Search

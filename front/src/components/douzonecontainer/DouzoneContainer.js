@@ -102,9 +102,9 @@ class DouzoneContainer extends Component {
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
-    if (this.props.callback.handleCallBackMileageData) {
+    // if (this.props.callback.handleCallBackMileageData) {
 
-    }
+    // }
   };
 
   handleClose = () => {

@@ -94,6 +94,10 @@ class Ace1010Search extends Component {
 
 
   searchcarforabizperson = async (event) => {
+
+    console.log('찍기')
+    console.log(event)
+    console.log(this.state.car_cd)
     // if (event) {
     //   event.preventDefault();
     // }
