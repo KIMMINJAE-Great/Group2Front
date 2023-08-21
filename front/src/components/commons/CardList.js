@@ -52,7 +52,7 @@ class CardList extends Component {
               variant="contained"
               color="primary"
               fullWidth
-              style={{ backgroundColor: "#FFFFFF", color: "#7A7A7A" }}
+              style={{ backgroundColor: "#FFFFFF", color: "#7A7A7A", marginTop: '5px' }}
               onClick={() => this.props.handleNewButtonClick()}
             >
               추가

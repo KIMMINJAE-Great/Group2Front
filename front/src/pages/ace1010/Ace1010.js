@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { DataGrid, GridToolbar, GridCellParams } from '@mui/x-data-grid';
 import DouzoneContainer from './../../components/douzonecontainer/DouzoneContainer';
-import { get, post, update } from '../../components/api_url/API_URL';
+import { del, get, post, update } from '../../components/api_url/API_URL';
 import { Box, Checkbox, Menu, MenuItem, Select } from '@mui/material';
 import Ace1010Search from './Ace1010Search';
 import './ace1010.css'
 import ModalInput from './ModalInput';
-
+import Spinner from '../../components/commons/Spinner/Spinner';
+import Ace1010BasicDistance from './Ace1010BasicDistance';
+import Ace1010DivisionDistance from './Ace1010DivisionDistance';
+import MileageModal from '../../components/mileagesearch/MileageModal';
+import Ace1010Bookmark from './Ace1010Bookmark';
 class Ace1010 extends Component {
 
   constructor(props) {
@@ -36,7 +40,6 @@ class Ace1010 extends Component {
       minute: '',
       car_cd: '',
       rows: [],
-      selectAllCheckbox: false,
       // 출발구분 위해
       inputValueforfg: '',
       // fg 구분에서 직접입력을 위한 state
@@ -48,17 +51,44 @@ class Ace1010 extends Component {
       selectedRowRmkdcmodi: '',//수정비고
       // 일단 플래그
       flag: false,
+
+      selectedCheckedRows: [],
+      selectAllCheckbox: false,
+
+      // Spinner
+      loading: false,
+
+      // 삭제 모달
+      showDeleteModal: false,
+      // 기초거리
+      startacc_km: 0,
     }
     this.DouzoneContainer = React.createRef();
     this.ace1010SearchRef = React.createRef();
-    this.dataGridRef = React.createRef()
+
   }
   componentDidMount() {
     this.getstartendfg();
     this.getsendyn();
     this.getusefg();
+
+    //this.setState({ loading: true })
   }
 
+  // 기능모음 리턴
+  setMenus = () => {
+    return [
+      <Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance>,
+      <Ace1010DivisionDistance
+        selectedCheckedRows={this.state.selectedCheckedRows}
+        researchAfterSaveDivisionDistance={this.researchAfterSaveDivisionDistance}
+        updateLoadingStateTrue={this.updateLoadingStateTrue}
+        updateLoadingStateFalse={this.updateLoadingStateFalse}
+      >안분</Ace1010DivisionDistance>,
+      <MileageModal>주행거리 검색</MileageModal>,
+      <Ace1010Bookmark>즐겨찾기</Ace1010Bookmark>
+    ]
+  }
 
 
   getstartendfg = async () => {
@@ -86,36 +116,6 @@ class Ace1010 extends Component {
 
     }
   }
-
-  // selectAllCheckbox 상태를 변경하고 모든 행의 체크박스 상태를 업데이트한다.
-  handleToggleAllCheckboxes = () => {
-    const newSelectAllCheckbox = !this.state.selectAllCheckbox;
-    const newRows = this.state.rows.map((row) => ({ ...row, check: newSelectAllCheckbox }));
-    this.setState({ selectAllCheckbox: newSelectAllCheckbox, rows: newRows }, () => {
-      console.log('체크박스 확인')
-      console.log(this.state.rows);
-    });
-  }
-
-  // 개별 체크박스의 선택 상태를 전환하는 함수.
-  // 해당 체크박스의 상태를 변경하고, 모든 체크박스가 선택되었는지 확인한 후 상태를 업데이트한다.
-  handleToggleCheckbox = (id) => {
-    this.setState((prevState) => {
-      const newRows = prevState.rows.map((row) => {
-        if (row.id === id) {
-          return { ...row, check: !row.check };
-        }
-        return row;
-      });
-      const allChecked = newRows.every((row) => row.check);
-      const someChecked = newRows.some((row) => row.check);
-      return {
-        rows: newRows,
-        selectAllCheckbox: allChecked ? true : (someChecked ? undefined : false)
-      };
-    });
-  }
-
 
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
@@ -203,9 +203,10 @@ class Ace1010 extends Component {
 
   // 행이 클릭되면 여러 요소를 저장 하여 활용
   handleRowClick = (params, event) => {
-
+    console.log('행클릭')
     console.log(params.rmk_dc);
     console.log(params.row.rmk_dc);
+    console.log(params.row)
     // 행 클릭시 필수 셀 빨간색 입히는 setState
     this.setState({
       selectedRowId: params.id,
@@ -244,44 +245,6 @@ class Ace1010 extends Component {
 
     })
   }
-
-
-  // 모달을 띄우기
-  showModalAndWait = () => {
-    return new Promise((resolve, reject) => {
-      this.resolveShowModal = resolve;  // resolve 함수를 저장
-      this.setState({ showModal: true });
-      console.log('모달이 생성되었음');
-    });
-  }
-
-  //  모달 확인버튼 클릭 후 
-  handleModalConfirm = (inputValue) => {
-    this.setState({
-      showModal: false,
-      inputValueforfg: inputValue,
-    }, () => {
-      if (this.resolveShowModal) {
-        this.resolveShowModal(); // 저장된 resolve 함수 실행
-        this.resolveShowModal = null; // resolve 함수 초기화
-        console.log('모달에서 입력 끝남')
-      }
-    });
-  };
-
-  handleModalNotConfirm = () => {
-    this.setState({
-      showModal: false,
-      inputValueforfg: '',
-    }, () => {
-      if (this.resolveShowModal) {
-        this.resolveShowModal();
-        this.resolveShowModal = null;
-        console.log('모달에서 입력 끝남')
-      }
-    });
-
-  }
   handleRmkDcChange = (value) => {
     // 현재 상태의 rows 배열을 복사
     const updatedRows = [...this.state.rows];
@@ -302,8 +265,9 @@ class Ace1010 extends Component {
     }
   }
 
-  processRowUpdatefunc = async (updatedRow, originalRow) => {
+  processRowUpdatefunc = (updatedRow, originalRow) => {
     console.log('프로세스 실행')
+    console.log(updatedRow)
     console.log(updatedRow.id)
     console.log(updatedRow.seq_nb)
 
@@ -311,72 +275,78 @@ class Ace1010 extends Component {
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
     const cellFieldName = this.state.editedCell;
 
-    // 출발구분, 도착구분
-    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'start_fg') {
 
-      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '즐겨찾기') {
-        console.log('모달뜨기 직전= 출발구분')
-        await this.showModalAndWait();
-
-        updatedRow.start_fg = this.state.inputValueforfg;
-
-      }
-    }
-
-    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
-
-      if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '즐겨찾기') {
-        console.log('모달뜨기 직전 도착구분')
-        await this.showModalAndWait();
-
-        updatedRow.end_fg = this.state.inputValueforfg;
-
-      }
-    }
-
-
-    //const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
     const mileageKm = Number(updatedRow.mileage_km);
     const updatedRows = [...this.state.rows];
     console.log('updatedRows의 row의 id 타입')
     console.log(typeof updatedRows[0].id) // row의 id는 number이다. 
     //  주행전, 후 자동 입력
     if (cellFieldName === 'mileage_km') {
-      //가정 1 첫 빈행일 때 즉 id가 1일때
-      //가정 2 id가 1이상일때
 
-      // 운행기록부 첫 주행 등록
-      if (updatedRow.id === 1 && updatedRow.seq_nb === 0) {
-        console.log('운행기록부 첫 주행 등록')
-        updatedRow.mileage_km = mileageKm;
-        if (!updatedRow.before_km) {
-          updatedRow.before_km = 0;
-          updatedRow.after_km = mileageKm + Number(updatedRow.before_km);
-        } else {
+      if (updatedRow.origin === 'Y') {
+
+        // 오리진이 y이지만 맨마지막 행일 떄 오류발생
+        console.log('마일리지까지 들어옴')
+        //가정 1 첫 빈행일 때 즉 id가 1일때
+        //가정 2 id가 1이상일때
+
+        console.log('요청 전')
+        // 스피너 적용
+        this.setState({ loading: true });
+        var finalresponse;
+        post('/ace1010/autocalcmileage', updatedRow)
+          .then((response) => {
+            console.log('주행 요청 후 데이터 출력')
+            console.log(response.data)
+            if (response.data > 0) {
+              finalresponse = response.data;
+              setTimeout(() => {
+                this.setState({ loading: false });
+                if (finalresponse > 0) {
+                  this.DouzoneContainer.current.handleSnackbarOpen(`주행거리가 수정되었습니다`, 'success');
+                  this.ace1010SearchRef.current.searchcarforabizperson();
+                }
+              }, 1000);
+
+              //여기서 조회를 다시한다
+            } else {
+              this.DouzoneContainer.current.handleSnackbarOpen(`주행거리가 수정에 실패하였습니다.`, 'error');
+            }
+
+          })
+          .catch((error) => {
+            console.error('서버 요청 중에 에러가 발생했습니다:', error);
+          })
+        // .finally(() => {
+        //   this.setState({ loading: false });
+        // })
+
+
+        console.log('요청후')
+
+
+      } else if (updatedRow.origin === 'N') {
+
+        if (updatedRow.before_km) {
+          updatedRow.mileage_km = mileageKm
           updatedRow.after_km = mileageKm + Number(updatedRow.before_km)
-        }
-        // 운행기록부 첫 주행 이후 등록
-      } else if (updatedRow.id > 1 && updatedRow.seq_nb === 0) {
-        console.log('운행기록부 첫 주행 이후 등록')
-        updatedRow.mileage_km = mileageKm;
-        updatedRow.before_km = updatedRows[updatedRow.id - 2].after_km;
-        updatedRow.after_km = Number(updatedRow.before_km) + mileageKm;
-        // 운행기록부 한행의 주행 변경시 이후의 행들의 주행전,주행후 변경
-      } else {
-        console.log('그 이후 한행 이 변한뒤 하위 행들 주행전, 주행 후 변경')
-        let i = updatedRow.id
-        updatedRows[i - 1].mileage_km = mileageKm;
-        updatedRow.after_km = Number(updatedRows[i - 1].before_km) + mileageKm;
-        updatedRows[i - 1].after_km = updatedRow.after_km
-        // updatedRows[i - 1].after_km = Number(updatedRows[i - 1].before_km) + mileageKm;을 하였을 때 updatedRows[i - 1].after_km이 부분이 인식이 안돼, 적용이 불가하여 분리 하였습니다.
-        for (let i = updatedRow.id; i < updatedRows.length - 1; i++) {
+        } else {
+          const maxId = Math.max(...updatedRows.map(row => row.id)) - 1;
+          const rowWithMaxId = updatedRows.find(row => row.id === maxId);
+          //id가 0이라면 그 전 행이 없다 그러면 after_km가 없고 그러면 굳이 설정해줄 필요는 없다
+          const afterKmForBeforeKm = rowWithMaxId ? rowWithMaxId.after_km : 0;
 
-          updatedRows[i].before_km = updatedRows[i - 1].after_km;
-          updatedRows[i].after_km = Number(updatedRows[i].before_km) + Number(updatedRows[i].mileage_km)
+          updatedRow.before_km = afterKmForBeforeKm
+          updatedRow.mileage_km = mileageKm
+          updatedRow.after_km = Number(afterKmForBeforeKm) + mileageKm
         }
+
+
+
       }
-
     }
+
+
 
     this.setState({
       //rows: updatedRows,
@@ -448,11 +418,12 @@ class Ace1010 extends Component {
         if (response.data === 'insert success') {
           this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 새롭게 저장되었습니다.', 'success');
 
-          // origin을 'Y'로 변경합니다.
-          if (params.row.seq_nb === 0) {
-            params.row.seq_nb = 1;
-          }
+          const maxSeqNb = Math.max(...this.state.rows.map(item => item.seq_nb));
 
+          params.row.seq_nb = maxSeqNb + 1;
+
+
+          // origin을 'Y'로 변경합니다.
           params.row.origin = 'Y';
 
           // 상태를 업데이트합니다.
@@ -569,50 +540,115 @@ class Ace1010 extends Component {
     }
 
   }
+  // 모든 체크박스
+  handleToggleAllCheckboxes = () => {
+    const { rows, selectAllCheckbox } = this.state;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  processRowUpdatefunc=(e)=>{
-    if(this.props.processRowUpdatefunc){
-      this.props.processRowUpdatefunc(e)
+    if (selectAllCheckbox === true || selectAllCheckbox === 'indeterminate') {
+      this.setState({ selectedCheckedRows: [], selectAllCheckbox: false });
+    } else {
+      this.setState({
+        selectedCheckedRows: rows.slice(0, -1), // 마지막 row 제외
+        selectAllCheckbox: true
+      });
     }
+  };
+
+  // 단일 체크박스
+  handleToggleCheckbox = (row) => {
+    const { selectedCheckedRows } = this.state;
+
+    const newSelectedCheckedRows = selectedCheckedRows.some(selectedRow => selectedRow.id === row.id)
+      ? selectedCheckedRows.filter(selectedRow => selectedRow.id !== row.id)
+      : [...selectedCheckedRows, row];
+
+    this.setState({ selectedCheckedRows: newSelectedCheckedRows }, () => {
+      this.updateSelectAllCheckboxState();
+    });
+  };
+
+
+  // 컬럼헤더의 체크박스 상태
+  updateSelectAllCheckboxState = () => {
+    const { selectedCheckedRows, rows } = this.state;
+
+    if (selectedCheckedRows.length === 0) {
+      this.setState({ selectAllCheckbox: false });
+    } else if (selectedCheckedRows.length === rows.length) {
+      this.setState({ selectAllCheckbox: true });
+    } else {
+      this.setState({ selectAllCheckbox: 'indeterminate' });
+    }
+  };
+
+  // 삭제 모달 열기
+  handleRowDeleteOpenModal = () => {
+    this.setState({ showDeleteModal: true });
+  }
+  // 삭제 모달 닫기
+  handleRowDeleteCloseModal = () => {
+    this.setState({ showDeleteModal: false });
   }
 
-  render() {
-    const user = JSON.parse(sessionStorage.getItem('user'));
 
-    const authority = user.authorities[0].authority
+  // 운행기록 삭제
+  deleteRow = async () => {
+    const deleteRows = this.state.selectedCheckedRows;
+    console.log(deleteRows)
+    const rows = this.state.rows;
 
-
-
-    class douzoneDataGrid{
-      render(){
-        <dataGrid 
-        
-          processRowUpdate={this.processRowUpdatefunc}
-          //processRowUpdate={this.testProceess}
-          onCellKeyDown={this.cellkeydown}
-          onRowClick={this.handleRowClick}
-          onCellClick={this.handleCellClick}
-         />
+    const finaleDeleteRows = deleteRows.map(row => {
+      return {
+        seq_nb: row.seq_nb,
+        car_cd: row.car_cd,
       }
-    }
-    const columns = [
+    })
+    // 삭제할 운행기록을 오름차순으로 정렬
+    finaleDeleteRows.sort((a, b) => a.seq_nb - b.seq_nb);
+    console.log('삭제될 운행기록들')
+    console.log(finaleDeleteRows)
+    this.setState({ loading: true })
+    del(`/ace1010/deleteabizcarperson`, { data: finaleDeleteRows })
+      .then((response) => {
+
+        if (response.data > 0) {
+          setTimeout(() => {
+            this.setState({ loading: false, selectedCheckedRows: [], selectAllCheckbox: false });
+            this.DouzoneContainer.current.handleSnackbarOpen(`운행기록이 정상적으로 삭제되었습니다.`, 'success');
+            this.ace1010SearchRef.current.searchcarforabizperson();
+          }, 1000);
+
+          //여기서 조회를 다시한다
+        } else {
+          this.DouzoneContainer.current.handleSnackbarOpen(`운행기록 삭제 실패하였습니다.`, 'error');
+        }
+      }
+      ).catch((error) => {
+        console.log(error)
+        this.DouzoneContainer.current.handleSnackbarOpen('운행기록 삭제 실패 하였습니다.', 'error');
+      })
+    this.handleRowDeleteCloseModal();
+  }
+  //  안분하고 spinner 사용하기 위해 
+  updateLoadingStateTrue = () => {
+    console.log('스피너 작동')
+    this.setState({ loading: true });
+  }
+  updateLoadingStateFalse = () => {
+    console.log('스피너 종료')
+    this.setState({ loading: false });
+  }
+  researchAfterSaveDivisionDistance = () => {
+    this.ace1010SearchRef.current.searchcarforabizperson();
+    this.setState({ selectedCheckedRows: [], selectAllCheckbox: false })
+    this.DouzoneContainer.current.handleClose();
+    this.DouzoneContainer.current.handleSnackbarOpen(`주행거리 안분 처리가 완료되었습니다.`, 'success');
+  }
+
+  columns = () => {
+    return [
       {
-        field: 'id', headerName: 'No', width: 30, editable: true, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
+        field: 'id', headerName: 'No', width: 30, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
       },
@@ -628,22 +664,21 @@ class Ace1010 extends Component {
         renderHeader: (params) => (
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Checkbox
-              indeterminate={this.state.rows.some((row) => row.check) && !this.state.selectAllCheckbox}
-              checked={this.state.selectAllCheckbox}
+              indeterminate={this.state.selectAllCheckbox === 'indeterminate'}
+              checked={this.state.selectAllCheckbox === true}
               onChange={this.handleToggleAllCheckboxes}
             />
           </div>
         ),
-        // renderCell: (params) => (
+        renderCell: (params) => (
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <Checkbox
+              checked={this.state.selectedCheckedRows.some(selectedRow => selectedRow.id === params.id)}
+              onChange={() => this.handleToggleCheckbox(params.row)} // 전체 row 정보를 전달
+            />
+          </div>
+        ),
 
-        //   <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-        //     <Checkbox
-        //       checked={params.row.check}
-        //       onChange={() => this.handleToggleCheckbox(params.id)}
-        //     />
-        //   </div>
-
-        // )
       },
       {
         field: 'use_dt',
@@ -745,7 +780,9 @@ class Ace1010 extends Component {
 
           // 값이 다른 형식이거나 누락된 경우 원래 값을 반환
           return time;
-        }
+        },
+
+
 
       },
       {
@@ -834,10 +871,9 @@ class Ace1010 extends Component {
         field: 'before_km',
         headerName: '주행전(Km)',
         type: 'string',
-        width: 120,
+        width: 130,
         align: 'center',
         headerAlign: 'center',
-        editable: "true",
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
@@ -846,7 +882,7 @@ class Ace1010 extends Component {
         field: 'after_km',
         headerName: '주행후(Km)',
         type: 'string',
-        width: 120,
+        width: 130,
         //editable: true,
         align: 'center',
         headerAlign: 'center',
@@ -860,7 +896,7 @@ class Ace1010 extends Component {
         headerName: '마감여부',
         type: 'singleSelect',
         valueOptions: this.state.sendyn.map(item => item.s_nm),
-        width: 120,
+        width: 140,
         editable: true,
         align: 'center',
         headerAlign: 'center',
@@ -875,21 +911,67 @@ class Ace1010 extends Component {
 
 
     ];
+  }
+
+
+
+
+
+
+
+
+  // processRowUpdatefunc=(e)=>{
+  //   if(this.props.processRowUpdatefunc){
+  //     this.props.processRowUpdatefunc(e)
+  //   }
+  // }
+
+  render() {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    const authority = user.authorities[0].authority
+
+
+
+    // class douzoneDataGrid{
+    //   render(){
+    //     <dataGrid 
+
+    //       processRowUpdate={this.processRowUpdatefunc}
+    //       //processRowUpdate={this.testProceess}
+    //       onCellKeyDown={this.cellkeydown}
+    //       onRowClick={this.handleRowClick}
+    //       onCellClick={this.handleCellClick}
+    //      />
+    //   }
+    // }
+
 
 
     return (
 
+
       <DouzoneContainer
         ref={this.DouzoneContainer}
         title={this.state.title}
-        isAce1010Open={this.state.isAce1010Open}
+        isAce1010Open={this.state.isAce1010Open} // 기능 모음 표시 여부
+        openDeleteModal={this.state.showDeleteModal}// 모달이 켜지는 state
+        delete={this.handleRowDeleteOpenModal} //삭제 모달 열기
+        menus={this.setMenus()} //기능 모음 메뉴 전달
+        handleClose={this.handleRowDeleteCloseModal} // 삭제 모달 닫기
+        handleConfirm={this.deleteRow}// 삭제 모달의 확인 버튼
+        showDelete={''}
+        //title="사원 삭제 확인"
+        message="정말로 운행기록 정보를 삭제하시겠습니까?"
+      // menu={}
       >
+
         <Ace1010Search
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
         </Ace1010Search>
         <DataGrid
-          ref={this.dataGridRef}
+
           disableColumnFilter
           disableColumnMenu
           hideFooterPagination hideFooter
@@ -904,18 +986,16 @@ class Ace1010 extends Component {
             // 다른 셀은 기본적으로 수정 가능하다고 가정
             return true;
           }}
-          // onCellEditStart={this.handleCellEditStart}
-          // onCellEditStop={this.handleCellEditStop}
           processRowUpdate={this.processRowUpdatefunc}
-          //processRowUpdate={this.testProceess}
           onCellKeyDown={this.cellkeydown}
           onRowClick={this.handleRowClick}
           onCellClick={this.handleCellClick}
           sx={{
-            "& .MuiDataGrid-columnHeaders": { background: "#cccccc", borderRadius: 0 },
+            "& .MuiDataGrid-columnHeaders": { background: "#cccccc", borderRadius: 0, },
+            "& .MuiDataGrid-cell": { borderRight: '1px solid #cccccc' },
             borderTop: '2px solid black',
             height: 500, borderRadius: 0, margin: '5px', overflowY: 'auto'
-          }} rows={this.state.rows} columns={columns} />
+          }} rows={this.state.rows} columns={this.columns()} />
 
 
 
@@ -942,17 +1022,14 @@ class Ace1010 extends Component {
           />
 
         </Box>
-        {this.state.showModal && (
-          <ModalInput
-            onConfirm={this.handleModalConfirm}
-            onCancel={this.handleModalNotConfirm}
-          />
-        )}
+
+
+
+        <Spinner loading={this.state.loading}></Spinner>
       </DouzoneContainer>
-
-    );
-
+    )
   }
+
 }
 
 export default Ace1010;

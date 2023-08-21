@@ -4,8 +4,10 @@
   color: black;
 }
 
-
 /* react-datepicker ->DrivingRecordCopy사용 */
 .react-datepicker__input-container input {
   width: 75px;
+}
+.MuiDataGrid-columnHeader {
+  border-right: 1px solid black;
 }

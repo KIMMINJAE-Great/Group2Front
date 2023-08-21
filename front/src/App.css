@@ -1,8 +1,7 @@
-
 @font-face {
-  font-family: 'DoTumFont';
-  src: url('../public/fonts/Dotum.ttf') format('truetype');
+  font-family: "DoTumFont";
+  src: url("../public/fonts/Dotum.ttf") format("truetype");
 }
-body{
-  font-family: 'DoTumFont', sans-serif;
+body {
+  font-family: "DoTumFont", sans-serif;
 }
