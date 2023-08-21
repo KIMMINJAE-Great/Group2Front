@@ -153,7 +153,6 @@ class CodePicker extends React.Component {
   };
 
   handleKeyDown = async (e, value) => {
-
     const { codeField, valueField, menuItems } = this.props;
 
     // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
@@ -171,14 +170,13 @@ class CodePicker extends React.Component {
         this.openModal();// 검색된 결과가 2개 이상일 때만 openModal() 실행
       }
     }
-
   };
 
 
   // 모달 내에서 엔터를 치면 해당 코드피커의 ModalTextValue 전달..
-  handleKeyDownModal = (e, value) => {
+  handleKeyDownModal = async (e, value) => {
     if (e.key === 'Enter') {
-      this.props.onhandleKeyDownModal(e, value);
+      await this.props.onhandleKeyDownModal(e, value);
     }
   };
 
