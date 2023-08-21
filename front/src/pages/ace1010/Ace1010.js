@@ -99,10 +99,23 @@ class Ace1010 extends Component {
     //this.setState({ loading: true })
   }
 
+  handleBeforeKmChange = (beforeKm) => {
+    this.setState({
+      receivedBeforeKm: beforeKm,
+    });
+    // 부모 컴포넌트로 값 전달
+    this.props.onBeforeKmChange(beforeKm);
+  };
+
+
   // 기능모음 리턴
   setMenus = () => {
     return [
-      <Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance>,
+      <Ace1010BasicDistance
+        car_cd={this.state.car_cd}
+        co_cd={this.state.co_cd}
+        onBeforeKmChange={this.handleBeforeKmChange}
+      >기초거리입력</Ace1010BasicDistance>,
       <Ace1010DivisionDistance
         selectedCheckedRows={this.state.selectedCheckedRows}
         researchAfterSaveDivisionDistance={this.researchAfterSaveDivisionDistance}

@@ -607,7 +607,7 @@ class Acc1013 extends Component {
         <Box sx={{ overflowY: "auto", maxHeight: "550px" }}>
           {/* 스크롤바 영역 설정 */}
           <Grid container spacing={2}>
-            {this.state.content.map((item, index) => (
+            {Array.isArray(this.state.content) && this.state.content.map((item, index) => (
               <Grid item xs={12} sm={12} md={12} lg={12} key={index}>
                 <Card
                   sx={{

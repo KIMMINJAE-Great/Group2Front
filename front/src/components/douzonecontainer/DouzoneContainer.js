@@ -108,29 +108,6 @@ class DouzoneContainer extends Component {
   handleClose = () => {
     this.setState({ funcVowel: null });
   };
-
-  state = {
-    isModalOpen: false,
-  };
-
-  handleOpenBd = () => {
-    this.setState({ isModalOpen: true });
-    console.log("handleOpenBd 실행됨!!!")
-  };
-  closeModal = () => {
-    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
-  };
-
-  handleBeforeKmChange = (beforeKm) => {
-    this.setState({
-      receivedBeforeKm: beforeKm,
-    });
-
-    // 부모 컴포넌트로 값 전달
-    this.props.onBeforeKmChange(beforeKm);
-  };
-
-
   //  스낵바 닫기
   handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -148,6 +125,19 @@ class DouzoneContainer extends Component {
       severity: severity,
     });
   };
+  state = {
+    isModalOpen: false,
+  };
+
+  handleOpenBd = () => {
+    this.setState({ isModalOpen: true });
+    console.log("handleOpenBd 실행됨!!!")
+  };
+  closeModal = () => {
+    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
+  };
+
+
 
   render() {
     //const open = Boolean(this.state.funcVowel);
@@ -161,7 +151,8 @@ class DouzoneContainer extends Component {
       showDelete,
       handleOpenBd,
       menus,
-      selectedCheckedRows
+      selectedCheckedRows,
+      selectedRows
     } = this.props;
 
     const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
@@ -173,7 +164,7 @@ class DouzoneContainer extends Component {
       iconColor = "#ffffff"; // 아이콘 색상
     }
     //const showDelete = this.props.onDelete
-    const { car_cd, co_cd, selectedRows } = this.props;
+
 
     return (
       <ThemeProvider theme={douzonecontainertheme}>
