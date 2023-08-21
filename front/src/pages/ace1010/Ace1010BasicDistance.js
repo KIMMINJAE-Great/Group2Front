@@ -8,6 +8,8 @@ import {
   Divider,
   Grid,
   MenuItem,
+  Slide,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
@@ -22,33 +24,60 @@ class Ace1010BasicDistance extends React.Component {
     this.state = {
       isModalOpen: '',
       abizcarNBNM: '',
+      startacc_km: '',
       showError: false,
       car_cd : this.props.car_cd,
       co_cd : this.props.co_cd,
       before_km: '',
+      openSnackBar: false,
     };
   }
 
+  // Snackbar 표시 함수
+  showErrorSnackbar = () => {
+    this.setState({ openSnackBar: true });
+  };
+
+  // Snackbar 숨기기 함수
+  handleCloseSnackbar = () => {
+    this.setState({ openSnackBar: false });
+  };
+
 handleOpenBd = async () =>  {
-  this.setState({ showError: false });
     const { car_cd } = this.props;
+
+    if (car_cd == '') {
+      this.showErrorSnackbar();
+      return;
+    }
+
     console.log("car_cd : ", car_cd);
+
     try {
       const response = await post('/regcar/getCarsInfo', { car_cd } ); // 서버의 API 엔드포인트에 맞게 수정
       const abizcarNBNM = response.data;
+
       console.log("car_cd : ", car_cd);
       console.log("abizcarNBNM : ", abizcarNBNM);
       console.log("response : ", response);
       console.log("response.data : ", response.data);
-      console.log("response.data.abizcarNBNM : ", response.data.abizcarNBNM);
-  
+
+      const response2 = await post('/ace1010/selectStartaccKm', { car_cd }); // 두 번째 엔드포인트 호출
+      const startacc_km = response2.data.startacc_km
+      console.log("response2 실행 :: ");
+      console.log("response2 : ", response2);
+      console.log("response2.data : ", response2.data);
+
+      console.log("startacc_km : ", startacc_km);
+
       const test = !this.state.isModalOpen;
       this.setState({
         isModalOpen: test,
         abizcarNBNM: response.data,
+        before_km:startacc_km,
       });
   
-      if (response.data) {
+      if (response.data && response2.data) {
         console.log(this.state);
       }
     } catch (error) {
@@ -207,6 +236,30 @@ handleOpenBd = async () =>  {
           
           
         </Dialog>
+        <Snackbar
+            open={this.state.openSnackBar}
+            autoHideDuration={2000}
+            onClose={this.handleCloseSnackbar}
+            TransitionComponent={Slide}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <Alert
+
+              severity="error"
+              sx={{
+                width: "100%",
+                bgcolor: "error.main",
+                ".MuiAlert-icon": {
+                  color: "#ffffff",
+                },
+                color: "white",
+                fontWeight: "bold",
+              }}
+
+            >
+              차량정보를 입력해 주세요
+            </Alert>
+          </Snackbar>
       </div>
     );
   }

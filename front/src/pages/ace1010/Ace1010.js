@@ -6,6 +6,7 @@ import { Box, Checkbox, Menu, MenuItem, Select } from '@mui/material';
 import Ace1010Search from './Ace1010Search';
 import './ace1010.css'
 import ModalInput from './ModalInput';
+import DrivingRecordCopy from './DrivingRecordCopy';
 
 class Ace1010 extends Component {
 
@@ -36,8 +37,9 @@ class Ace1010 extends Component {
       minute: '',
       car_cd: '',
       co_cd: '',
+      // 운행기록부에 표시될 기본 rows
       rows: [],
-      selectAllCheckbox: false,
+     
       // 출발구분 위해
       inputValueforfg: '',
       // fg 구분에서 직접입력을 위한 state
@@ -50,6 +52,11 @@ class Ace1010 extends Component {
       // 일단 플래그
       flag: false,
       beforeKm: '',
+      selectedCheckedRows: [],
+      selectAllCheckbox: false,
+
+      startacc_km :0,
+
     }
     this.DouzoneContainer = React.createRef();
     this.ace1010SearchRef = React.createRef();
@@ -61,8 +68,13 @@ class Ace1010 extends Component {
     this.getusefg();
   }
   handleBeforeKmChange = (beforeKm) => {
-    const updatedRows = [...this.state.rows]
-    updatedRows[0].before_km = beforeKm
+    const updatedRows = [...this.state.rows];
+  
+    if (updatedRows.length === 0) {
+      updatedRows.push({ before_km: beforeKm });
+    } else {
+      updatedRows[0].before_km = beforeKm;
+    }
     
     this.setState({
       beforeKm: beforeKm,
@@ -95,35 +107,39 @@ class Ace1010 extends Component {
 
     }
   }
-
-  // selectAllCheckbox 상태를 변경하고 모든 행의 체크박스 상태를 업데이트한다.
-  handleToggleAllCheckboxes = () => {
-    const newSelectAllCheckbox = !this.state.selectAllCheckbox;
-    const newRows = this.state.rows.map((row) => ({ ...row, check: newSelectAllCheckbox }));
-    this.setState({ selectAllCheckbox: newSelectAllCheckbox, rows: newRows }, () => {
-      console.log('체크박스 확인')
-      console.log(this.state.rows);
-    });
+  setStartacckm =(value)=>{
+    console.log('... : '+value)
+    this.setState({startacc_km : value})
   }
+  // selectAllCheckbox 상태를 변경하고 모든 행의 체크박스 상태를 업데이트한다.
+  // handleToggleAllCheckboxes = () => {
+  //   const newSelectAllCheckbox = !this.state.selectAllCheckbox;
+  //   const newRows = this.state.rows.map((row) => ({ ...row, check: newSelectAllCheckbox }));
+  //   this.setState({ selectAllCheckbox: newSelectAllCheckbox, rows: newRows }, () => {
+  //     console.log('체크박스 확인')
+  //     console.log(this.state.rows);
+  //   });
+  // }
 
   // 개별 체크박스의 선택 상태를 전환하는 함수.
   // 해당 체크박스의 상태를 변경하고, 모든 체크박스가 선택되었는지 확인한 후 상태를 업데이트한다.
-  handleToggleCheckbox = (id) => {
-    this.setState((prevState) => {
-      const newRows = prevState.rows.map((row) => {
-        if (row.id === id) {
-          return { ...row, check: !row.check };
-        }
-        return row;
-      });
-      const allChecked = newRows.every((row) => row.check);
-      const someChecked = newRows.some((row) => row.check);
-      return {
-        rows: newRows,
-        selectAllCheckbox: allChecked ? true : (someChecked ? undefined : false)
-      };
-    });
-  }
+  // handleToggleCheckbox = (id) => {
+  //   console.log("여긴가@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  //   this.setState((prevState) => {
+  //     const newRows = prevState.rows.map((row) => {
+  //       if (row.id === id) {
+  //         return { ...row, check: !row.check };
+  //       }
+  //       return row;
+  //     });
+  //     const allChecked = newRows.every((row) => row.check);
+  //     const someChecked = newRows.some((row) => row.check);
+  //     return {
+  //       rows: newRows,
+  //       selectAllCheckbox: allChecked ? true : (someChecked ? undefined : false)
+  //     };
+  //   });
+  // }
 
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
@@ -259,42 +275,7 @@ class Ace1010 extends Component {
   }
 
 
-  // 모달을 띄우기
-  showModalAndWait = () => {
-    return new Promise((resolve, reject) => {
-      this.resolveShowModal = resolve;  // resolve 함수를 저장
-      this.setState({ showModal: true });
-      console.log('모달이 생성되었음');
-    });
-  }
-
-  //  모달 확인버튼 클릭 후 
-  handleModalConfirm = (inputValue) => {
-    this.setState({
-      showModal: false,
-      inputValueforfg: inputValue,
-    }, () => {
-      if (this.resolveShowModal) {
-        this.resolveShowModal(); // 저장된 resolve 함수 실행
-        this.resolveShowModal = null; // resolve 함수 초기화
-        console.log('모달에서 입력 끝남')
-      }
-    });
-  };
-
-  handleModalNotConfirm = () => {
-    this.setState({
-      showModal: false,
-      inputValueforfg: '',
-    }, () => {
-      if (this.resolveShowModal) {
-        this.resolveShowModal();
-        this.resolveShowModal = null;
-        console.log('모달에서 입력 끝남')
-      }
-    });
-
-  }
+ 
   handleRmkDcChange = (value) => {
     // 현재 상태의 rows 배열을 복사
     const updatedRows = [...this.state.rows];
@@ -318,6 +299,7 @@ class Ace1010 extends Component {
   processRowUpdatefunc = async (updatedRow) => {
     console.log('프로세스 실행')
     console.log(updatedRow.id)
+    console.log(updatedRow.seq_nb)
 
 
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
@@ -459,11 +441,11 @@ class Ace1010 extends Component {
         if (response.data === 'insert success') {
           this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 새롭게 저장되었습니다.', 'success');
 
+          const maxSeqNb = Math.max(...this.state.rows.map(item => item.seq_nb));
+          
+          params.row.seq_nb = maxSeqNb + 1;
+          
           // origin을 'Y'로 변경합니다.
-          if (params.row.seq_nb === 0) {
-            params.row.seq_nb = 1;
-          }
-
           params.row.origin = 'Y';
 
           // 상태를 업데이트합니다.
@@ -579,6 +561,48 @@ class Ace1010 extends Component {
     }
 
   }
+ // 모든 체크박스
+ handleToggleAllCheckboxes = () => {
+  const { rows, selectAllCheckbox } = this.state;
+
+  if (selectAllCheckbox === true || selectAllCheckbox === 'indeterminate') {
+    this.setState({ selectedCheckedRows: [], selectAllCheckbox: false });
+  } else {
+    this.setState({
+      selectedCheckedRows: rows.slice(0, -1), // 마지막 row 제외
+      selectAllCheckbox: true
+    });
+  }
+};
+
+
+ // 단일 체크박스
+ handleToggleCheckbox = (row) => {
+  const { selectedCheckedRows } = this.state;
+
+  const newSelectedCheckedRows = selectedCheckedRows.some(selectedRow => selectedRow.id === row.id)
+    ? selectedCheckedRows.filter(selectedRow => selectedRow.id !== row.id)
+    : [...selectedCheckedRows, row];
+
+  this.setState({ selectedCheckedRows: newSelectedCheckedRows }, () => {
+    this.updateSelectAllCheckboxState();
+
+    console.log('Selected Rows:', selectedCheckedRows);
+  });
+};
+
+// 컬럼헤더의 체크박스 상태
+updateSelectAllCheckboxState = () => {
+  const { selectedCheckedRows, rows } = this.state;
+
+  if (selectedCheckedRows.length === 0) {
+    this.setState({ selectAllCheckbox: false });
+  } else if (selectedCheckedRows.length === rows.length) {
+    this.setState({ selectAllCheckbox: true });
+  } else {
+    this.setState({ selectAllCheckbox: 'indeterminate' });
+  }
+};
 
 
 
@@ -623,23 +647,25 @@ class Ace1010 extends Component {
         renderHeader: (params) => (
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Checkbox
-              indeterminate={this.state.rows.some((row) => row.check) && !this.state.selectAllCheckbox}
-              checked={this.state.selectAllCheckbox}
+              indeterminate={this.state.selectAllCheckbox === 'indeterminate'}
+              checked={this.state.selectAllCheckbox === true}
               onChange={this.handleToggleAllCheckboxes}
             />
           </div>
         ),
-        // renderCell: (params) => (
+        renderCell: (params) => (
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <Checkbox
+              // checked={this.state.selectedCheckedRows.includes(params.id)}
+              checked={this.state.selectedCheckedRows.some(selectedRow => selectedRow.id === params.id)}
+              // onChange={() => this.handleToggleCheckbox(params.id)}
+              onChange={() => this.handleToggleCheckbox(params.row)} // 전체 row 정보를 전달
+            />
+          </div>
+        ),
 
-        //   <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-        //     <Checkbox
-        //       checked={params.row.check}
-        //       onChange={() => this.handleToggleCheckbox(params.id)}
-        //     />
-        //   </div>
-
-        // )
       },
+
       {
         field: 'use_dt',
         headerName: '운행일자',
@@ -882,12 +908,17 @@ class Ace1010 extends Component {
         title={this.state.title}
         isAce1010Open={this.state.isAce1010Open}
         onBeforeKmChange={this.handleBeforeKmChange}
+        selectedRows={this.state.selectedCheckedRows}
+        handleToggleCheckbox={this.handleToggleCheckbox}
       >
         <Ace1010Search
+          beforeKm={this.state.beforeKm}
+          handleBeforeKmChange={this.handleBeforeKmChange}
+          setStartacckm={this.setStartacckm}
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
-
         </Ace1010Search>
+        {/* <DrivingRecordCopy selectedRows={this.state.newSelectedCheckedRows} /> */}
         <DataGrid
           ref={this.dataGridRef}
           disableColumnFilter

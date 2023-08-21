@@ -163,7 +163,7 @@ class DouzoneContainer extends Component {
       handleOpenBd,
     } = this.props;
 
-    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open , functionCollection } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
@@ -172,7 +172,7 @@ class DouzoneContainer extends Component {
       iconColor = "#ffffff"; // 아이콘 색상
     }
     //const showDelete = this.props.onDelete
-    const {car_cd, co_cd} = this.props;
+    const {car_cd, co_cd, selectedRows} = this.props;
 
     return (
       <ThemeProvider theme={douzonecontainertheme}>
@@ -185,8 +185,10 @@ class DouzoneContainer extends Component {
             {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
               <div style={{ display: 'flex'}}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
-                  <DrivingRecordCopy>
-                    
+                  <DrivingRecordCopy
+                  selectedRows={selectedRows}
+                  handleToggleCheckbox={this.props.handleToggleCheckbox}
+                  >
                   </DrivingRecordCopy>
                   <Button
                     id="basic-button"

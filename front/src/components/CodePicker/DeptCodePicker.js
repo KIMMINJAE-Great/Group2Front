@@ -18,102 +18,114 @@ class DeptCodePicker extends React.Component{
           modalTextFieldValue: '',
         };
       }
-  // 엔터쳤을때,
-  handleKeyDown = async (e, textFieldValue) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      this.setState({
-        textFieldValue: textFieldValue
-      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-        try {
-          const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-          this.setState({
-            menuItems: response.data,
-            selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
-          });
-            console.log(response.data);
-          } catch (error) {
-            console.log(error);
-          }
-      });
-    }
-  };
-  handleKeyDownModal = async (e ,textFieldValue) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      this.setState({
-        modalTextFieldValue: textFieldValue
-      });
-      try {
-        const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+  // // 엔터쳤을때,
+  // handleKeyDown = async (e, textFieldValue) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     this.setState({
+  //       textFieldValue: textFieldValue
+  //     }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+  //       try {
+  //         const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+  //         this.setState({
+  //           menuItems: response.data,
+  //           selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+  //         });
+  //           console.log(response.data);
+  //         } catch (error) {
+  //           console.log(error);
+  //         }
+  //     });
+  //   }
+  // };
+  // handleKeyDownModal = async (e ,textFieldValue) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     this.setState({
+  //       modalTextFieldValue: textFieldValue
+  //     });
+  //     try {
+  //       const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
         
-        this.setState({ 
-          menuItems: response.data,
-          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
-        });
-        console.log(response.data);
-      } catch (error) {
-          console.log(error);
-      }
-    }
-  };
-  //serach버튼을 위해..
-  handleOnClick = async (e, textFieldValue) => {
-    e.preventDefault();
-    this.setState({
-      textFieldValue: textFieldValue
-    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-      try {
-        const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-        this.state.menuItems = response.data;
-        this.setState({
-          menuItems: response.data,
-          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+  //       this.setState({ 
+  //         menuItems: response.data,
+  //         selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
+  //       });
+  //       console.log(response.data);
+  //     } catch (error) {
+  //         console.log(error);
+  //     }
+  //   }
+  // };
+  // //serach버튼을 위해..
+  // handleOnClick = async (e, textFieldValue) => {
+  //   e.preventDefault();
+  //   this.setState({
+  //     modalTextFieldValue: textFieldValue
+  //   }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+  //     try {
+  //       const response = await get(`/codepicker/depmanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+  //       this.state.menuItems = response.data;
+  //       this.setState({
+  //         menuItems: response.data,
+  //         selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
 
-        });
-          if(this.state.menuItems.length === 1 ){
-            this.setState({
-              selectedIds: response.data,
-            });
-          }
-            console.log(response.data);
-          } catch (error) {
-            console.log(error);
-          }
-      }
-    );
-  };
+  //       });
+  //         if(this.state.menuItems.length === 1 ){
+  //           this.setState({
+  //             selectedIds: response.data,
+  //           });
+  //         }
+  //           console.log(response.data);
+  //         } catch (error) {
+  //           console.log(error);
+  //         }
+  //     }
+  //   );
+  // };
 
-  deleteMenuItem = (valueToDelete) => {
-    const updatedMenuItems = this.state.menuItems.filter(
-      item => item.dept_cd !== valueToDelete
-    );
-    this.setState({ menuItems: updatedMenuItems });
-  };
+  // deleteMenuItem = (valueToDelete) => {
+  //   const updatedMenuItems = this.state.menuItems.filter(
+  //     item => item.dept_cd !== valueToDelete
+  //   );
+  //   this.setState({ menuItems: updatedMenuItems });
+  // };
 
-  // 메뉴아이템 체크할때
-  toggleMenuItemCheck = (id) => {
-      this.setState(prevState => ({
-        selectedIds: prevState.selectedIds
-          ? prevState.selectedIds.includes(id)
-            ? prevState.selectedIds.filter(codeField => codeField !== id)
-            : [...prevState.selectedIds, id]
-          : [id]
-    }));
-  }
-  //텍스트필드값 핸들러
-  handleTextInputChange = (e) => {
-    this.setState({ 
-      [e.target.name]: e.target.value, 
-    });
-  };
-  //popover 핸들러
-  handleTextFieldChange = (value) => {
-    this.setState({
-      textFieldValue: value, 
-      selectedValue: value,
-    });
-  };
+  // // 메뉴아이템 체크할때
+  // toggleMenuItemCheck = (id) => {
+  //     this.setState(prevState => ({
+  //       selectedIds: prevState.selectedIds
+  //         ? prevState.selectedIds.includes(id)
+  //           ? prevState.selectedIds.filter(codeField => codeField !== id)
+  //           : [...prevState.selectedIds, id]
+  //         : [id]
+  //   }));
+  // }
+  // // 모든 체크박스의 상태를 해제
+  // resetCheckboxes = () => {
+  //   this.setState(prevState => {        
+  //       const updatedContent = prevState.menuItems.map(item => ({ ...item, checked: false }));
+
+  //       return {
+  //           menuItems: updatedContent,
+  //           selectedIds: [],  // 선택된 항목의 목록을 비움
+  //           selectAllCheckbox: false  // 전체 선택 체크박스 상태 초기화
+  //       };
+  //   });
+  // }
+  // //텍스트필드값 핸들러
+  // handleTextInputChange = (e) => {
+  //   this.setState({ 
+  //     [e.target.name]: e.target.value, 
+  //   });
+  // };
+  // //popover 핸들러
+  // handleTextFieldChange = (value) => {
+  //   this.setState({
+  //     textFieldValue: value, 
+  //     selectedValue: value,
+  //   });
+  // };
 
     render(){
       console.log("muenuItems"+JSON.stringify(this.state.menuItems));

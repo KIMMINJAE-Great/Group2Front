@@ -29,11 +29,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 
 import SearchIcon from '@mui/icons-material/Search';
-import { getByQueryString } from "../../components/api_url/API_URL";
+import { getByQueryString, post } from "../../components/api_url/API_URL";
 import { Component } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dayjs from "dayjs";
-import Ace1010BasicDistance from "./Ace1010BasicDistance";
+import CodePickerManager from '../../components/CodePicker/CodePickerManager';
 const theme = createTheme({
   components: {
 
@@ -67,8 +67,14 @@ class Ace1010Search extends Component {
       firstUse_dt: dayjs().startOf('month'),   // 해당 달의 첫째날
       LastUse_dt: dayjs().endOf('month'),     // 해당 달의 말일
       openSnackBar: false,
+      beforeKm: "",
     };
   }
+
+
+
+
+
   handleclearFields = () => {
     this.setState({
       car_cd: "",
@@ -93,19 +99,19 @@ class Ace1010Search extends Component {
     event.preventDefault();
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
 
+    // if (searchCarResult) {
+    //   this.setState({ car_cd: searchCarResult });
+    // }
     if (!this.state.firstUse_dt || !this.state.LastUse_dt) {
       this.showErrorSnackbar();
       return;
     }
-
     const formattedFirstUse = firstUse_dt.format('YYYY-MM-DD');
     const formattedLastUse = LastUse_dt.format('YYYY-MM-DD');
-
     let carforabizperson
     try {
       const queryString = `?car_cd=${car_cd}&startDate=${formattedFirstUse}&endDate=${formattedLastUse}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
-
       console.log('검색직후 ')
       console.log(response.data)
       if (response.data === 'not found') {
@@ -117,6 +123,16 @@ class Ace1010Search extends Component {
         carforabizperson = response.data;
         this.props.searchcarforabizperson(carforabizperson, car_cd);
       }
+      const response2 = await post('/ace1010/selectStartaccKm', { car_cd }); // 두 번째 엔드포인트 호출
+      const startacc_km = response2.data.startacc_km
+      this.props.setStartacckm(startacc_km)
+      console.log("startacc_km", startacc_km)
+      console.log("두 번째 엔드포인트 호출")
+
+
+      this.setState({
+        beforeKm :startacc_km,
+      });
 
       // this.handleclearFields();
     } catch (error) {
@@ -124,7 +140,20 @@ class Ace1010Search extends Component {
     }
   };
 
+  //서치 콜백  
+  searchCallback = {
+    handleCallBackData: (e) => {
+      this.setState({ car_cd: e }, () =>
+        console.log("@@@car_cd :car_cdcar_cdcar_cd" + this.state.car_cd));
+    },
+
+  }
+
+
   render() {
+
+    const beforeKm = this.props.beforeKm;
+
     return (
       <form onSubmit={this.searchcarforabizperson}>
         <div className="acc1010search_container" >
@@ -138,16 +167,14 @@ class Ace1010Search extends Component {
               </Typography>
             </Grid>
             <Grid item xs={2} sx={{ backgroundColor: 'white', paddingLeft: '5px' }} >
-              <TextField
-                fullWidth
-                required
-                variant="outlined"
-                size="small"
-                value={this.state.car_cd}
-                onChange={event => this.setState({ car_cd: event.target.value })}
-                inputProps={{ style: { height: "12px" } }}
-                sx={{ backgroundColor: '#FEF4F4' }}
+              {/* 코드피커 */}
+              <CodePickerManager helpId={"DrivingCodePicker"} callback={this.searchCallback} variant="outlined"
+                onChange={(e) => {
+                  const carInfo = (e || []).length > 0 ? e[0] : undefined
+                  this.setState({ car_cd: carInfo.carCd })
+                }}
               />
+
             </Grid>
             <Grid item xs={1.1} style={{ textAlign: "right" }}>
               <Typography>
