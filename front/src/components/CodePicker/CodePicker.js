@@ -144,12 +144,16 @@ class CodePicker extends React.Component {
   };
 
   handleKeyDown = async (e, value) => {
+
+    const { codeField, valueField, menuItems } = this.props;
+
     // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
     if (e.key === 'F2' || e.key === 'Enter') {
       await this.props.onHandleKeyDown(e, value);
 
       if (this.props.callback && this.props.callback.handleCallBackData) {
-        await this.props.callback.handleCallBackData(value);
+        const firstItem = this.props.menuItems[0];
+        await this.props.callback.handleCallBackData(firstItem[codeField]);
       }
       if (this.props.menuItems.length === 1) {
         this.handleSearchDataIsItemOne();
