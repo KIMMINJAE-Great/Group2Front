@@ -77,7 +77,7 @@ class Acd1010Search extends Component {
   render() {
     return (
       <div className="acd1010search_container">
-        <Grid container item sx={{ padding: "4px" }}>
+        <Grid container item sx={{ padding: "4px", height: '42px' }}>
           <Grid item xs={1.1} style={{ textAlign: "right" }}>
             <Typography>
               <h5 style={{ margin: "9px" }}>차량</h5>
@@ -86,7 +86,7 @@ class Acd1010Search extends Component {
           <Grid
             item
             xs={1}
-            sx={{ backgroundColor: "white", paddingLeft: "5px" }}
+            sx={{ backgroundColor: "white", paddingLeft: "5px", marginTop: '2px' }}
           >
             <CodePickerManager helpId={"CarCodePicker"} variant="outlined" />
           </Grid>
@@ -109,7 +109,7 @@ class Acd1010Search extends Component {
               value={this.state.lease_yn}
               onChange={event => this.setState({ lease_yn: event.target.value })}
               variant="outlined"
-              style={{ width: "100%", height: "36px" }}
+              style={{ width: "100%", height: "30px", marginTop: '2px' }}
             >
               <MenuItem value="all">0.전체</MenuItem>
               <MenuItem value="owned">1.자가</MenuItem>

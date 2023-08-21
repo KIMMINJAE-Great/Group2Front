@@ -231,15 +231,21 @@ class CodePicker extends React.Component {
 
     return (
       <div>
-        <div style={{ position: 'relative', width: '219px', height: '39px' }}>
+        <div style={{ position: 'relative', width: '219px', height: '30px', }}>
           <TextField
-            style={{ display: "flex", boxSizing: 'border-box', width: '215px' }}
+            sx={{
+              display: "flex", boxSizing: 'border-box', width: '215px',
+              "& .MuiInputBase-root": {
+                height: 30
+              }
+            }}
+
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
             value={this.state.selectedValue || this.props.textFieldValue}
             onChange={this.handleOnChange}
-            inputProps={{ style: { height: '2px' } }}
+          // inputProps={{ style: { height: '2px' } }}
           />
 
           <div style={{ position: 'absolute', top: 0, right: 10, height: '100%', display: 'flex', alignItems: 'center' }}>

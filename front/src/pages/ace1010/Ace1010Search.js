@@ -153,7 +153,7 @@ class Ace1010Search extends Component {
       <form onSubmit={this.searchcarforabizperson}>
         <div className="acc1010search_container" >
 
-          <Grid container item sx={{ padding: '4px' }}>
+          <Grid container item sx={{ padding: '4px', }}>
 
 
             <Grid item xs={1.1} style={{ textAlign: "right" }}>

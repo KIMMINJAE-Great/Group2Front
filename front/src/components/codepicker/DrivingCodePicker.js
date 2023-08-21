@@ -125,16 +125,16 @@ class DrivingCodePicker extends React.Component {
       const item = prevState.menuItems.find(item => item.car_cd === id);
 
       let updatedSelectedIds;
-    if (item && item.checked) {
-      updatedSelectedIds = prevState.selectedIds.filter(selectedItem => selectedItem.car_cd !== id);
-    } else {
-      // 이미 selectedIds에 해당 아이템이 있는지 확인
-      if (!prevState.selectedIds.some(selectedItem => selectedItem.car_cd === id)) {
-        updatedSelectedIds = [...prevState.selectedIds, item];
+      if (item && item.checked) {
+        updatedSelectedIds = prevState.selectedIds.filter(selectedItem => selectedItem.car_cd !== id);
       } else {
-        updatedSelectedIds = [...prevState.selectedIds];
+        // 이미 selectedIds에 해당 아이템이 있는지 확인
+        if (!prevState.selectedIds.some(selectedItem => selectedItem.car_cd === id)) {
+          updatedSelectedIds = [...prevState.selectedIds, item];
+        } else {
+          updatedSelectedIds = [...prevState.selectedIds];
+        }
       }
-    }
 
       return {
         menuItems: updatedContent,
@@ -175,6 +175,7 @@ class DrivingCodePicker extends React.Component {
 
     return (
       <CodePicker
+        style={{ backgroundColor: 'grey' }}
         //필수 전달 
         valueField='car_nm'
         codeField='car_cd'
