@@ -61,8 +61,7 @@ class Ace1010Search extends Component {
 
     this.state = {
       car_cd: "",
-
-      carinfo: "",
+      carinfo: [],
 
       firstUse_dt: dayjs().startOf('month'),   // 해당 달의 첫째날
       LastUse_dt: dayjs().endOf('month'),     // 해당 달의 말일
@@ -135,8 +134,8 @@ class Ace1010Search extends Component {
 
   //서치 콜백  
   searchCallback = {
-    handleCallBackData: (e) => {
-      this.setState({ car_cd: e }, () =>
+    handleCallBackData: (code) => {
+      this.setState({ car_cd: code }, () =>
         console.log("@@@car_cd :car_cdcar_cdcar_cd" + this.state.car_cd));
     },
 

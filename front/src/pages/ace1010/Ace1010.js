@@ -11,6 +11,19 @@ import Ace1010BasicDistance from './Ace1010BasicDistance';
 import Ace1010DivisionDistance from './Ace1010DivisionDistance';
 import MileageModal from '../../components/mileagesearch/MileageModal';
 import Ace1010Bookmark from './Ace1010Bookmark';
+import Ace1010BasicDistance from './Ace1010BasicDistance';
+import Ace1010DivisionDistance from './Ace1010DivisionDistance';
+import MileageModal from './mileagesearch/MileageModal';
+import Ace1010Bookmark from './Ace1010Bookmark';
+
+// //기능모음
+// const functionCollection = [
+//   { component: <Ace1010BasicDistance />, label: "기초거리입력" },
+//   { component: <Ace1010DivisionDistance />, label: "안분" },
+//   { component: <MileageModal />, label: "주행거리 검색" },
+//   { component: <Ace1010Bookmark />, label: "즐겨찾기" }
+// ];
+
 class Ace1010 extends Component {
 
   constructor(props) {
@@ -36,6 +49,8 @@ class Ace1010 extends Component {
       //  출발구분 용
       selectedRowIdFg: '',
       selectedCellFg: '',
+      selectedRowId: null, //선택된 행
+      selectedCellName: null, //선택된 열의 이름
       hour: '',
       minute: '',
       car_cd: '',
@@ -49,19 +64,22 @@ class Ace1010 extends Component {
       selectedRowUseFg: '',//입력구분
       selectedRowRmkdc: '',//비고
       selectedRowRmkdcmodi: '',//수정비고
-      // 일단 플래그
-      flag: false,
 
       selectedCheckedRows: [],
       selectAllCheckbox: false,
 
+      // 일단 플래그
+      flag: false,
       // Spinner
       loading: false,
 
       // 삭제 모달
       showDeleteModal: false,
-      // 기초거리
-      startacc_km: 0,
+      //마일리지....관련
+      cardsMileageKm: '', // 주행거리 검색 콜백으로 바뀌는 mileage_km
+      cardsSeq: '',        // 주행거리 검색 에서 선택한 카드리스트  의 seq_nb
+      MileageFunction: {} //주행거리 검색에서 사용할 함수 집합
+
     }
     this.DouzoneContainer = React.createRef();
     this.ace1010SearchRef = React.createRef();
@@ -116,7 +134,6 @@ class Ace1010 extends Component {
 
     }
   }
-
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
   searchcarforabizperson = (carforabizperson, car_cd) => {
@@ -237,13 +254,15 @@ class Ace1010 extends Component {
   handleCellClick = (params, event) => {
     // console.log('셀 클릭')
     // console.log(params.row.id)
-    // console.log(params.field)
-
+    console.log("집중해야하는값!!" + params.field);
+    //mileageserach를 위해   
+    // if(params.field === 'mileage_km'){
+    //   this.MileageFunction.handleSeletedMileageKmRowAndColumn(params.row.id, params.field); 
+    // }
     this.setState({
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
-
-    })
+    });
   }
   handleRmkDcChange = (value) => {
     // 현재 상태의 rows 배열을 복사
@@ -581,6 +600,55 @@ class Ace1010 extends Component {
     }
   };
 
+
+  //주행거리 함수 모음
+  MileageFunction = {
+
+    //체크박스를 눌러서 배열을 만들어서 가져감,
+    //카드리스트를 눌러서 출발지와 목적지를 바인딩함..
+    //주행거리가 검색되어 나온 결과를 누르면 반영이 되어야함.
+    //선택한 카드의 배열 정보는 seq_nb로 찾아서 mileageModal에 handelCardClick에 있다.
+    //선택한 KM의 정보는 TableView에서 가져온다....
+
+    //카드를 선택한곳의 Mileage_km을 가져오는 함수...
+    handleSeletedCardsKmMileage: (data) => {
+      this.setState({
+        // cardsMileageKm : mileageData,
+        cardsSeq: data
+      });
+    },
+    //ace1010.js -> MileageModal.js // mileage변경
+    handleCallBackMileageData: (data) => {
+      if (data == 0) {
+        alert('값을 다시 입력해주세요.');
+      } else {
+        this.setState({ cardsMileageKm: data, });
+      }
+
+    },
+    //주행거리 계산 함수
+    handelCalcMileageKm: () => {
+      const { cardsSeq, rows, mileage_km, cardsMileageKm } = this.state;
+
+      const updatedRows = [...rows];
+      if (cardsSeq !== null && cardsSeq !== undefined) {
+        const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
+        if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
+          //(조건에 부합하는 요소가 없다면 -1을 반환이므로)
+          updatedRows[rowIndex].mileage_km = Number(cardsMileageKm);
+          // updatedRows[rowIndex].after_km = Number(updatedRows[rowIndex].before_km) + Number(cardsMileageKm);
+
+          this.setState({
+            rows: updatedRows,
+            mileage_km: cardsMileageKm,
+            // after_km: updatedRows[rowIndex].after_km
+          });
+        }
+      }
+    }
+
+  }
+
   // 삭제 모달 열기
   handleRowDeleteOpenModal = () => {
     this.setState({ showDeleteModal: true });
@@ -908,8 +976,6 @@ class Ace1010 extends Component {
           return params.row.send_yn === '마감' ? '마감' : '미마감';
         },
       },
-
-
     ];
   }
 
@@ -948,6 +1014,7 @@ class Ace1010 extends Component {
 
 
 
+
     return (
 
 
@@ -963,7 +1030,9 @@ class Ace1010 extends Component {
         showDelete={''}
         //title="사원 삭제 확인"
         message="정말로 운행기록 정보를 삭제하시겠습니까?"
-      // menu={}
+        // menu={}
+        callback={this.MileageFunction} //콜백함수 전달 (주행거리)
+        content={this.state.selectedCheckedRows} //체크박스 선택된 배열 (주행거리)
       >
 
         <Ace1010Search
@@ -971,7 +1040,6 @@ class Ace1010 extends Component {
           searchcarforabizperson={this.searchcarforabizperson}>
         </Ace1010Search>
         <DataGrid
-
           disableColumnFilter
           disableColumnMenu
           hideFooterPagination hideFooter
@@ -1017,7 +1085,6 @@ class Ace1010 extends Component {
             type="text"
             style={{ height: '30px', width: '300px', outline: 'none', marginTop: '17px', marginLeft: '5px', border: '0px', fontSize: 15, }}
             value={this.state.selectedRowUseFg}
-
             readOnly
           />
 

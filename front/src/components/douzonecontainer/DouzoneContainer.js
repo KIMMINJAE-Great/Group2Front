@@ -19,7 +19,7 @@ import { ThemeProvider } from "@emotion/react";
 import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
-import MileageModal from "../mileagesearch/MileageModal";
+import MileageModal from "../../pages/ace1010/mileagesearch/MileageModal";
 import DrivingRecordCopy from "../../pages/ace1010/DrivingRecordCopy";
 
 
@@ -102,6 +102,9 @@ class DouzoneContainer extends Component {
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
+    if (this.props.callback.handleCallBackMileageData) {
+
+    }
   };
 
   handleClose = () => {
@@ -162,7 +165,7 @@ class DouzoneContainer extends Component {
       selectedCheckedRows
     } = this.props;
 
-    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
