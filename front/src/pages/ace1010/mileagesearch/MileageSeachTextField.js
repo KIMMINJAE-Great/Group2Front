@@ -94,11 +94,11 @@ class MileageSeachTextField extends Component {
       selectedLatitude: latitude,
     }, () => {
       this.onSendCoordData(); // 위도 경도를 부모로 보내는 코드 실행!
-      //확인 
-      console.log("seletedboundary :" + this.state.selectedBoundary);
-      console.log("seletedaddr :" + this.state.selectedAddress);
-      console.log("selectedLongitude :" + this.state.selectedLongitude); 
-      console.log("selectedLatitude :" + this.state.selectedLatitude);
+      // //확인 
+      // console.log("seletedboundary :" + this.state.selectedBoundary);
+      // console.log("seletedaddr :" + this.state.selectedAddress);
+      // console.log("selectedLongitude :" + this.state.selectedLongitude); 
+      // console.log("selectedLatitude :" + this.state.selectedLatitude);
     }
     );
   };
@@ -107,9 +107,6 @@ class MileageSeachTextField extends Component {
     const { selectedLongitude, selectedLatitude } = this.state;
     this.props.onSendCoordData(selectedLongitude, selectedLatitude);
   };
-
-  
-  
 
     render() {
       const { query, boundary, addresses, error, isDropdownVisible, selectedAddress  } = this.state;
@@ -138,7 +135,6 @@ class MileageSeachTextField extends Component {
             )
           }}
         />
-
         {/* 선택한 주소를 표시하는 텍스트 필드 */}
         <TextField
         fullWidth
@@ -151,7 +147,6 @@ class MileageSeachTextField extends Component {
             style: { height: '30px' },
           }}
         />
-
         {/* 드롭다운 목록 */}
         {isDropdownVisible && addresses.length > 0 && (
           <div style={{ 

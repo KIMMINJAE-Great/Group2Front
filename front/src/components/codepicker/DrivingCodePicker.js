@@ -22,25 +22,27 @@ class DrivingCodePicker extends React.Component {
   //텍스트필드에서 엔터쳤을때
   handleKeyDown = async (e, textFieldValue) => {
     e.preventDefault();
-    this.setState({
-      textFieldValue: textFieldValue
-    }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-      try {
-        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
-        if (response.data.length === 1) {
-          this.setState({
-            menuItems: response.data,
-            selectedIds: response.data
-          });
-        } else {
-          this.setState({
-            menuItems: response.data,
-            selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
-          });
+    return new Promise(async (resolve, reject) => { //Promise반환하도록,, 함수내의 모든 비동기 작업들이 완료될때까지 대기시키려고
+      this.setState({
+        textFieldValue: textFieldValue
+      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+        try {
+          const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.textFieldValue)}`);
+          if (response.data.length === 1) {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: response.data
+            }, resolve);
+          } else {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
+            }, resolve);
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
+      });
     });
   };
 
@@ -121,9 +123,18 @@ class DrivingCodePicker extends React.Component {
       );
 
       const item = prevState.menuItems.find(item => item.car_cd === id);
-      const updatedSelectedIds = item && item.checked
-        ? prevState.selectedIds.filter(selectedItem => selectedItem.car_cd !== id)
-        : [...prevState.selectedIds, item];
+
+      let updatedSelectedIds;
+    if (item && item.checked) {
+      updatedSelectedIds = prevState.selectedIds.filter(selectedItem => selectedItem.car_cd !== id);
+    } else {
+      // 이미 selectedIds에 해당 아이템이 있는지 확인
+      if (!prevState.selectedIds.some(selectedItem => selectedItem.car_cd === id)) {
+        updatedSelectedIds = [...prevState.selectedIds, item];
+      } else {
+        updatedSelectedIds = [...prevState.selectedIds];
+      }
+    }
 
       return {
         menuItems: updatedContent,

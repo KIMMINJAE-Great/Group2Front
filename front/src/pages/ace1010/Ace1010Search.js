@@ -61,8 +61,7 @@ class Ace1010Search extends Component {
 
     this.state = {
       car_cd: "",
-
-      carinfo: "",
+      carinfo: [],
 
       firstUse_dt: dayjs().startOf('month'),   // 해당 달의 첫째날
       LastUse_dt: dayjs().endOf('month'),     // 해당 달의 말일
@@ -95,7 +94,16 @@ class Ace1010Search extends Component {
 
 
   searchcarforabizperson = async (event) => {
-    event.preventDefault();
+
+    console.log('찍기')
+    console.log(event)
+    console.log(this.state.car_cd)
+    // if (event) {
+    //   event.preventDefault();
+    // }
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
 
     // if (searchCarResult) {
@@ -130,8 +138,8 @@ class Ace1010Search extends Component {
 
   //서치 콜백  
   searchCallback = {
-    handleCallBackData: (e) => {
-      this.setState({ car_cd: e }, () =>
+    handleCallBackData: (code) => {
+      this.setState({ car_cd: code }, () =>
         console.log("@@@car_cd :car_cdcar_cdcar_cd" + this.state.car_cd));
     },
 
@@ -193,7 +201,7 @@ class Ace1010Search extends Component {
           <IconButton type="submit" color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
             <SearchIcon />
           </IconButton>
-          <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
+          {/* <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button> */}
 
           <Snackbar
             open={this.state.openSnackBar}

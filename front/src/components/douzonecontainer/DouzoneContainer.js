@@ -1,5 +1,5 @@
 import { Button, Select } from "@mui/material";
-import { Component } from "react";
+import React, { Component } from "react";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,7 +19,7 @@ import { ThemeProvider } from "@emotion/react";
 import Ace1010BasicDistance from "../../pages/ace1010/Ace1010BasicDistance";
 import Ace1010Bookmark from "../../pages/ace1010/Ace1010Bookmark";
 import Ace1010DivisionDistance from "../../pages/ace1010/Ace1010DivisionDistance";
-import MileageModal from "../mileagesearch/MileageModal";
+import MileageModal from "../../pages/ace1010/mileagesearch/MileageModal";
 import DrivingRecordCopy from "../../pages/ace1010/DrivingRecordCopy";
 
 
@@ -102,6 +102,9 @@ class DouzoneContainer extends Component {
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
+    // if (this.props.callback.handleCallBackMileageData) {
+
+    // }
   };
 
   handleClose = () => {
@@ -121,8 +124,10 @@ class DouzoneContainer extends Component {
   };
 
 
-
-
+  // 기능 모음의 메뉴를 자식 컴포넌트에서 받아온다
+  // setMenus = (menus) => {
+  //   this.setState({ menus });
+  // }
 
 
 
@@ -156,9 +161,11 @@ class DouzoneContainer extends Component {
       message,
       showDelete,
       handleOpenBd,
+      menus,
+      selectedCheckedRows
     } = this.props;
 
-    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
@@ -167,6 +174,8 @@ class DouzoneContainer extends Component {
       iconColor = "#ffffff"; // 아이콘 색상
     }
     //const showDelete = this.props.onDelete
+
+
     return (
       <ThemeProvider theme={douzonecontainertheme}>
 
@@ -175,11 +184,11 @@ class DouzoneContainer extends Component {
           <div className="container-header">
             <div className="container-header-left">{this.props.title}</div>
             <div className="container-header-right">
-            {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
-              <div style={{ display: 'flex'}}>
+              {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
+                <div style={{ display: 'flex' }}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
                   <DrivingRecordCopy>
-                    
+
                   </DrivingRecordCopy>
                   <Button
                     id="basic-button"
@@ -195,18 +204,17 @@ class DouzoneContainer extends Component {
                     anchorEl={this.state.funcVowel}
                     open={Boolean(this.state.funcVowel)}
                     onClose={this.handleClose}
+
                     MenuListProps={{
                       "aria-labelledby": "basic-button",
                     }}
                   >
-                    <MenuItem><Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance></MenuItem>
-                    <MenuItem><Ace1010DivisionDistance>안분</Ace1010DivisionDistance></MenuItem>
-                    <MenuItem><MileageModal>주행거리 검색</MileageModal></MenuItem>
-                    <MenuItem><Ace1010Bookmark>즐겨찾기</Ace1010Bookmark></MenuItem>
+                    {menus && menus}
                   </Menu>
-                
-              </div>
-               )} 
+
+
+                </div>
+              )}
               <span style={{ color: "lightgrey" }}>|</span>
               <DeleteIcon
                 style={{ display: showDelete }}

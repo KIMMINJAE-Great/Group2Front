@@ -35,3 +35,6 @@
   color: blue; /* replace #yourColor with the color you want when hovering */
   cursor: pointer;
 }
+.img-container {
+  cursor: pointer;
+}
