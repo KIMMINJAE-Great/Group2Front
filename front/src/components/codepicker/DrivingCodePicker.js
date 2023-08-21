@@ -181,7 +181,7 @@ class DrivingCodePicker extends React.Component {
         codeField='car_cd'
         valueField2='car_nb'
         dispType='codeAndValueAndValue'
-        pickerTitle='차량코드 검색'
+        pickerTitle='차량코드'
         pickerCodeName='차량코드'
         pickerName='차량명'
         pickerName2='차량번호'

@@ -171,7 +171,7 @@ class CarCodePicker extends React.Component{
       valueField='tr_nm' 
       codeField='tr_cd' 
       dispType='codeAndValue'
-      pickerTitle='거래처 코드 검색'
+      pickerTitle='거래처 코드'
       pickerCodeName='거래처코드'
       pickerName='거래처명'
 

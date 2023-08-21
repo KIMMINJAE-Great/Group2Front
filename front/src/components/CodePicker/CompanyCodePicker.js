@@ -164,7 +164,7 @@ class CompanyCodePicker extends React.Component{
           valueField='co_nm' 
           codeField='co_cd' 
           dispType='codeAndValue'
-          pickerTitle='회사코드 검색'
+          pickerTitle='회사코드'
           pickerCodeName='회사코드'
           pickerName='회사이름'
           //필수 전달 함수!!
