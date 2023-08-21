@@ -31,7 +31,7 @@ class CodePicker extends React.Component {
       selectedchecked: [],
       content: [],
 
-      selectedColor:null, //색상
+      selectedColor: null, //색상
     };
   }
 
@@ -117,7 +117,7 @@ class CodePicker extends React.Component {
     this.setState({
       isModalOpen: true,
       modalTextFieldValue: '', // 모달 열때마다 모달안의 TextField를 초기화
-      selectedColor:null,
+      selectedColor: null,
     }, () => { this.props.resetCheckboxes() });
   };
   // 모달 닫기 함수
@@ -134,15 +134,15 @@ class CodePicker extends React.Component {
 
   // 체크박스 상태 초기화
   handleResetCheck = (e) => {
-    e.preventDefault();    
+    e.preventDefault();
     this.props.resetCheckboxes();
   };
 
 
   handleMenuItemClick = (value) => {
-    this.setState({ 
+    this.setState({
       selectedValue: value,
-      selectedColor : value  //색상때문에
+      selectedColor: value  //색상때문에
     }, () => {
       if (this.props.callback && this.props.callback.handleCallBackData) {
         this.props.callback.handleCallBackData(value);
@@ -216,7 +216,6 @@ class CodePicker extends React.Component {
       menuItems
     } = this.props;
     this.handleDropDown = this.handleDropDown.bind(this);
-
 
     // 드롭다운
     const open1 = Boolean(anchor1);
@@ -307,59 +306,59 @@ class CodePicker extends React.Component {
           >
             <DialogTitle>
               <Grid container alignItems="center" >
-                  <Grid item xs={6} alignItems="center">
-                      <Typography sx={{ fontSize: '24px', fontWeight: 'bolder', }}>{this.props.pickerTitle}</Typography>
-                  </Grid>
-                  <Grid item xs={6} display="flex" justifyContent="flex-end">
-                      <button style={{ backgroundColor: 'transparent', border: 'none', fontSize: '18px' }} onClick={this.closeModal}>X</button>
-                  </Grid>
+                <Grid item xs={6} alignItems="center">
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bolder', }}>{this.props.pickerTitle}</Typography>
+                </Grid>
+                <Grid item xs={6} display="flex" justifyContent="flex-end">
+                  <button style={{ backgroundColor: 'transparent', border: 'none', fontSize: '18px' }} onClick={this.closeModal}>X</button>
+                </Grid>
               </Grid>
-              <hr/>
+              <hr />
             </DialogTitle>
 
 
-            <DialogContent style={{minHeight:'9vh'}}>
-              
-              <div style={{ display: 'flex', marginTop:0}}>
-                <Box sx={{ maxWidth: '100%', maxHeight: '100%', width: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px',  ml: 0.5 }}>
+            <DialogContent style={{ minHeight: '9vh' }}>
+
+              <div style={{ display: 'flex', marginTop: 0 }}>
+                <Box sx={{ maxWidth: '100%', maxHeight: '100%', width: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px', ml: 0.5 }}>
                   <Grid container>
                     <Grid item xs={3} display="flex" alignItems="center">
                       <Typography variant="subtitle1" sx={{ marginLeft: 10, fontSize: '15px', fontWeight: 'bold' }}>검색어</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TextField
-                          sx={{ width: '100%',}}
-                          // style={{width:"180px", marginLeft:"5px"}}
-                          onKeyDown={(e) => this.handleKeyDownModal(e, this.state.modalTextFieldValue)}
-                          name="modalTextFieldValue"
-                          value={this.state.modalTextFieldValue}
-                          onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
-                          variant="outlined" size="small"
-                          inputProps={{ style: { height: '12px' } }} />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 13, width: '30px', height: '30px' }}
-                          onClick={(e) => this.props.onHandleOnClick(e, this.state.modalTextFieldValue)}>
-                          <SearchIcon />
-                        </IconButton>
-                      </Grid>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        sx={{ width: '100%', }}
+                        // style={{width:"180px", marginLeft:"5px"}}
+                        onKeyDown={(e) => this.handleKeyDownModal(e, this.state.modalTextFieldValue)}
+                        name="modalTextFieldValue"
+                        value={this.state.modalTextFieldValue}
+                        onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
+                        variant="outlined" size="small"
+                        inputProps={{ style: { height: '12px' } }} />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 13, width: '30px', height: '30px' }}
+                        onClick={(e) => this.props.onHandleOnClick(e, this.state.modalTextFieldValue)}>
+                        <SearchIcon />
+                      </IconButton>
+                    </Grid>
 
                     <Grid item xs={12} display="flex" alignItems="center">
                       <Grid container>
                         <Grid item xs={8.1}></Grid>
                         <Grid item xs={0}>
-                          <Typography variant="subtitle1" sx={{ ml: 9, mt: 0.5, mr: 0.2, fontSize: '12px', fontWeight: 'bold' }} style={{marginRight: '15px'}}>전체</Typography>
+                          <Typography variant="subtitle1" sx={{ ml: 9, mt: 0.5, mr: 0.2, fontSize: '12px', fontWeight: 'bold' }} style={{ marginRight: '15px' }}>전체</Typography>
                         </Grid>
                         <Grid item xs={1}>
-                        <FormControlLabel control={
-                          <input
-                          type="checkbox"
+                          <FormControlLabel control={
+                            <input
+                              type="checkbox"
 
-                          checked={this.props.selectAllCheckbox}
-                          onChange={() => this.props.handleToggleAllCheckboxes()}
-                        />
-                        }
-                        />
+                              checked={this.props.selectAllCheckbox}
+                              onChange={() => this.props.handleToggleAllCheckboxes()}
+                            />
+                          }
+                          />
                         </Grid>
                       </Grid>
                     </Grid>
@@ -377,7 +376,7 @@ class CodePicker extends React.Component {
 
             <DialogContent>
               {/* Instead of DataGrid, use a regular Grid for table-like layout */}
-              <div style={{  minHeight: 310, width: '100%', overflow: 'auto',  }}>
+              <div style={{ minHeight: 310, width: '100%', overflow: 'auto', }}>
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #D3D3D3', borderTop: '2px solid gray' }}>
@@ -407,10 +406,10 @@ class CodePicker extends React.Component {
                   <tbody>
                     {/* 운행기록부의 경우 코드로 텍스트필드값에 넣어야한다. */}
                     {menuItems?.map((item, index) => (
-                      <tr 
-                        key={index}                        
+                      <tr
+                        key={index}
                         onClick={() => this.handleMenuItemClick(item[this.props.codeField])}
-                        style={{ borderBottom: '1px solid #D3D3D3',backgroundColor: this.state.selectedColor === item[this.props.codeField] ? "#E3EEFA":  "white"}}
+                        style={{ borderBottom: '1px solid #D3D3D3', backgroundColor: this.state.selectedColor === item[this.props.codeField] ? "#E3EEFA" : "white" }}
                       >
                         <td style={{ width: 8, padding: '4px', textAlign: 'center', borderLeft: '1px solid #D3D3D3', borderRight: '1px solid #D3D3D3' }}>
                           {/* 체크박스 */}

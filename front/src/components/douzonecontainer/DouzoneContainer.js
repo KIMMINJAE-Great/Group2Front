@@ -97,41 +97,17 @@ class DouzoneContainer extends Component {
       snackBarMessage: "",
       severity: "success",
       isModalOpen: '',
+      receivedBeforeKm: '',
     };
   }
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
-    // if (this.props.callback.handleCallBackMileageData) {
-
-    // }
   };
 
   handleClose = () => {
     this.setState({ funcVowel: null });
   };
-
-  state = {
-    isModalOpen: false,
-  };
-
-  handleOpenBd = () => {
-    this.setState({ isModalOpen: true });
-    console.log("handleOpenBd 실행됨!!!")
-  };
-  closeModal = () => {
-    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
-  };
-
-
-  // 기능 모음의 메뉴를 자식 컴포넌트에서 받아온다
-  // setMenus = (menus) => {
-  //   this.setState({ menus });
-  // }
-
-
-
-
   //  스낵바 닫기
   handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -149,6 +125,19 @@ class DouzoneContainer extends Component {
       severity: severity,
     });
   };
+  state = {
+    isModalOpen: false,
+  };
+
+  handleOpenBd = () => {
+    this.setState({ isModalOpen: true });
+    console.log("handleOpenBd 실행됨!!!")
+  };
+  closeModal = () => {
+    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
+  };
+
+
 
   render() {
     //const open = Boolean(this.state.funcVowel);
@@ -162,7 +151,8 @@ class DouzoneContainer extends Component {
       showDelete,
       handleOpenBd,
       menus,
-      selectedCheckedRows
+      selectedCheckedRows,
+      selectedRows
     } = this.props;
 
     const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
@@ -187,8 +177,10 @@ class DouzoneContainer extends Component {
               {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
                 <div style={{ display: 'flex' }}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
-                  <DrivingRecordCopy>
-
+                  <DrivingRecordCopy
+                    selectedRows={selectedRows}
+                    handleToggleCheckbox={this.props.handleToggleCheckbox}
+                  >
                   </DrivingRecordCopy>
                   <Button
                     id="basic-button"

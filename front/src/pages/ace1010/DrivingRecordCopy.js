@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import "./ace1010.css";
 import { Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, MenuItem, Radio, RadioGroup, Typography } from '@mui/material';
+import { post } from '../../components/api_url/API_URL';
 
 
 class DrivingRecordCopy extends Component {
@@ -14,7 +15,8 @@ class DrivingRecordCopy extends Component {
       selectedValue: 'option1',
       startDate: new Date(),
       endDate: new Date(),
-      weekendDates: []
+      weekendDates: [],
+      selectedRows : this.props.selectedRows,
     };
   }
   // 주말 확인 함수
@@ -28,6 +30,7 @@ class DrivingRecordCopy extends Component {
   getDatesWeekends(startDate, endDate) {    
     let currentDate = new Date(startDate);
     const dateArray = [];
+    console.log("dateArray : ", dateArray)
     // 반환할 dateArray 배열을 초기화
 
     while (currentDate <= endDate) {
@@ -44,15 +47,53 @@ class DrivingRecordCopy extends Component {
     // 주말을 제외한 날짜 배열을 반환
   }
 
-  // 확인 버튼을 클릭했을 때 실행될 함수
+  // 확인 버튼을 클릭했을 때 실행될 함수 -- 경호
   handleCopyDrivingRecord = () => {
-    const { startDate, endDate } = this.state;
-    const filteredDates = this.getDatesWeekends(startDate, endDate);
-    // 주말을 제외한 날짜 배열을 가져옴
 
-    axios.post('YOUR_BACKEND_ENDPOINT', { dates: filteredDates })
+    // 3일부터 10일 까지 복사를 가정한다면 3,4,5,6,7,8,9,10  총 8개의 날짜가 입력된 배열이 만들어 져야한다.
+    // selectedRows의 갯수 2개니깐 
+    // 날짜배열길이 == dateArray.length
+    // selectedRows[j].use_dt(dateArray[i]) <- 이걸 finalData 배열에 하나씩 넣는다 
+
+    // seq_nb가 4인 곳에 use_dt도 8월 3일로 바꾼다
+    //이 행위를 날짜 배열만큼 반복한다
+    // 그런다음 이걸 List<AbizCarPersonDTO> 타입으로 서버에서 받고 그대로 저장을 한다. 리액트에서는 {data : 배열객체} 만 해도 된다.
+    const { startDate, endDate } = this.state;
+    const { selectedRows } = this.props;
+    const filteredDates = this.getDatesWeekends(startDate, endDate);
+    const dateArray = this.getDatesWeekends(startDate, endDate);
+    console.log(selectedRows)
+    let finalData = [];
+
+    for(let i = 0; i < dateArray.length; i++){
+     for(let j = 0 ;  j< selectedRows.length; j++){
+       const rowData = {
+            ...selectedRows[j], // 기존 row 데이터 복사
+            use_dt: dateArray[i], // use_dt 속성 변경
+        };
+        finalData.push(rowData);
+     }
+   }
+   console.log('포이치실행')
+   console.log(finalData)
+  //  finalData.forEach(item =>  console.log(item.use_dt));
+  //   console.log("finalData : ", finalData);
+  //  console.log("dateArray : ", dateArray);
+  //  console.log("dateArray.length : ", dateArray.length);
+  //  console.log("result : ", result);
+
+ 
+    // selectedRows와 filteredDates를 합치기
+  const selectedData = [...selectedRows, ...filteredDates];
+
+    // 주말을 제외한 날짜 배열을 가져옴
+    console.log("확인 @@@@@@@@2 this.props.selectedRows : ", selectedData);
+
+    post('/ace1010/selectedCopy', { dates: [selectedData] })
       .then(response => {
         console.log('Data successfully sent to server:', response.data);
+        console.log('post로 전달 갔수~~~~~~~~~~~~ selectedRows 값은 ===> ', selectedData);
+
       })
       .catch(error => {
         console.error('Error sending data:', error);
@@ -63,11 +104,73 @@ class DrivingRecordCopy extends Component {
     localStorage.setItem('selectedDates', JSON.stringify(filteredDates));
     // 콘솔에 해당 날짜들을 출력.
     console.log('Copying data for:', filteredDates);
+
+    // const user = JSON.parse(sessionStorage.getItem('user'));
+
+    //   const insertid = user.emp_id;
+
+    //   const cocd = selectedData[0].co_cd;
+    //   const empcd = selectedData[0].emp_cd;
+    //   const carcd = selectedData[0].car_cd;
+
+    // if (selectedData[0].seq_nb !== 0) {
+
+
+    //   const dataWithIds = selectedData.map((item, index) => {
+    //     return {
+    //       ...item,
+    //       use_dt: new Date(item.use_dt),
+    //       // modify_id: modifyid,
+    //       co_cd: cocd,
+    //       // emp_cd: empcd,
+    //       car_cd: carcd,
+    //       id: index + 1,
+    //       origin: 'Y',
+
+    //     };
+    //   });
+
+    //   const maxId = Math.max(...dataWithIds.map(item => item.id));
+
+    //   // 빈 행을 생성
+    //   const emptyRow = {
+    //     id: maxId + 1,
+    //     car_cd: carcd,
+    //     co_cd: cocd,
+    //     seq_nb: 0,
+    //     emp_cd: empcd,
+    //     send_yn: '2',
+    //     insert_id: insertid,
+    //     origin: 'N',
+    //     rmk_dc: '',
+    //     use_fg: '',
+
+    //   };
+
+    //   this.setState({ rows: [...dataWithIds, emptyRow] });
+
+
+    // } else {
+    //   // 차량등 등록되어 있지만 운행기록이 없을 때
+    //   // 빈 행을 생성
+    //   const emptyRow = {
+    //     id: 1,
+    //     car_cd: carcd,
+    //     co_cd: cocd,
+    //     seq_nb: 0,
+    //     emp_cd: empcd,
+    //     insert_id: insertid,
+    //     send_yn: '2',
+    //     origin: 'N',
+    //     rmk_dc: '',
+    //     use_fg: '',
+    //   };
+    //   this.setState({ rows: [emptyRow] });
+    // }
+  
     
     this.closeModal();
   };
-
-
 
   handleStartDateChange = (selectedDate) => {
     const endDate = new Date(this.state.endDate);
@@ -111,6 +214,7 @@ class DrivingRecordCopy extends Component {
  
   
   render() {
+    
 
     // 컴포넌트를 렌더링하는 메서드입니다.
     const { startDate, endDate } = this.state;
