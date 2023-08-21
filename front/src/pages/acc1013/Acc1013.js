@@ -179,7 +179,7 @@ class Acc1013 extends Component {
   handleSaveButton = async (e) => {
     e.preventDefault();
 
-    const { selectedCompanyCards, selectedRead,companyCards } = this.state;
+    const { selectedCompanyCards, selectedRead, companyCards } = this.state;
     /* 필수값 유효성 검사 */
     if (!selectedCompanyCards.co_cd) {
       alert("회사 코드를 입력해주세요.");
@@ -366,10 +366,10 @@ class Acc1013 extends Component {
         const selectedchecked = updatedContent.filter((item) => item.checked);
         return { content: updatedContent, selectedchecked: selectedchecked };
       })
-      }
+  }
 
   //onChange핸들함수
-  handleCoCdChange = (value , emp) => {
+  handleCoCdChange = (value, emp) => {
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
@@ -615,7 +615,7 @@ class Acc1013 extends Component {
                     border: this.state.selectedCardIndex === index ? "0.5px solid blue" : "0.5px solid lightgrey", // 파란색 테두리 추가
                     marginRight: "2px",
                     display: "flex",
-                    
+
                   }}
                   onClick={() =>
                     this.handleCardClick(this.state.content[index].co_cd, index)
@@ -694,7 +694,7 @@ class Acc1013 extends Component {
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
 
-    
+
     //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
     //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
     this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용

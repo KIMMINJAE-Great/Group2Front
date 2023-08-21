@@ -96,32 +96,29 @@ class DouzoneContainer extends Component {
       openSnackBar: false,
       snackBarMessage: "",
       severity: "success",
-      isModalOpen: '',
+      // isModalOpen: '',
     };
   }
   // 기능 모음 열기 닫기
   handleClick = (event) => {
     this.setState({ funcVowel: event.currentTarget });
-    // if (this.props.callback.handleCallBackMileageData) {
-
-    // }
   };
 
   handleClose = () => {
     this.setState({ funcVowel: null });
   };
 
-  state = {
-    isModalOpen: false,
-  };
+  // state = {
+  //   isModalOpen: false,
+  // };
 
-  handleOpenBd = () => {
-    this.setState({ isModalOpen: true });
-    console.log("handleOpenBd 실행됨!!!")
-  };
-  closeModal = () => {
-    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
-  };
+  // handleOpenBd = () => {
+  //   this.setState({ isModalOpen: true });
+  //   console.log("handleOpenBd 실행됨!!!")
+  // };
+  // closeModal = () => {
+  //   this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
+  // };
 
 
   // 기능 모음의 메뉴를 자식 컴포넌트에서 받아온다
@@ -165,7 +162,7 @@ class DouzoneContainer extends Component {
       selectedCheckedRows
     } = this.props;
 
-    const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
