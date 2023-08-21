@@ -29,11 +29,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 
 import SearchIcon from '@mui/icons-material/Search';
-import { getByQueryString } from "../../components/api_url/API_URL";
+import { getByQueryString, post } from "../../components/api_url/API_URL";
 import { Component } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dayjs from "dayjs";
-import CodePickerManager from "../../components/codepicker/CodePickerManager";
+import CodePickerManager from '../../components/CodePicker/CodePickerManager';
 const theme = createTheme({
   components: {
 
@@ -66,6 +66,7 @@ class Ace1010Search extends Component {
       firstUse_dt: dayjs().startOf('month'),   // 해당 달의 첫째날
       LastUse_dt: dayjs().endOf('month'),     // 해당 달의 말일
       openSnackBar: false,
+      beforeKm: "",
     };
   }
 
@@ -122,6 +123,17 @@ class Ace1010Search extends Component {
         carforabizperson = response.data;
         this.props.searchcarforabizperson(carforabizperson, car_cd);
       }
+      const response2 = await post('/ace1010/selectStartaccKm', { car_cd }); // 두 번째 엔드포인트 호출
+      const startacc_km = response2.data.startacc_km
+      this.props.setStartacckm(startacc_km)
+      console.log("startacc_km", startacc_km)
+      console.log("두 번째 엔드포인트 호출")
+
+
+      this.setState({
+        beforeKm :startacc_km,
+      });
+
       // this.handleclearFields();
     } catch (error) {
       console.log(error);
@@ -140,6 +152,7 @@ class Ace1010Search extends Component {
 
   render() {
 
+    const beforeKm = this.props.beforeKm;
 
     return (
       <form onSubmit={this.searchcarforabizperson}>

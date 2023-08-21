@@ -96,7 +96,8 @@ class DouzoneContainer extends Component {
       openSnackBar: false,
       snackBarMessage: "",
       severity: "success",
-      // isModalOpen: '',
+      isModalOpen: '',
+      receivedBeforeKm: '',
     };
   }
   // 기능 모음 열기 닫기
@@ -108,25 +109,26 @@ class DouzoneContainer extends Component {
     this.setState({ funcVowel: null });
   };
 
-  // state = {
-  //   isModalOpen: false,
-  // };
+  state = {
+    isModalOpen: false,
+  };
 
-  // handleOpenBd = () => {
-  //   this.setState({ isModalOpen: true });
-  //   console.log("handleOpenBd 실행됨!!!")
-  // };
-  // closeModal = () => {
-  //   this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
-  // };
+  handleOpenBd = () => {
+    this.setState({ isModalOpen: true });
+    console.log("handleOpenBd 실행됨!!!")
+  };
+  closeModal = () => {
+    this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기
+  };
 
+  handleBeforeKmChange = (beforeKm) => {
+    this.setState({
+      receivedBeforeKm: beforeKm,
+    });
 
-  // 기능 모음의 메뉴를 자식 컴포넌트에서 받아온다
-  // setMenus = (menus) => {
-  //   this.setState({ menus });
-  // }
-
-
+    // 부모 컴포넌트로 값 전달
+    this.props.onBeforeKmChange(beforeKm);
+  };
 
 
   //  스낵바 닫기
@@ -162,7 +164,7 @@ class DouzoneContainer extends Component {
       selectedCheckedRows
     } = this.props;
 
-    const { isAce1010Open } = this.props; // Ace1010.js의 상태 가져오기
+    const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
 
     let backgroundColor = "success.main"; // 초록색 배경
     let iconColor = "#ffffff"; // 아이콘 색상
@@ -171,7 +173,7 @@ class DouzoneContainer extends Component {
       iconColor = "#ffffff"; // 아이콘 색상
     }
     //const showDelete = this.props.onDelete
-
+    const { car_cd, co_cd, selectedRows } = this.props;
 
     return (
       <ThemeProvider theme={douzonecontainertheme}>
@@ -184,8 +186,10 @@ class DouzoneContainer extends Component {
               {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
                 <div style={{ display: 'flex' }}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
-                  <DrivingRecordCopy>
-
+                  <DrivingRecordCopy
+                    selectedRows={selectedRows}
+                    handleToggleCheckbox={this.props.handleToggleCheckbox}
+                  >
                   </DrivingRecordCopy>
                   <Button
                     id="basic-button"

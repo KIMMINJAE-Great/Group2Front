@@ -18,6 +18,8 @@ import MileageModal from './mileagesearch/MileageModal';
 //   { component: <MileageModal />, label: "주행거리 검색" },
 //   { component: <Ace1010Bookmark />, label: "즐겨찾기" }
 // ];
+import ModalInput from './ModalInput';
+import DrivingRecordCopy from './DrivingRecordCopy';
 
 class Ace1010 extends Component {
 
@@ -49,6 +51,8 @@ class Ace1010 extends Component {
       hour: '',
       minute: '',
       car_cd: '',
+      co_cd: '',
+      // 운행기록부에 표시될 기본 rows
       rows: [],
       // 출발구분 위해
       inputValueforfg: '',
@@ -65,6 +69,7 @@ class Ace1010 extends Component {
 
       // 일단 플래그
       flag: false,
+
       // Spinner
       loading: false,
 
@@ -73,7 +78,13 @@ class Ace1010 extends Component {
       //마일리지....관련
       cardsMileageKm: '', // 주행거리 검색 콜백으로 바뀌는 mileage_km
       cardsSeq: '',        // 주행거리 검색 에서 선택한 카드리스트  의 seq_nb
-      MileageFunction: {} //주행거리 검색에서 사용할 함수 집합
+      MileageFunction: {}, //주행거리 검색에서 사용할 함수 집합
+
+      beforeKm: '',
+
+
+      startacc_km: 0,
+
 
     }
     this.DouzoneContainer = React.createRef();
@@ -105,6 +116,21 @@ class Ace1010 extends Component {
     ]
   }
 
+  handleBeforeKmChange = (beforeKm) => {
+    const updatedRows = [...this.state.rows];
+
+    if (updatedRows.length === 0) {
+      updatedRows.push({ before_km: beforeKm });
+    } else {
+      updatedRows[0].before_km = beforeKm;
+    }
+
+    this.setState({
+      beforeKm: beforeKm,
+    });
+  };
+
+
 
   getstartendfg = async () => {
     try {
@@ -131,9 +157,19 @@ class Ace1010 extends Component {
 
     }
   }
+  setStartacckm = (value) => {
+    console.log('... : ' + value)
+    this.setState({ startacc_km: value })
+  }
+
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
   searchcarforabizperson = (carforabizperson, car_cd) => {
+
+    this.setState({ car_cd: carforabizperson[0].car_cd })
+    this.setState({ co_cd: carforabizperson[0].co_cd })
+
+
     if (carforabizperson === 'none') {
       this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 사용이 중지되었습니다', 'error');
       this.setState({ rows: [] })
@@ -144,7 +180,7 @@ class Ace1010 extends Component {
       this.setState({ rows: [] })
       return
 
-    }
+    } //첫 기록이 없을 때 사원코드나 그런거 차에서 가져와도 못담네 야팔
     else {
       // emp_cd 로그인 사원코드 
       const user = JSON.parse(sessionStorage.getItem('user'));
@@ -365,7 +401,7 @@ class Ace1010 extends Component {
 
 
     this.setState({
-      //rows: updatedRows,
+      // rows: updatedRows,
       inputValueforfg: ''
     })
 
@@ -385,10 +421,9 @@ class Ace1010 extends Component {
   // 5. 
   saveCellKeyDown = async (params) => {
     console.log(' 저장 시작 ')
-    console.log(params)//<- 여이가 undefined가 뜨니깐 반복저장할 때 잘 못 넘겨준거
+    console.log(params)
     console.log(params.row)
     console.log(params.field)
-
     const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
 
     const allFieldsHaveValue = fieldsToCheck.every(field => {
@@ -402,7 +437,9 @@ class Ace1010 extends Component {
       return
     }
 
-    if (params.row.origin === 'N') {
+
+
+    if (params.row.origin == 'N') {
       console.log('신규 저장 시작')
       const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
       const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
@@ -457,8 +494,7 @@ class Ace1010 extends Component {
           // 새로운 운행기록부 저장시 빈행 추가
           const lastRow = this.state.rows[this.state.rows.length - 1];
           const newId = lastRow.id + 1;
-          const seqnb = lastRow.seq_nb;
-          // const seqnb = lastRow.seq_nb + 1; 왜 1로 해놨는데 잘 됐을까 무섭네
+          const seqnb = lastRow.seq_nb + 1;
           const user = JSON.parse(sessionStorage.getItem('user'));
           const empid = user.emp_id;
           const carcd = params.row.car_cd;
@@ -573,7 +609,6 @@ class Ace1010 extends Component {
   // 단일 체크박스
   handleToggleCheckbox = (row) => {
     const { selectedCheckedRows } = this.state;
-
     const newSelectedCheckedRows = selectedCheckedRows.some(selectedRow => selectedRow.id === row.id)
       ? selectedCheckedRows.filter(selectedRow => selectedRow.id !== row.id)
       : [...selectedCheckedRows, row];
@@ -582,6 +617,10 @@ class Ace1010 extends Component {
       this.updateSelectAllCheckboxState();
     });
   };
+
+  // const authority = user.authorities[0].authority;
+  // const { beforeKm } = this.state;
+
 
 
   // 컬럼헤더의 체크박스 상태
@@ -745,6 +784,7 @@ class Ace1010 extends Component {
         ),
 
       },
+
       {
         field: 'use_dt',
         headerName: '운행일자',
@@ -942,6 +982,7 @@ class Ace1010 extends Component {
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
+
       },
       {
         field: 'after_km',
@@ -1016,6 +1057,8 @@ class Ace1010 extends Component {
 
 
       <DouzoneContainer
+        car_cd={this.state.car_cd}
+        co_cd={this.state.co_cd}
         ref={this.DouzoneContainer}
         title={this.state.title}
         isAce1010Open={this.state.isAce1010Open} // 기능 모음 표시 여부
@@ -1032,9 +1075,13 @@ class Ace1010 extends Component {
       >
 
         <Ace1010Search
+          beforeKm={this.state.beforeKm}
+          handleBeforeKmChange={this.handleBeforeKmChange}
+          setStartacckm={this.setStartacckm}
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
         </Ace1010Search>
+        {/* <DrivingRecordCopy selectedRows={this.state.newSelectedCheckedRows} /> */}
         <DataGrid
           disableColumnFilter
           disableColumnMenu
