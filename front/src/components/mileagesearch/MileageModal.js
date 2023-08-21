@@ -89,11 +89,7 @@ class MileageModal extends Component {
   render() {
     const { bookmarkCards, selectedBookmark } = this.state;
     const { distanceRealtime, distanceBased, distanceFree } = this.state;
-    console.log("스타트 위도경도" + this.state.startCoords);
-    console.log("엔드 위도경도" + this.state.endCoords);
-    console.log("distanceRealtime : " + distanceRealtime);
-    console.log("distanceBased : " + distanceBased);
-    console.log("distanceFree : " + distanceFree);
+
     return (
 
       <div style={{ width: '500px' }}>
@@ -106,7 +102,7 @@ class MileageModal extends Component {
             PaperProps={{
               style: {
                 width: '120%', // 원하는 너비
-                
+
               },
             }}
           >
@@ -118,7 +114,7 @@ class MileageModal extends Component {
 
 
             {/* div 두 영역으로 나눔 */}
-            <div style={{ display: "flex", flexDirection: "row"}}>
+            <div style={{ display: "flex", flexDirection: "row" }}>
               {/* 왼쪽인 카드리스트 */}
               <DialogContent style={{ width: "110px", maxHeight: "310px", overflow: "auto" }}>
                 <Grid container style={{ borderBottom: '1px solid #D3D3D3' }}>
@@ -175,7 +171,7 @@ class MileageModal extends Component {
 
                   <Grid container item xs={12}>
                     <Grid container style={{ marginBottom: "6px" }}>
-                      <Grid item xs={2.5} style={{marginTop:'5px'}}>
+                      <Grid item xs={2.5} style={{ marginTop: '5px' }}>
                         도착지<br />
                         상세주소
                       </Grid>

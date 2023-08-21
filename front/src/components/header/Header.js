@@ -7,6 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Typography } from '@mui/material';
 import { post } from "../api_url/API_URL";
 import { fontSize } from "@mui/system";
+import { Link } from "react-router-dom";
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -44,9 +45,12 @@ class Header extends Component {
       <div>
         <Box className="header-container" display="flex" justifyContent="space-between" alignItems="center">
 
-          <div className="img-container">
-            <img src={Logo} width='230' alt="logo" height='35' />
-          </div>
+
+          <Link to="/mainpage">
+            <div className="img-container">
+              <img src={Logo} width='230' alt="logo" height='35' />
+            </div>
+          </Link>
 
           <Box display="flex" alignItems="center">
             <AccountCircleIcon fontSize="large" />

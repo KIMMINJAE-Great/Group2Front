@@ -196,7 +196,7 @@ class Acc1010Basic extends Component {
                 <TextField
                   name="emp_id"
                   required
-                  helperText={errorMessage == '' ? '' : errorMessage}
+                  // helperText={errorMessage == '' ? '' : errorMessage}
                   sx={{ backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' }}
                   fullWidth
                   variant="outlined"
