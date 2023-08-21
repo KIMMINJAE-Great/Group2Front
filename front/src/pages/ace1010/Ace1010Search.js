@@ -94,16 +94,7 @@ class Ace1010Search extends Component {
 
 
   searchcarforabizperson = async (event) => {
-
-    console.log('찍기')
-    console.log(event)
-    console.log(this.state.car_cd)
-    // if (event) {
-    //   event.preventDefault();
-    // }
-    if (event && typeof event.preventDefault === 'function') {
-      event.preventDefault();
-    }
+    event.preventDefault();
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
 
     // if (searchCarResult) {
@@ -153,7 +144,7 @@ class Ace1010Search extends Component {
       <form onSubmit={this.searchcarforabizperson}>
         <div className="acc1010search_container" >
 
-          <Grid container item sx={{ padding: '4px' }}>
+          <Grid container item sx={{ padding: '4px', }}>
 
 
             <Grid item xs={1.1} style={{ textAlign: "right" }}>
@@ -201,7 +192,7 @@ class Ace1010Search extends Component {
           <IconButton type="submit" color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
             <SearchIcon />
           </IconButton>
-          {/* <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button> */}
+          <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
 
           <Snackbar
             open={this.state.openSnackBar}

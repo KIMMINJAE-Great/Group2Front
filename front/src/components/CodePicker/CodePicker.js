@@ -31,6 +31,7 @@ class CodePicker extends React.Component {
       selectedchecked: [],
       content: [],
 
+      selectedColor:null, //색상
     };
   }
 
@@ -85,7 +86,6 @@ class CodePicker extends React.Component {
         if (this.props.selectedIds.length === 1) {
           displayValue = `${firstItem[codeField]}.${firstItem[valueField]}`; // 첫번째 아이템의 값
         } else {
-          console.log("this.props.selectedIds" + JSON.stringify(this.props.selectedIds));
           displayValue = `${firstItem[valueField]} 외 ...${this.props.selectedIds.length - 1}건`;
         }
       } else {
@@ -117,7 +117,7 @@ class CodePicker extends React.Component {
     this.setState({
       isModalOpen: true,
       modalTextFieldValue: '', // 모달 열때마다 모달안의 TextField를 초기화
-
+      selectedColor:null,
     }, () => { this.props.resetCheckboxes() });
   };
   // 모달 닫기 함수
@@ -132,9 +132,18 @@ class CodePicker extends React.Component {
     });
   };
 
+  // 체크박스 상태 초기화
+  handleResetCheck = (e) => {
+    e.preventDefault();    
+    this.props.resetCheckboxes();
+  };
+
 
   handleMenuItemClick = (value) => {
-    this.setState({ selectedValue: value }, () => {
+    this.setState({ 
+      selectedValue: value,
+      selectedColor : value  //색상때문에
+    }, () => {
       if (this.props.callback && this.props.callback.handleCallBackData) {
         this.props.callback.handleCallBackData(value);
       }
@@ -144,41 +153,27 @@ class CodePicker extends React.Component {
   };
 
   handleKeyDown = async (e, value) => {
+
+    const { codeField, valueField, menuItems } = this.props;
+
     // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
     if (e.key === 'F2' || e.key === 'Enter') {
       await this.props.onHandleKeyDown(e, value);
 
       if (this.props.callback && this.props.callback.handleCallBackData) {
-        await this.props.callback.handleCallBackData(value);
+        const firstItem = this.props.menuItems[0];
+        await this.props.callback.handleCallBackData(firstItem[codeField]);
       }
       if (this.props.menuItems.length === 1) {
         this.handleSearchDataIsItemOne();
-        console.log("너 실행돔?")
 
       } else if (this.props.menuItems.length >= 2) {
         this.openModal();// 검색된 결과가 2개 이상일 때만 openModal() 실행
       }
     }
-    // 키 조작이 끝나면 selectedValue를 초기화
-    //  this.setState({ selectedValue: null });
+
   };
 
-
-  // handleKeyDown = (e, value) => {
-  //   // F2 키를 누르면 모달을 열고 부모의 onHandleKeyDown 함수도 호출
-  //   if (e.key === 'F2' || e.key === 'Enter') {
-  //     this.props.onHandleKeyDown(e, value);
-  //     if (this.props.callback && this.props.callback.handleCallBackData) {
-  //       this.props.callback.handleCallBackData(value);
-  //     }
-  //     this.openModal();
-  //   }
-
-
-  //    // 키 조작이 끝나면 selectedValue를 초기화
-  //    this.setState({ selectedValue: null });
-
-  // };
 
   // 모달 내에서 엔터를 치면 해당 코드피커의 ModalTextValue 전달..
   handleKeyDownModal = (e, value) => {
@@ -231,15 +226,21 @@ class CodePicker extends React.Component {
 
     return (
       <div>
-        <div style={{ position: 'relative', width: '219px', height: '39px' }}>
+        <div style={{ position: 'relative', width: '219px', height: '30px', }}>
           <TextField
-            style={{ display: "flex", boxSizing: 'border-box', width: '215px' }}
+            sx={{
+              display: "flex", boxSizing: 'border-box', width: '215px',
+              "& .MuiInputBase-root": {
+                height: 30
+              }
+            }}
+
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
             value={this.state.selectedValue || this.props.textFieldValue}
             onChange={this.handleOnChange}
-            inputProps={{ style: { height: '2px' } }}
+          // inputProps={{ style: { height: '2px' } }}
           />
 
           <div style={{ position: 'absolute', top: 0, right: 10, height: '100%', display: 'flex', alignItems: 'center' }}>
@@ -301,82 +302,76 @@ class CodePicker extends React.Component {
             maxWidth="sm"
             PaperProps={{
               style: {
-                minHeight: '65vh',
+                minHeight: '35vh',
               },
             }}
             fullWidth
           >
             <DialogTitle>
               <Grid container alignItems="center" >
-                <Grid item xs={6} display="flex" alignItems="center" marginTop={-2.5} >
-                  <Typography sx={{ fontsize: '24px', fontWeight: 'bolder', mt: 1 }}>{this.props.pickerTitle}</Typography>
-                </Grid>
-                <Grid item xs={6} display="flex" justifyContent="flex-end" marginTop={-1}>
-                  <button style={{ justifyContent: 'space-between', backgroundColor: 'transparent', border: 'none', fontSize: '18px' }} onClick={this.closeModal}>X</button>
-                </Grid>
+                  <Grid item xs={6} alignItems="center">
+                      <Typography sx={{ fontSize: '24px', fontWeight: 'bolder', }}>{this.props.pickerTitle}</Typography>
+                  </Grid>
+                  <Grid item xs={6} display="flex" justifyContent="flex-end">
+                      <button style={{ backgroundColor: 'transparent', border: 'none', fontSize: '18px' }} onClick={this.closeModal}>X</button>
+                  </Grid>
               </Grid>
+              <hr/>
             </DialogTitle>
 
-            <Divider sx={{ ml: 3, mt: -1, width: '29vw' }} />
 
-            <DialogContent>
+            <DialogContent style={{minHeight:'9vh'}}>
+              
+              <div style={{ display: 'flex', marginTop:0}}>
+                <Box sx={{ maxWidth: '100%', maxHeight: '100%', width: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px',  ml: 0.5 }}>
+                  <Grid container>
+                    <Grid item xs={3} display="flex" alignItems="center">
+                      <Typography variant="subtitle1" sx={{ marginLeft: 10, fontSize: '15px', fontWeight: 'bold' }}>검색어</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <TextField
+                          sx={{ width: '100%',}}
+                          // style={{width:"180px", marginLeft:"5px"}}
+                          onKeyDown={(e) => this.handleKeyDownModal(e, this.state.modalTextFieldValue)}
+                          name="modalTextFieldValue"
+                          value={this.state.modalTextFieldValue}
+                          onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
+                          variant="outlined" size="small"
+                          inputProps={{ style: { height: '12px' } }} />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 13, width: '30px', height: '30px' }}
+                          onClick={(e) => this.props.onHandleOnClick(e, this.state.modalTextFieldValue)}>
+                          <SearchIcon />
+                        </IconButton>
+                      </Grid>
 
-              <div style={{ display: 'flex', flexDirection: 'itemm' }}>
-                <Box sx={{ maxWidth: '100%', maxHeight: '100%', width: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px', mt: -1, ml: 0.5 }}>
-                  <Grid item xs={12} display="flex" alignItems="center">
-                    <Typography variant="subtitle1" sx={{ marginLeft: 7, fontSize: '13px', fontWeight: 'bold' }}>검색어</Typography>
-                    <TextField
-                      sx={{ width: '35%', ml: 1 }}
-                      onKeyDown={(e) => this.handleKeyDownModal(e, this.state.modalTextFieldValue)}
-                      name="modalTextFieldValue"
-                      value={this.state.modalTextFieldValue}
-                      onChange={(e) => this.setState({ modalTextFieldValue: e.target.value })}
-                      variant="outlined" size="small"
-                      inputProps={{ style: { height: '12px' } }} />
-                    <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 26, width: '30px', height: '30px' }}
-                      onClick={(e) => this.props.onHandleOnClick(e, this.state.modalTextFieldValue)}>
-                      <SearchIcon />
-                    </IconButton>
-                  </Grid>
+                    <Grid item xs={12} display="flex" alignItems="center">
+                      <Grid container>
+                        <Grid item xs={8.1}></Grid>
+                        <Grid item xs={0}>
+                          <Typography variant="subtitle1" sx={{ ml: 9, mt: 0.5, mr: 0.2, fontSize: '12px', fontWeight: 'bold' }} style={{marginRight: '15px'}}>전체</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                        <FormControlLabel control={
+                          <input
+                          type="checkbox"
 
-                  <Grid item xs={12} display="flex" alignItems="center">
-                    <Typography variant="subtitle1" sx={{ ml: 9, mt: 0.5, mr: 0.2, fontSize: '12px', fontWeight: 'bold' }}>범위</Typography>
-                    <FormControlLabel control={
-                      <Checkbox
-                        size="small"
-                        sx={{ ml: 0.5, }}
-                      />
-                    }
-                    />
-                    <Typography variant="subtitle1" sx={{ ml: -3, mt: 0.5, fontSize: '12px', alignItems: 'center' }}>기준일</Typography>
-                    {/* <TextField  sx={{ width: '20%', ml: 5}} variant="outlined" size="small" inputProps={{ style: { height: '12px' } }} /> */}
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs} style={{ width: "100%" }}>
-                      <DatePicker
-                        // onChange={(date) => this.props.onInputChange({ target: { name: 'est_dt', value: date } })} 
-                        variant="outlined"
-                        InputProps={{ style: { height: 30, padding: '0 10px' } }}
-                        style={{ width: "100%" }}
-                        slotProps={{ textField: { size: 'small' } }}
-                      />
-                    </LocalizationProvider> */}
-                    <FormControlLabel control={
-                      <Checkbox
-                        checked={this.props.selectAllCheckbox}
-                        onClick={this.props.handleToggleAllCheckboxes}
-                        size="small"
-                        sx={{
-                          ml: 3,
-                        }}
-                      />
-                    }
-                    />
-                    <Typography variant="subtitle1" sx={{ ml: -3, mt: 0.5, fontSize: '12px', alignItems: 'center' }}>전체</Typography>
+                          checked={this.props.selectAllCheckbox}
+                          onChange={() => this.props.handleToggleAllCheckboxes()}
+                        />
+                        }
+                        />
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Box>
               </div>
               <Grid container alignItems="center" marginBottom={-6}>
                 <Grid item xs={12} display="flex" justifyContent="flex-end" marginTop={1} >
-                  <button style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '24px', width: '10%', fontSize: '11px', fontWeight: 'bold' }}>초기화</button>
+                  <button onClick={this.handleResetCheck} style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '24px', width: '10%', fontSize: '11px', fontWeight: 'bold' }}>초기화</button>
+
                 </Grid>
               </Grid>
 
@@ -384,7 +379,7 @@ class CodePicker extends React.Component {
 
             <DialogContent>
               {/* Instead of DataGrid, use a regular Grid for table-like layout */}
-              <div style={{ maxHeight: 310, minHeight: 310, width: '100%', overflow: 'auto', marginTop: '-21px' }}>
+              <div style={{  minHeight: 310, width: '100%', overflow: 'auto',  }}>
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #D3D3D3', borderTop: '2px solid gray' }}>
@@ -392,7 +387,6 @@ class CodePicker extends React.Component {
                         {/* 체크박스 열 */}
                         <input
                           type="checkbox"
-
                           checked={this.props.selectAllCheckbox}
                           onChange={() => this.props.handleToggleAllCheckboxes()}
                         />
@@ -415,9 +409,10 @@ class CodePicker extends React.Component {
                   <tbody>
                     {/* 운행기록부의 경우 코드로 텍스트필드값에 넣어야한다. */}
                     {menuItems?.map((item, index) => (
-                      <tr key={index}
+                      <tr 
+                        key={index}                        
                         onClick={() => this.handleMenuItemClick(item[this.props.codeField])}
-                        style={{ borderBottom: '1px solid #D3D3D3' }}
+                        style={{ borderBottom: '1px solid #D3D3D3',backgroundColor: this.state.selectedColor === item[this.props.codeField] ? "#E3EEFA":  "white"}}
                       >
                         <td style={{ width: 8, padding: '4px', textAlign: 'center', borderLeft: '1px solid #D3D3D3', borderRight: '1px solid #D3D3D3' }}>
                           {/* 체크박스 */}

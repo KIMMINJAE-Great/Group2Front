@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, TextField, Typography } from "@mui/material";
+import { Alert, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, Slide, Snackbar, TextField, Typography } from "@mui/material";
 
 import MileageSeachTextField from "./MileageSeachTextField";
 import MileageSearchBtn from "./MileageSearchBtn";
@@ -10,6 +10,8 @@ class MileageModal extends Component {
     super(props);
     this.state = {
       isModalOpen: false,
+      openSnackBar: false,
+
       startName: '',
       endName: '',
       startCoords: '',
@@ -22,12 +24,10 @@ class MileageModal extends Component {
       selectedItems: '', //선택된 카드리스트의 정보 저장할 상태변수
       // content: [], //하위 컴포넌트로의 전달 등 여러기능함
       coordinateInfo: '', //위도경도가 포함된 정보를 담을 변수인데... mileageCards에서 충분할듯? 
-
+      selectedCardSeqNb: null,
       tableShow: false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!! 스피너!
 
       data: null,// 검색api에 사용될것임
-
-
     };
   }
 
@@ -44,8 +44,22 @@ class MileageModal extends Component {
   state = {
     isModalOpen: false,
   };
+
+   // Snackbar 표시 함수
+   showErrorSnackbar = () => {
+    this.setState({ openSnackBar: true });
+  };
+
+  // Snackbar 숨기기 함수
+  handleCloseSnackbar = () => {
+    this.setState({ openSnackBar: false });
+  };
   // 모달 열기 함수
-  openModal = () => {
+  openModal = () => {    
+    if(this.state.mileageCards.length === 0){
+      this.showErrorSnackbar()
+      return
+    }
     this.setState({ isModalOpen: true });
   };
   // 모달 닫기 함수
@@ -55,7 +69,9 @@ class MileageModal extends Component {
 
   //확인 눌렀을 때 . . .  상태값 저장할수있는 추가 로직 작성가능성
   saveModalCheckedItems = () => {
-    this.setState({ isModalOpen: false, });
+    this.setState({ isModalOpen: false,distanceRealtime: '',
+    distanceBased: '',
+    distanceFree: '', });
     this.props.callback.handelCalcMileageKm();
 
   };
@@ -65,15 +81,19 @@ class MileageModal extends Component {
     const selectedCard = this.state.mileageCards.find(item => item.seq_nb === seq_nb);
     console.log("selectedCard이다." + JSON.stringify(selectedCard));
     console.log("selectedCard의 km이다.." + JSON.stringify(selectedCard.mileage_km));
+
     this.props.callback.handleSeletedCardsKmMileage(selectedCard.seq_nb); //확인 버튼의 함수로 옮겨야 할듯 나중에....
     if (selectedCard) {
       this.setState({
+        selectedCardSeqNb: seq_nb, //카드색상때문에
         selectedItems: selectedCard,
         // startFieldValue: selectedCard.start_addr, 
         // endFieldValue: selectedCard.end_addr,
       });
     }
   };
+
+  
 
   // startCoords와 endCoords를 각각 저장해야한다!
   handleCoordData = (fieldType, longitude, latitude) => {
@@ -112,12 +132,13 @@ class MileageModal extends Component {
         <div>
           <Dialog
             open={this.state.isModalOpen}
+
             onClose={this.closeModal}
             maxWidth="lg"
             PaperProps={{
               style: {
                 width: "50vw",
-                height: "50vh",
+                height: "45vh",
               },
             }}
           >
@@ -130,12 +151,12 @@ class MileageModal extends Component {
             {/* div 두 영역으로 나눔 */}
             <div style={{ display: "flex", flexDirection: "row", height: "50vh" }}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{ width: "10px", maxWidth: "20vw", maxHeight: "310px", overflow: "auto" }}>
-                <Grid container style={{ borderBottom: '1px solid #D3D3D3' }}>
+              <DialogContent style={{ width: "10px", maxWidth: "20vw", maxHeight: "610px", overflow: "auto" }}>
+                <Grid container >
                   {mileageCards.map((item, index) => (
                     <Grid style={{ height: '70px', marginBottom: "20px", }} key={index}>
                       <Card
-                        style={{ width: "16.5vw", height: "10vh" }}
+                        style={{ width: "16.5vw",  backgroundColor: this.state.selectedCardSeqNb === item.seq_nb ? "#E3EEFA" : "white" }}
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
@@ -237,18 +258,14 @@ class MileageModal extends Component {
                       </Grid>
                       <Grid item xs={11}>
                         {/* TABLE VIEW */}
-                        {this.state.tableShow ? (
+                        {
                           <MileageTableView
                             callback={this.props.callback}
                             distanceRealtime={this.state.distanceRealtime}
                             distanceBased={this.state.distanceBased}
                             distanceFree={this.state.distanceFree}
-                          />)
-                          :
-                          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
-                            <CircularProgress />
-                          </div>
-
+                          />
+                         
                         }
                       </Grid>
                     </Grid>
@@ -266,6 +283,31 @@ class MileageModal extends Component {
             </Grid>
           </Dialog>
         </div>
+
+
+
+        <Snackbar
+          open={this.state.openSnackBar}
+          autoHideDuration={1000}
+          onClose={this.handleCloseSnackbar}
+          TransitionComponent={Slide}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            severity="error"
+            sx={{
+              width: "100%",
+              bgcolor: "error.main",
+              ".MuiAlert-icon": {
+                color: "#ffffff",
+              },
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            먼저 주행거리를 수정할 운행기록을 선택해 주세요.
+          </Alert>
+        </Snackbar>
       </div>
     )
   }
