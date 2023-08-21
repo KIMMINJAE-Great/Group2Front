@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, TextField, Typography } from "@mui/material";
+import { Alert, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, MenuItem, Slide, Snackbar, TextField, Typography } from "@mui/material";
 
 import MileageSeachTextField from "./MileageSeachTextField";
 import MileageSearchBtn from "./MileageSearchBtn";
@@ -26,7 +26,7 @@ class MileageModal extends Component {
       tableShow: false,//주행거리 검색 함수가 눌린 이후에 true로 바뀔꺼임!! 스피너!
 
       data: null,// 검색api에 사용될것임
-
+      openSnackBar: false,
 
     };
   }
@@ -44,8 +44,22 @@ class MileageModal extends Component {
   state = {
     isModalOpen: false,
   };
+
+   // Snackbar 표시 함수
+   showErrorSnackbar = () => {
+    this.setState({ openSnackBar: true });
+  };
+
+  // Snackbar 숨기기 함수
+  handleCloseSnackbar = () => {
+    this.setState({ openSnackBar: false });
+  };
   // 모달 열기 함수
-  openModal = () => {
+  openModal = () => {    
+    if(this.state.mileageCards.length === 0){
+      this.showErrorSnackbar()
+      return
+    }
     this.setState({ isModalOpen: true });
   };
   // 모달 닫기 함수
@@ -266,6 +280,33 @@ class MileageModal extends Component {
             </Grid>
           </Dialog>
         </div>
+
+
+
+        <Snackbar
+          open={this.state.openSnackBar}
+          autoHideDuration={1000}
+          onClose={this.handleCloseSnackbar}
+          TransitionComponent={Slide}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+
+            severity="error"
+            sx={{
+              width: "100%",
+              bgcolor: "error.main",
+              ".MuiAlert-icon": {
+                color: "#ffffff",
+              },
+              color: "white",
+              fontWeight: "bold",
+            }}
+
+          >
+            먼저 주행거리를 수정할 운행기록을 선택해 주세요.
+          </Alert>
+        </Snackbar>
       </div>
     )
   }
