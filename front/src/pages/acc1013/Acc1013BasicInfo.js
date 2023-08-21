@@ -1,5 +1,4 @@
 import React from "react";
-import { get, post } from "../../components/api_url/API_URL";
 import { styled, } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -165,7 +164,7 @@ handleReg_nbChange = (input) => {
                         <FieldName variant="subtitle1" >사용여부</FieldName>
                       </GridItem3>
                       <Grid
-                        item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
+                        item xs={3.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft:'15px'}} >
 
                         <FormControl>
                           <FormLabel id="demo-radio-buttons-group-label"></FormLabel>
@@ -253,7 +252,7 @@ handleReg_nbChange = (input) => {
                       </Grid>
                       <Grid
                         item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >
-                        <button style={{ height: '31px', width: "130px", marginTop: '5px' }}>타회사 코드참조</button>
+                        
                       </Grid>
 
                     </Grid>
@@ -319,7 +318,8 @@ handleReg_nbChange = (input) => {
                       </GridItem1>
                       <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField onChange={(e) => this.props.handleRegNbChange(e.target.value)}
+                        <MyTextField 
+                          onChange={(e) => this.props.handleRegNbChange(e.target.value)}
                           value={selectedCompanyCards?.reg_nb || ""}
                           inputProps={{ style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
                           variant="outlined" />
@@ -394,9 +394,9 @@ handleReg_nbChange = (input) => {
                       </Grid>
                       <Grid
                         item xs={1.85} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <LocalizationProvider dateAdapter={AdapterDayjs} style>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
                           <DatePicker
-                            value={dayjs(selectedCompanyCards?.cls_dt ? selectedCompanyCards?.cls_dt : '')}
+                            value={selectedCompanyCards?.cls_dt ? new Date(selectedCompanyCards?.cls_dt) : null}
                             name="cls_dt"
                             onChange={(value) => { this.props.handleClsDtChange(value); }}
 
@@ -454,12 +454,12 @@ handleReg_nbChange = (input) => {
                           <Grid
                             item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
                             <MyTextField name="adr_zp" onChange={this.props.onInputChange}
-                              value={this.props.adr_zp || this.props.postcode || (this.props.companyCardData && this.props.companyCardData.length > 0 ? this.props.companyCardData[0].adr_zp : '')}
 
+                              value={selectedCompanyCards?.adr_zp || ""}
                               variant="outlined" />
                           </Grid>
                           <Grid xs={0} variant="outlined" style={{ marginLeft: '15px', marginTop: '5px', }}>
-                            <Postcode onComplete={this.props.onComplete} />
+                            <Postcode onComplete={this.props.onPostComplete} />
                           </Grid>
 
 
@@ -473,7 +473,7 @@ handleReg_nbChange = (input) => {
 
                           </Grid>
                           <Grid
-                            item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
+                            item xs={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
                             <MyTextField onChange={(e) => this.props.handleAdrEtcChange(e.target.value)}
                               value={selectedCompanyCards?.adr_etc || ""}
                               variant="outlined" />
@@ -496,7 +496,7 @@ handleReg_nbChange = (input) => {
                       </Grid>
                       <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <Typography variant="subtitle1">기</Typography>
+                        <Typography variant="subtitle1" style={{marginRight:'5px'}}>기</Typography>
                       </Grid>
                       <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -508,7 +508,7 @@ handleReg_nbChange = (input) => {
                             slotProps={{ textField: { size: 'small' } }} />
                         </LocalizationProvider>
                       </Grid>
-                      <button style={{ marginLeft: "5px", marginTop: "3.5px", height: "35px" }}>회계기수 등록</button>
+                      
                     </Grid>
                   </Grid>
 

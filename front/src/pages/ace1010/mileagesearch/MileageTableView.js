@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
 
-class MileageTableViewTest extends Component {
+class MileageTableView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: null,
-            isLoading: false,
             selectedRoute: null
         };
-    }
+    }    
 
     handleRouteClick = (route) => {
         this.setState({ selectedRoute: route });
-        // 이 부분에 클릭 시 원하는 동작을 추가하실 수 있습니다.
-        console.log(`선택된 경로: ${route.name}`);
+        this.props.callback.handleCallBackMileageData(route.distance);  //Ace1010.js에 있는 콜백함수 실행!
+        console.log("viewTest에서 콜백 들어갈값 route.distance:" +route.distance);
     }
 
     render() {
@@ -27,20 +25,20 @@ class MileageTableViewTest extends Component {
 
         return (
             <div>
-                <table style={{ marginTop: "5px" }} border="1">
+                <table style={{ marginTop: "5px", width:"450px" }} border="1">
                     <thead>
                         <tr>
-                            <th style={{ width: "50px" }}>No</th>
-                            <th style={{ width: "118px" }}>경로</th>
-                            <th style={{ width: "209px" }}>거리(km)</th>
+                            <th style={{ width: "70px" }}>No</th>
+                            <th style={{ width: "148px" }}>경로</th>
+                            <th style={{ width: "239px" }}>거리(km)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {routes.map(route => (
                             <tr key={route.id} onClick={() => this.handleRouteClick(route)}>
-                                <td style={{ textAlign: "center" }}>{route.id}</td>
-                                <td style={{ textAlign: "center" }}>{route.name}</td>
-                                <td style={{ textAlign: "center" }}>{route.distance}</td>
+                                <td style={{ textAlign: "center", height:"50px" }}>{route.id}</td>
+                                <td style={{ textAlign: "center", height:"50px" }}>{route.name}</td>
+                                <td style={{ textAlign: "center", height:"50px" }}>{route.distance}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -51,4 +49,4 @@ class MileageTableViewTest extends Component {
     }
 }
 
-export default MileageTableViewTest;
+export default MileageTableView;

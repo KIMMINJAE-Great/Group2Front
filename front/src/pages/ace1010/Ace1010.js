@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import { DataGrid, GridToolbar, GridCellParams } from '@mui/x-data-grid';
 import DouzoneContainer from './../../components/douzonecontainer/DouzoneContainer';
-import { get, post, update } from '../../components/api_url/API_URL';
+import { del, get, post, update } from '../../components/api_url/API_URL';
 import { Box, Checkbox, Menu, MenuItem, Select } from '@mui/material';
 import Ace1010Search from './Ace1010Search';
 import './ace1010.css'
-import ModalInput from './ModalInput';
-import DrivingRecordCopy from './DrivingRecordCopy';
+import Spinner from '../../components/commons/Spinner/Spinner';
+import Ace1010Bookmark from './Ace1010Bookmark';
+import Ace1010BasicDistance from './Ace1010BasicDistance';
+import Ace1010DivisionDistance from './Ace1010DivisionDistance';
+import MileageModal from './mileagesearch/MileageModal';
+
+// //기능모음
+// const functionCollection = [
+//   { component: <Ace1010BasicDistance />, label: "기초거리입력" },
+//   { component: <Ace1010DivisionDistance />, label: "안분" },
+//   { component: <MileageModal />, label: "주행거리 검색" },
+//   { component: <Ace1010Bookmark />, label: "즐겨찾기" }
+// ];
 
 class Ace1010 extends Component {
 
@@ -33,13 +44,12 @@ class Ace1010 extends Component {
       //  출발구분 용
       selectedRowIdFg: '',
       selectedCellFg: '',
+      selectedRowId: null, //선택된 행
+      selectedCellName: null, //선택된 열의 이름
       hour: '',
       minute: '',
       car_cd: '',
-      co_cd: '',
-      // 운행기록부에 표시될 기본 rows
       rows: [],
-     
       // 출발구분 위해
       inputValueforfg: '',
       // fg 구분에서 직접입력을 위한 state
@@ -49,37 +59,51 @@ class Ace1010 extends Component {
       selectedRowUseFg: '',//입력구분
       selectedRowRmkdc: '',//비고
       selectedRowRmkdcmodi: '',//수정비고
-      // 일단 플래그
-      flag: false,
-      beforeKm: '',
+
       selectedCheckedRows: [],
       selectAllCheckbox: false,
 
-      startacc_km :0,
+      // 일단 플래그
+      flag: false,
+      // Spinner
+      loading: false,
+
+      // 삭제 모달
+      showDeleteModal: false,
+      //마일리지....관련
+      cardsMileageKm: '', // 주행거리 검색 콜백으로 바뀌는 mileage_km
+      cardsSeq: '',        // 주행거리 검색 에서 선택한 카드리스트  의 seq_nb
+      MileageFunction: {} //주행거리 검색에서 사용할 함수 집합
 
     }
     this.DouzoneContainer = React.createRef();
     this.ace1010SearchRef = React.createRef();
-    this.dataGridRef = React.createRef()
+
   }
   componentDidMount() {
     this.getstartendfg();
     this.getsendyn();
     this.getusefg();
+
+    //this.setState({ loading: true })
   }
-  handleBeforeKmChange = (beforeKm) => {
-    const updatedRows = [...this.state.rows];
-  
-    if (updatedRows.length === 0) {
-      updatedRows.push({ before_km: beforeKm });
-    } else {
-      updatedRows[0].before_km = beforeKm;
-    }
-    
-    this.setState({
-      beforeKm: beforeKm,
-    });
-  };
+
+  // 기능모음 리턴
+  setMenus = () => {
+    return [
+      <Ace1010BasicDistance>기초거리입력</Ace1010BasicDistance>,
+      <Ace1010DivisionDistance
+        selectedCheckedRows={this.state.selectedCheckedRows}
+        researchAfterSaveDivisionDistance={this.researchAfterSaveDivisionDistance}
+        updateLoadingStateTrue={this.updateLoadingStateTrue}
+        updateLoadingStateFalse={this.updateLoadingStateFalse}
+      >안분</Ace1010DivisionDistance>,
+      <MileageModal
+        callback={this.MileageFunction}
+        content={this.state.selectedCheckedRows}>주행거리 검색</MileageModal>,
+      <Ace1010Bookmark>즐겨찾기</Ace1010Bookmark>
+    ]
+  }
 
 
   getstartendfg = async () => {
@@ -107,48 +131,9 @@ class Ace1010 extends Component {
 
     }
   }
-  setStartacckm =(value)=>{
-    console.log('... : '+value)
-    this.setState({startacc_km : value})
-  }
-  // selectAllCheckbox 상태를 변경하고 모든 행의 체크박스 상태를 업데이트한다.
-  // handleToggleAllCheckboxes = () => {
-  //   const newSelectAllCheckbox = !this.state.selectAllCheckbox;
-  //   const newRows = this.state.rows.map((row) => ({ ...row, check: newSelectAllCheckbox }));
-  //   this.setState({ selectAllCheckbox: newSelectAllCheckbox, rows: newRows }, () => {
-  //     console.log('체크박스 확인')
-  //     console.log(this.state.rows);
-  //   });
-  // }
-
-  // 개별 체크박스의 선택 상태를 전환하는 함수.
-  // 해당 체크박스의 상태를 변경하고, 모든 체크박스가 선택되었는지 확인한 후 상태를 업데이트한다.
-  // handleToggleCheckbox = (id) => {
-  //   console.log("여긴가@@@@@@@@@@@@@@@@@@@@@@@@@@")
-  //   this.setState((prevState) => {
-  //     const newRows = prevState.rows.map((row) => {
-  //       if (row.id === id) {
-  //         return { ...row, check: !row.check };
-  //       }
-  //       return row;
-  //     });
-  //     const allChecked = newRows.every((row) => row.check);
-  //     const someChecked = newRows.some((row) => row.check);
-  //     return {
-  //       rows: newRows,
-  //       selectAllCheckbox: allChecked ? true : (someChecked ? undefined : false)
-  //     };
-  //   });
-  // }
-
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
   searchcarforabizperson = (carforabizperson, car_cd) => {
-
-    this.setState({car_cd : carforabizperson[0].car_cd})
-    this.setState({co_cd : carforabizperson[0].co_cd})
-
-
     if (carforabizperson === 'none') {
       this.DouzoneContainer.current.handleSnackbarOpen('해당차량은 사용이 중지되었습니다', 'error');
       this.setState({ rows: [] })
@@ -159,7 +144,7 @@ class Ace1010 extends Component {
       this.setState({ rows: [] })
       return
 
-    } //첫 기록이 없을 때 사원코드나 그런거 차에서 가져와도 못담네 야팔
+    }
     else {
       // emp_cd 로그인 사원코드 
       const user = JSON.parse(sessionStorage.getItem('user'));
@@ -232,9 +217,10 @@ class Ace1010 extends Component {
 
   // 행이 클릭되면 여러 요소를 저장 하여 활용
   handleRowClick = (params, event) => {
-
+    console.log('행클릭')
     console.log(params.rmk_dc);
     console.log(params.row.rmk_dc);
+    console.log(params.row)
     // 행 클릭시 필수 셀 빨간색 입히는 setState
     this.setState({
       selectedRowId: params.id,
@@ -265,17 +251,16 @@ class Ace1010 extends Component {
   handleCellClick = (params, event) => {
     // console.log('셀 클릭')
     // console.log(params.row.id)
-    // console.log(params.field)
-
+    console.log("집중해야하는값!!" + params.field);
+    //mileageserach를 위해   
+    // if(params.field === 'mileage_km'){
+    //   this.MileageFunction.handleSeletedMileageKmRowAndColumn(params.row.id, params.field); 
+    // }
     this.setState({
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
-
-    })
+    });
   }
-
-
- 
   handleRmkDcChange = (value) => {
     // 현재 상태의 rows 배열을 복사
     const updatedRows = [...this.state.rows];
@@ -296,8 +281,9 @@ class Ace1010 extends Component {
     }
   }
 
-  processRowUpdatefunc = async (updatedRow) => {
+  processRowUpdatefunc = (updatedRow, originalRow) => {
     console.log('프로세스 실행')
+    console.log(updatedRow)
     console.log(updatedRow.id)
     console.log(updatedRow.seq_nb)
 
@@ -305,73 +291,81 @@ class Ace1010 extends Component {
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
     const cellFieldName = this.state.editedCell;
 
-    console.log('updatedRow.id : ' + updatedRow.id)
-    console.log('this.state.selectedRowIdFg  : ' + this.state.selectedRowIdFg)
-    console.log('this.state.selectedCellFg  : ' + this.state.selectedCellFg)
 
-    // 출발구분, 도착구분
-    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'start_fg') {
-
-      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '즐겨찾기') {
-        console.log('모달뜨기 직전= 출발구분')
-        await this.showModalAndWait();
-
-        updatedRow.start_fg = this.state.inputValueforfg;
-
-      }
-    }
-
-    if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
-
-      if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '즐겨찾기') {
-        console.log('모달뜨기 직전 도착구분')
-        await this.showModalAndWait();
-
-        updatedRow.end_fg = this.state.inputValueforfg;
-
-      }
-    }
-
-
-    const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
-
+    const mileageKm = Number(updatedRow.mileage_km);
+    const updatedRows = [...this.state.rows];
+    console.log('updatedRows의 row의 id 타입')
+    console.log(typeof updatedRows[0].id) // row의 id는 number이다. 
     //  주행전, 후 자동 입력
     if (cellFieldName === 'mileage_km') {
-      //만약 해당 행의 다음행이 존재한다면 주행을 바꾸는 순간 그 뒤에 오는 행들을 모두 수정해줘야하며
-      // 바꿔주기만 하면 일일히 만약 100라면 다 하나하나 저장을 해야하니 일제히 저장을 돌려버린다.
-      // 1.  해당 행 이후에 행이 있는지 체크
-      // 2. 있다면 모든 행들을 가져오기
-      // 3. 모든 행이 직전의 행의 after_km를 가져와 before_km에 담고 다시 mileage_km랑 더하여 after_km를 변환
-      // 4. 다 끝나면 saveCellKeyDown을 강제로 모든 행을 차례대로 실행
-      // 그런데 안분을 사용하게 되면 일제히 바뀌게 되는데 그러면 어떻게 하지?
-      // 해당행들을 배열로 다시 받아와서 첫번째 행에 안분된 거리를 입력하고 주행후를 바꾸고 
-      // 그게 끝나면 그 다음 행 그리고 순차적으로 저장
 
-      const rowWithId2 = this.state.rows.find((row) => row.id === updatedRow.id - 1);
+      if (updatedRow.origin === 'Y') {
 
-      const mileageKmValue = Number(updatedRow.mileage_km);
-      if (rowWithId2) {
-        const afterKmValueOfId2 = Number(rowWithId2.after_km);
+        // 오리진이 y이지만 맨마지막 행일 떄 오류발생
+        console.log('마일리지까지 들어옴')
+        //가정 1 첫 빈행일 때 즉 id가 1일때
+        //가정 2 id가 1이상일때
 
-        updatedRow.after_km = mileageKmValue + afterKmValueOfId2;
+        console.log('요청 전')
+        // 스피너 적용
+        this.setState({ loading: true });
+        var finalresponse;
+        post('/ace1010/autocalcmileage', updatedRow)
+          .then((response) => {
+            console.log('주행 요청 후 데이터 출력')
+            console.log(response.data)
+            if (response.data > 0) {
+              finalresponse = response.data;
+              setTimeout(() => {
+                this.setState({ loading: false });
+                if (finalresponse > 0) {
+                  this.DouzoneContainer.current.handleSnackbarOpen(`주행거리가 수정되었습니다`, 'success');
+                  this.ace1010SearchRef.current.searchcarforabizperson();
+                }
+              }, 1000);
 
-        updatedRow.before_km = afterKmValueOfId2;
-      } else {
-        //운행기록부 데이터가 없을 때는 기초거리에서 가져와야 하는데 현재 없으니 일단 0으로 시작
-        updatedRow.before_km = 0;
+              //여기서 조회를 다시한다
+            } else {
+              this.DouzoneContainer.current.handleSnackbarOpen(`주행거리가 수정에 실패하였습니다.`, 'error');
+            }
 
-        updatedRow.after_km = mileageKmValue + updatedRow.before_km;
+          })
+          .catch((error) => {
+            console.error('서버 요청 중에 에러가 발생했습니다:', error);
+          })
+        // .finally(() => {
+        //   this.setState({ loading: false });
+        // })
+
+
+        console.log('요청후')
+
+
+      } else if (updatedRow.origin === 'N') {
+
+        if (updatedRow.before_km) {
+          updatedRow.mileage_km = mileageKm
+          updatedRow.after_km = mileageKm + Number(updatedRow.before_km)
+        } else {
+          const maxId = Math.max(...updatedRows.map(row => row.id)) - 1;
+          const rowWithMaxId = updatedRows.find(row => row.id === maxId);
+          //id가 0이라면 그 전 행이 없다 그러면 after_km가 없고 그러면 굳이 설정해줄 필요는 없다
+          const afterKmForBeforeKm = rowWithMaxId ? rowWithMaxId.after_km : 0;
+
+          updatedRow.before_km = afterKmForBeforeKm
+          updatedRow.mileage_km = mileageKm
+          updatedRow.after_km = Number(afterKmForBeforeKm) + mileageKm
+        }
+
+
+
       }
-
     }
 
-
-    const updatedRows = [...this.state.rows];
-    updatedRows[rowIndex] = updatedRow;
 
 
     this.setState({
-      // rows: updatedRows,
+      //rows: updatedRows,
       inputValueforfg: ''
     })
 
@@ -391,9 +385,10 @@ class Ace1010 extends Component {
   // 5. 
   saveCellKeyDown = async (params) => {
     console.log(' 저장 시작 ')
-    console.log(params)
+    console.log(params)//<- 여이가 undefined가 뜨니깐 반복저장할 때 잘 못 넘겨준거
     console.log(params.row)
     console.log(params.field)
+
     const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
 
     const allFieldsHaveValue = fieldsToCheck.every(field => {
@@ -407,9 +402,7 @@ class Ace1010 extends Component {
       return
     }
 
-
-
-    if (params.row.origin == 'N') {
+    if (params.row.origin === 'N') {
       console.log('신규 저장 시작')
       const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
       const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
@@ -442,9 +435,10 @@ class Ace1010 extends Component {
           this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 새롭게 저장되었습니다.', 'success');
 
           const maxSeqNb = Math.max(...this.state.rows.map(item => item.seq_nb));
-          
+
           params.row.seq_nb = maxSeqNb + 1;
-          
+
+
           // origin을 'Y'로 변경합니다.
           params.row.origin = 'Y';
 
@@ -463,7 +457,8 @@ class Ace1010 extends Component {
           // 새로운 운행기록부 저장시 빈행 추가
           const lastRow = this.state.rows[this.state.rows.length - 1];
           const newId = lastRow.id + 1;
-          const seqnb = lastRow.seq_nb + 1;
+          const seqnb = lastRow.seq_nb;
+          // const seqnb = lastRow.seq_nb + 1; 왜 1로 해놨는데 잘 됐을까 무섭네
           const user = JSON.parse(sessionStorage.getItem('user'));
           const empid = user.emp_id;
           const carcd = params.row.car_cd;
@@ -561,77 +556,164 @@ class Ace1010 extends Component {
     }
 
   }
- // 모든 체크박스
- handleToggleAllCheckboxes = () => {
-  const { rows, selectAllCheckbox } = this.state;
+  // 모든 체크박스
+  handleToggleAllCheckboxes = () => {
+    const { rows, selectAllCheckbox } = this.state;
 
-  if (selectAllCheckbox === true || selectAllCheckbox === 'indeterminate') {
-    this.setState({ selectedCheckedRows: [], selectAllCheckbox: false });
-  } else {
-    this.setState({
-      selectedCheckedRows: rows.slice(0, -1), // 마지막 row 제외
-      selectAllCheckbox: true
+    if (selectAllCheckbox === true || selectAllCheckbox === 'indeterminate') {
+      this.setState({ selectedCheckedRows: [], selectAllCheckbox: false });
+    } else {
+      this.setState({
+        selectedCheckedRows: rows.slice(0, -1), // 마지막 row 제외
+        selectAllCheckbox: true
+      });
+    }
+  };
+
+  // 단일 체크박스
+  handleToggleCheckbox = (row) => {
+    const { selectedCheckedRows } = this.state;
+
+    const newSelectedCheckedRows = selectedCheckedRows.some(selectedRow => selectedRow.id === row.id)
+      ? selectedCheckedRows.filter(selectedRow => selectedRow.id !== row.id)
+      : [...selectedCheckedRows, row];
+
+    this.setState({ selectedCheckedRows: newSelectedCheckedRows }, () => {
+      this.updateSelectAllCheckboxState();
     });
+  };
+
+
+  // 컬럼헤더의 체크박스 상태
+  updateSelectAllCheckboxState = () => {
+    const { selectedCheckedRows, rows } = this.state;
+
+    if (selectedCheckedRows.length === 0) {
+      this.setState({ selectAllCheckbox: false });
+    } else if (selectedCheckedRows.length === rows.length) {
+      this.setState({ selectAllCheckbox: true });
+    } else {
+      this.setState({ selectAllCheckbox: 'indeterminate' });
+    }
+  };
+
+
+  //주행거리 함수 모음
+  MileageFunction = {
+
+    //체크박스를 눌러서 배열을 만들어서 가져감,
+    //카드리스트를 눌러서 출발지와 목적지를 바인딩함..
+    //주행거리가 검색되어 나온 결과를 누르면 반영이 되어야함.
+    //선택한 카드의 배열 정보는 seq_nb로 찾아서 mileageModal에 handelCardClick에 있다.
+    //선택한 KM의 정보는 TableView에서 가져온다....
+
+    //카드를 선택한곳의 Mileage_km을 가져오는 함수...
+    handleSeletedCardsKmMileage: (data) => {
+      this.setState({
+        // cardsMileageKm : mileageData,
+        cardsSeq: data
+      });
+    },
+    //ace1010.js -> MileageModal.js // mileage변경
+    handleCallBackMileageData: (data) => {
+      if (data == 0) {
+        alert('값을 다시 입력해주세요.');
+      } else {
+        this.setState({ cardsMileageKm: data, });
+      }
+
+    },
+    //주행거리 계산 함수
+    handelCalcMileageKm: () => {
+      const { cardsSeq, rows, mileage_km, cardsMileageKm } = this.state;
+
+      const updatedRows = [...rows];
+      if (cardsSeq !== null && cardsSeq !== undefined) {
+        const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
+        if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
+          //(조건에 부합하는 요소가 없다면 -1을 반환이므로)
+          updatedRows[rowIndex].mileage_km = Number(cardsMileageKm);
+          // updatedRows[rowIndex].after_km = Number(updatedRows[rowIndex].before_km) + Number(cardsMileageKm);
+
+          this.setState({
+            rows: updatedRows,
+            mileage_km: cardsMileageKm,
+            // after_km: updatedRows[rowIndex].after_km
+          });
+        }
+      }
+    }
+
   }
-};
 
-
- // 단일 체크박스
- handleToggleCheckbox = (row) => {
-  const { selectedCheckedRows } = this.state;
-
-  const newSelectedCheckedRows = selectedCheckedRows.some(selectedRow => selectedRow.id === row.id)
-    ? selectedCheckedRows.filter(selectedRow => selectedRow.id !== row.id)
-    : [...selectedCheckedRows, row];
-
-  this.setState({ selectedCheckedRows: newSelectedCheckedRows }, () => {
-    this.updateSelectAllCheckboxState();
-
-    console.log('Selected Rows:', selectedCheckedRows);
-  });
-};
-
-// 컬럼헤더의 체크박스 상태
-updateSelectAllCheckboxState = () => {
-  const { selectedCheckedRows, rows } = this.state;
-
-  if (selectedCheckedRows.length === 0) {
-    this.setState({ selectAllCheckbox: false });
-  } else if (selectedCheckedRows.length === rows.length) {
-    this.setState({ selectAllCheckbox: true });
-  } else {
-    this.setState({ selectAllCheckbox: 'indeterminate' });
+  // 삭제 모달 열기
+  handleRowDeleteOpenModal = () => {
+    this.setState({ showDeleteModal: true });
   }
-};
+  // 삭제 모달 닫기
+  handleRowDeleteCloseModal = () => {
+    this.setState({ showDeleteModal: false });
+  }
 
 
+  // 운행기록 삭제
+  deleteRow = async () => {
+    const deleteRows = this.state.selectedCheckedRows;
+    console.log(deleteRows)
+    const rows = this.state.rows;
 
+    const finaleDeleteRows = deleteRows.map(row => {
+      return {
+        seq_nb: row.seq_nb,
+        car_cd: row.car_cd,
+      }
+    })
+    // 삭제할 운행기록을 오름차순으로 정렬
+    finaleDeleteRows.sort((a, b) => a.seq_nb - b.seq_nb);
+    console.log('삭제될 운행기록들')
+    console.log(finaleDeleteRows)
+    this.setState({ loading: true })
+    del(`/ace1010/deleteabizcarperson`, { data: finaleDeleteRows })
+      .then((response) => {
 
+        if (response.data > 0) {
+          setTimeout(() => {
+            this.setState({ loading: false, selectedCheckedRows: [], selectAllCheckbox: false });
+            this.DouzoneContainer.current.handleSnackbarOpen(`운행기록이 정상적으로 삭제되었습니다.`, 'success');
+            this.ace1010SearchRef.current.searchcarforabizperson();
+          }, 1000);
 
+          //여기서 조회를 다시한다
+        } else {
+          this.DouzoneContainer.current.handleSnackbarOpen(`운행기록 삭제 실패하였습니다.`, 'error');
+        }
+      }
+      ).catch((error) => {
+        console.log(error)
+        this.DouzoneContainer.current.handleSnackbarOpen('운행기록 삭제 실패 하였습니다.', 'error');
+      })
+    this.handleRowDeleteCloseModal();
+  }
+  //  안분하고 spinner 사용하기 위해 
+  updateLoadingStateTrue = () => {
+    console.log('스피너 작동')
+    this.setState({ loading: true });
+  }
+  updateLoadingStateFalse = () => {
+    console.log('스피너 종료')
+    this.setState({ loading: false });
+  }
+  researchAfterSaveDivisionDistance = () => {
+    this.ace1010SearchRef.current.searchcarforabizperson();
+    this.setState({ selectedCheckedRows: [], selectAllCheckbox: false })
+    this.DouzoneContainer.current.handleClose();
+    this.DouzoneContainer.current.handleSnackbarOpen(`주행거리 안분 처리가 완료되었습니다.`, 'success');
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  render() {
-    const user = JSON.parse(sessionStorage.getItem('user'));
-
-    const authority = user.authorities[0].authority;
-    const { beforeKm } = this.state;
-
-
-
-    const columns = [
+  columns = () => {
+    return [
       {
-        field: 'id', headerName: 'No', width: 30, editable: true, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
+        field: 'id', headerName: 'No', width: 30, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
       },
@@ -656,16 +738,13 @@ updateSelectAllCheckboxState = () => {
         renderCell: (params) => (
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Checkbox
-              // checked={this.state.selectedCheckedRows.includes(params.id)}
               checked={this.state.selectedCheckedRows.some(selectedRow => selectedRow.id === params.id)}
-              // onChange={() => this.handleToggleCheckbox(params.id)}
               onChange={() => this.handleToggleCheckbox(params.row)} // 전체 row 정보를 전달
             />
           </div>
         ),
 
       },
-
       {
         field: 'use_dt',
         headerName: '운행일자',
@@ -766,7 +845,9 @@ updateSelectAllCheckboxState = () => {
 
           // 값이 다른 형식이거나 누락된 경우 원래 값을 반환
           return time;
-        }
+        },
+
+
 
       },
       {
@@ -855,20 +936,18 @@ updateSelectAllCheckboxState = () => {
         field: 'before_km',
         headerName: '주행전(Km)',
         type: 'string',
-        width: 120,
+        width: 130,
         align: 'center',
         headerAlign: 'center',
-        editable: 'true',
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
-
       },
       {
         field: 'after_km',
         headerName: '주행후(Km)',
         type: 'string',
-        width: 120,
+        width: 130,
         //editable: true,
         align: 'center',
         headerAlign: 'center',
@@ -882,7 +961,7 @@ updateSelectAllCheckboxState = () => {
         headerName: '마감여부',
         type: 'singleSelect',
         valueOptions: this.state.sendyn.map(item => item.s_nm),
-        width: 120,
+        width: 140,
         editable: true,
         align: 'center',
         headerAlign: 'center',
@@ -894,33 +973,69 @@ updateSelectAllCheckboxState = () => {
           return params.row.send_yn === '마감' ? '마감' : '미마감';
         },
       },
-
-
     ];
+  }
+
+
+
+
+
+
+
+
+  // processRowUpdatefunc=(e)=>{
+  //   if(this.props.processRowUpdatefunc){
+  //     this.props.processRowUpdatefunc(e)
+  //   }
+  // }
+
+  render() {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    const authority = user.authorities[0].authority
+
+
+
+    // class douzoneDataGrid{
+    //   render(){
+    //     <dataGrid 
+
+    //       processRowUpdate={this.processRowUpdatefunc}
+    //       //processRowUpdate={this.testProceess}
+    //       onCellKeyDown={this.cellkeydown}
+    //       onRowClick={this.handleRowClick}
+    //       onCellClick={this.handleCellClick}
+    //      />
+    //   }
+    // }
+
+
 
 
     return (
 
+
       <DouzoneContainer
-        car_cd={this.state.car_cd}
-        co_cd={this.state.co_cd}
         ref={this.DouzoneContainer}
         title={this.state.title}
-        isAce1010Open={this.state.isAce1010Open}
-        onBeforeKmChange={this.handleBeforeKmChange}
-        selectedRows={this.state.selectedCheckedRows}
-        handleToggleCheckbox={this.handleToggleCheckbox}
+        isAce1010Open={this.state.isAce1010Open} // 기능 모음 표시 여부
+        openDeleteModal={this.state.showDeleteModal}// 모달이 켜지는 state
+        delete={this.handleRowDeleteOpenModal} //삭제 모달 열기
+        menus={this.setMenus()} //기능 모음 메뉴 전달
+        handleClose={this.handleRowDeleteCloseModal} // 삭제 모달 닫기
+        handleConfirm={this.deleteRow}// 삭제 모달의 확인 버튼
+        showDelete={''}
+        //title="사원 삭제 확인"
+        message="정말로 운행기록 정보를 삭제하시겠습니까?"
+      // menu={}
+
       >
+
         <Ace1010Search
-          beforeKm={this.state.beforeKm}
-          handleBeforeKmChange={this.handleBeforeKmChange}
-          setStartacckm={this.setStartacckm}
           ref={this.ace1010SearchRef}
           searchcarforabizperson={this.searchcarforabizperson}>
         </Ace1010Search>
-        {/* <DrivingRecordCopy selectedRows={this.state.newSelectedCheckedRows} /> */}
         <DataGrid
-          ref={this.dataGridRef}
           disableColumnFilter
           disableColumnMenu
           hideFooterPagination hideFooter
@@ -935,18 +1050,16 @@ updateSelectAllCheckboxState = () => {
             // 다른 셀은 기본적으로 수정 가능하다고 가정
             return true;
           }}
-          // onCellEditStart={this.handleCellEditStart}
-          // onCellEditStop={this.handleCellEditStop}
           processRowUpdate={this.processRowUpdatefunc}
-          //processRowUpdate={this.testProceess}
           onCellKeyDown={this.cellkeydown}
           onRowClick={this.handleRowClick}
           onCellClick={this.handleCellClick}
           sx={{
-            "& .MuiDataGrid-columnHeaders": { background: "#cccccc", borderRadius: 0 },
+            "& .MuiDataGrid-columnHeaders": { background: "#cccccc", borderRadius: 0, },
+            "& .MuiDataGrid-cell": { borderRight: '1px solid #cccccc' },
             borderTop: '2px solid black',
             height: 500, borderRadius: 0, margin: '5px', overflowY: 'auto'
-          }} rows={this.state.rows} columns={columns} />
+          }} rows={this.state.rows} columns={this.columns()} />
 
 
 
@@ -968,22 +1081,18 @@ updateSelectAllCheckboxState = () => {
             type="text"
             style={{ height: '30px', width: '300px', outline: 'none', marginTop: '17px', marginLeft: '5px', border: '0px', fontSize: 15, }}
             value={this.state.selectedRowUseFg}
-
             readOnly
           />
 
         </Box>
-        {this.state.showModal && (
-          <ModalInput
-            onConfirm={this.handleModalConfirm}
-            onCancel={this.handleModalNotConfirm}
-          />
-        )}
+
+
+
+        <Spinner loading={this.state.loading}></Spinner>
       </DouzoneContainer>
-
-    );
-
+    )
   }
+
 }
 
 export default Ace1010;
