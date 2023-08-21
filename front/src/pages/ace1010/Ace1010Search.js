@@ -94,7 +94,6 @@ class Ace1010Search extends Component {
 
 
   searchcarforabizperson = async (event) => {
-
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
     if (event && typeof event.preventDefault === 'function') {
       event.preventDefault();
