@@ -48,24 +48,30 @@ class CarCodePicker extends React.Component{
     });
   };
 
-  handleKeyDownModal = async (e ,textFieldValue) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      this.setState({
-        modalTextFieldValue: textFieldValue
-      });
-      try {
-        const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
-        
-        this.setState({ 
-          menuItems: response.data,
-          selectedIds: [], // 다시 검색이 일어나면 선택된 항목들을 초기화
-        });
-        console.log(response.data);
-      } catch (error) {
+  handleKeyDownModal = async (e, textFieldValue) => {
+    e.preventDefault();
+      return new Promise(async (resolve, reject) => {
+        this.setState({
+          modalTextFieldValue: textFieldValue
+        }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+          try {
+          const response = await get(`/codepicker/trademanagement/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+          if (response.data.length === 1) {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: response.data
+            }, resolve);
+          } else {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
+            }, resolve);
+          }
+        } catch (error) {
           console.log(error);
-      }
-    }
+        }
+      });
+    });
   };
 
   handleOnClick = async (e, textFieldValue) => {

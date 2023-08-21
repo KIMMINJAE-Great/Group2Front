@@ -33,7 +33,7 @@ import { getByQueryString, post } from "../../components/api_url/API_URL";
 import { Component } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dayjs from "dayjs";
-import CodePickerManager from '../../components/CodePicker/CodePickerManager';
+import CodePickerManager from '../../components/codepicker/CodePickerManager';
 const theme = createTheme({
   components: {
 
@@ -95,9 +95,10 @@ class Ace1010Search extends Component {
 
 
   searchcarforabizperson = async (event) => {
-    event.preventDefault();
     const { car_cd, firstUse_dt, LastUse_dt } = this.state;
-
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
     // if (searchCarResult) {
     //   this.setState({ car_cd: searchCarResult });
     // }
@@ -130,7 +131,7 @@ class Ace1010Search extends Component {
 
 
       this.setState({
-        beforeKm :startacc_km,
+        beforeKm: startacc_km,
       });
 
       // this.handleclearFields();
