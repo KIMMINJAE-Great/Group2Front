@@ -156,7 +156,7 @@ class MileageModal extends Component {
                   {mileageCards.map((item, index) => (
                     <Grid style={{ height: '70px', marginBottom: "20px", }} key={index}>
                       <Card
-                        style={{ width: "16.5vw",  backgroundColor: this.state.selectedCardSeqNb === item.seq_nb ? "lightblue" : "white" }}
+                        style={{ width: "16.5vw",  backgroundColor: this.state.selectedCardSeqNb === item.seq_nb ? "#E3EEFA" : "white" }}
                         sx={{
                           borderRadius: "0px",
                           border: "0.5px solid lightgrey",
