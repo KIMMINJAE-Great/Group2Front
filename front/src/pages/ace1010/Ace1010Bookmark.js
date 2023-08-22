@@ -1,10 +1,17 @@
 import {
+  Alert,
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   MenuItem,
+  Slide,
+  Snackbar,
 } from "@mui/material";
+import { get, post, update } from "../../components/api_url/API_URL";
+import { getByQueryString } from "../../components/api_url/API_URL";
+import DouzoneContainer from "./../../components/douzonecontainer/DouzoneContainer";
 import { lightGreen } from "@mui/material/colors";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { Component } from "react";
@@ -16,42 +23,631 @@ class Ace1010Bookmark extends Component {
       isModalOpen: "",
       bookmarks: [], // 즐겨찾기 객체들
 
-       // 출발 도착 구분
-       startendfg: [],
+      isConfirmationModalOpen: false, // 확인 창의 모달
 
-       // 운행 구분
+      updatedValue: "",
+
+      addedrows: [],
+
+      // 출발 도착 구분
+      startendfg: [],
+      // 운행 구분
       usefg: [],
+      // 마지막 셀에서 엔터가 이루어 졌을 때 누락되는 정보를 담기 위함
+      editedCell: "",
 
+      //즐겨찾기가 저장되면 다시 데이터를 불러오기 위한 state
+      selectedRowId: "",
 
-
-
-
-      // 차량에 대해 운행기록부가 저장되면 다시 데이터를 불러오기 위한 state
-      selectedRowforbgc: "",
+      //  출발구분 용
+      selectedRowIdFg: "",
+      selectedCellFg: "",
       hour: "",
       minute: "",
       car_cd: "",
       rows: [],
+      selectAllCheckbox: false,
+      // 출발구분 위해
+      inputValueforfg: "",
+      // fg 구분에서 직접입력을 위한 state
+      showModal: false,
+      editingCellName: "",
+
+      selectedRowUseFg: "", //입력구분
+      // 일단 플래그
+      flag: false,
+
+      openSnackBar: false,
+      snackBarMessage: "",
+      severity: "success",
+
+
+      hasArrowDownEvent: false,
+      hasArrowUpEvent: false,
+
+
 
     };
+
+    this.DouzoneContainer = React.createRef();
+    this.dataGridRef = React.createRef();
   }
 
-  handleOpen = async () => {
+ 
+  componentDidMount() {
+    this.getstartendfg();
+    document.addEventListener('keydown', this.handleKeyDown)
+    this.getsendyn();
+    this.getusefg();
+    
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
+  getstartendfg = async () => {
     try {
-      const response = "";
-      const open = !this.state.isModalOpen;
-      this.setState({
-        isModalOpen: open,
-        bookmarks: response.data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+      const response = await get("/ace1010/startendfg");
+      this.setState({ startendfg: response.data });
+    } catch (error) {}
+  };
+  getsendyn = async () => {
+    try {
+      const response = await get("/ace1010/sendyn");
+      this.setState({ sendyn: response.data });
+    } catch (error) {}
+  };
+  getusefg = async () => {
+    try {
+      const response = await get("/ace1010/usefg");
+      this.setState({ usefg: response.data });
+    } catch (error) {}
   };
 
   closeModal = () => {
     this.setState({ isModalOpen: false });
   };
+
+  openConfirmationModal = () => {
+    this.setState({ isConfirmationModalOpen: true });
+  };
+
+  closeConfirmationModal = () => {
+    this.setState({ isConfirmationModalOpen: false });
+  };
+
+  saveModalCheckedItems = () => {
+    // 확인 모달을 열기
+    this.openConfirmationModal();
+  };
+
+  // 확인 모달 내부의 "확인" 버튼 클릭을 처리하는 함수
+  handleConfirmation = async () => {
+    // 확인 모달을 닫기
+    this.closeConfirmationModal();
+    this.closeModal();
+
+    // const {updatedValue} = this.state;
+
+    //수정
+   
+    // 저장 동작 또는 원하는 다른 동작 수행
+    try{
+
+      if(this.state.updatedValue.origin ==='Y'){
+        console.log("수정하러 디비로~");
+        const response = await update("/ace1010/updatebookmark",this.state.updatedValue);
+
+        this.setState((prevState) => ({
+          // rows: [...prevState.rows, emptyRow],
+          updatedValue:"",
+        }));
+
+  
+  
+       
+      }else{
+        const response = await post("/ace1010/insertbookmark",this.state.addedrows);
+
+      console.log(response.data)
+
+      this.setState({addedrows:[],})
+
+
+      }
+      
+      
+
+
+    }catch{
+
+    }
+  };
+
+  // handleKeyDown = (e) => {
+  //   if (e.key === 'ArrowDown' && !this.state.hasArrowDownEvent) {
+  //     this.setState({ hasArrowDownEvent: true });
+  //     this.props.handleArrowDown(); // 원하는 로직 실행
+  //   }
+  // };
+
+
+  handleKeyDown = (event) => {
+    if (event.key === 'ArrowDown') {
+      event.stopPropagation();
+      // ArrowDown 키 이벤트 처리 로직
+      console.log('ArrowDown key pressed');
+    } else if (event.key === 'ArrowUp') {
+      event.stopPropagation();
+      // ArrowUp 키 이벤트 처리 로직
+      console.log('ArrowUp key pressed');
+    }
+  };
+
+  //여기부터 하세용
+  // get 으로 emp_cd를 보내서 로그인한 사원의 emp_cd를 갖는 즐겨찾기 객체를 가져온다
+  // 그걸담아서 즐겨찾기에 뿌려준다.
+  // 없으면 빈행을 추가
+  // 내일 부모함수에 this.props.abizbookmark 할수있는거 만들어 그리고 여기엔 객체담아
+  handleOpen = async (event) => {
+    event.preventDefault();
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const emp_cd = user.emp_cd;
+    const co_cd = "1000";
+    console.log("있나요?................................");
+    console.log(emp_cd);
+
+    try {
+      const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
+      const response = await getByQueryString(
+        `/ace1010/abizbookmark${queryString}`
+      );
+      const open = !this.state.isModalOpen;
+      this.setState(
+        {
+          bookmarks: response.data,
+          isModalOpen: open,
+        },
+        () => {
+          console.log(this.state.bookmarks);
+          this.getabizcarbookmark(this.state.bookmarks);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+ //  스낵바 닫기
+ handleSnackbarClose = (event, reason) => {
+  if (reason === "clickaway") {
+    return;
+  }
+
+  this.setState({
+    openSnackBar: false,
+  });
+};
+handleSnackbarOpen = (message, severity = "success") => {
+  this.setState({
+    openSnackBar: true,
+    snackBarMessage: message,
+    severity: severity,
+  });
+};
+
+
+
+
+
+  getabizcarbookmark = (bookmarks) => {
+    // emp_cd 로그인 사원코드
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    const insertid = user.emp_id;
+
+    const modifyid = user.emp_id;
+
+    const empcd = user.emp_cd;
+    const cocd = "1000";
+
+    if (bookmarks && bookmarks.length > 0) {
+      const dataWithIds = bookmarks.map((item, index) => {
+        return {
+          ...item,
+          modify_id: modifyid,
+          co_cd: cocd,
+          emp_cd: empcd,
+          id: index + 1,
+          origin: "Y",
+        };
+      });
+
+      const maxId = Math.max(...dataWithIds.map((item) => item.id));
+
+      // 빈 행을 생성
+      const emptyRow = {
+        id: maxId + 1,
+        co_cd: cocd,
+        emp_cd: empcd,
+        send_yn: "2",
+        insert_id: insertid,
+        origin: "N",
+        use_fg: "",
+      };
+
+      this.setState({ rows: [...dataWithIds, emptyRow] });
+      console.log(dataWithIds);
+      console.log(emptyRow);
+    } else {
+      // 차량등 등록되어 있지만 운행기록이 없을 때
+      // 빈 행을 생성
+      const emptyRow = {
+        id: 1,
+        co_cd: cocd,
+        emp_cd: empcd,
+        insert_id: insertid,
+        send_yn: "2",
+        origin: "N",
+        use_fg: "",
+      };
+      this.setState({ rows: [emptyRow] });
+    }
+  };
+
+  // 행이 클릭되면 여러 요소를 저장 하여 활용
+  handleRowClick = (params, event) => {
+    console.log(params.row);
+    // 행 클릭시 필수 셀 빨간색 입히는 setState
+    this.setState({
+      selectedRowId: params.id,
+      selectedRowUseFg: params.row.use_fg,
+    });
+  };
+  // cellkeydown = (params, event) => {
+  //   console.log("셀키다운");
+  //   console.log(params.field);
+  //   console.log(params.row.id);
+  //   console.log(params);
+  //   console.log(event.key)
+    // if (event.key === "Tab") {
+    //   // 특정 필드에서만 처리하고자 할 때
+    // if (params.field !== "bookmark_cd") {
+    //   event.preventDefault(); // 기본 Tab 동작을 막습니다.
+    // }
+    //     this.setState(
+    //       {
+    //         editedCell: params.field,
+    //         selectedRowIdFg: params.row.id,
+    //         selectedCellFg: params.field,
+    //       }
+    //       // ,
+    //       // () => {
+    //       //   // saveCellKeyDown 호출
+    //       //   this.saveCellKeyDown(params);
+    //       // }
+    //     );
+      
+    // }
+
+  // };
+
+
+  processRowUpdatefunc = (updatedRow, originalRow) => {
+    console.log(updatedRow);
+    console.log(originalRow);
+
+    //  // bookmark_cd 중복체크
+    //  const isDuplicate = this.state.rows.some(
+    //   (row) => row.bookmark_cd === updatedRow.bookmark_cd
+    // );
+
+    // if (isDuplicate||(updatedRow.bookmark_cd===originalRow.bookmark_cd)) {
+    //   this.handleSnackbarOpen(
+    //     "이미 존재하는 즐겨찾기 코드입니다.",
+    //     "error"
+    //   );
+    //     // 이전 bookmark_cd 값으로 변경
+    //     updatedRow.bookmark_cd = originalRow.bookmark_cd;
+
+
+    //   this.setState(
+    //     () => ({
+    //       updatedRow: updatedRow,
+    //     })
+    //   );
+    //   return;
+    // }
+
+    
+
+    // 업데이트된 값을 새로운 변수에 저장
+    this.setState(
+      () => ({
+        updatedValue: updatedRow,
+      }),
+      () => {
+        console.log(this.state.updatedValue);
+      }
+    );
+
+    return updatedRow;
+  };
+
+  // 유효성 검사 후 빈행을 추가한다,
+  handleSaveRowButtonClick =async(params)=>{
+
+    const {updatedValue}=this.state;
+
+    console.log(" 저장 시작 ");
+    console.log(updatedValue)
+
+    const fieldsToCheck = [
+      "bookmark_cd",
+      "bookmark_nm",
+      "use_fg",
+      "start_fg",
+      "end_fg",
+    ];
+
+    const allFieldsHaveValue = fieldsToCheck.every((field) => {
+      const value = updatedValue[field];
+      return value !== undefined && value !== null && value !== "";
+    });
+    
+
+    if (!allFieldsHaveValue) {
+      this.handleSnackbarOpen(
+        "필수 입력란을 입력 하지 않았습니다.다시 입력 해주세요.",
+        "error"
+      );
+      return;
+    }
+
+    if (updatedValue.origin === "N") {
+      console.log("신규 저장하고 새로운행 시작");
+
+      // bookmark_cd 중복체크
+      const isDuplicate = this.state.rows.some(
+        (row) => row.bookmark_cd === updatedValue.bookmark_cd
+      );
+
+      if (isDuplicate) {
+        this.handleSnackbarOpen(
+          "이미 존재하는 즐겨찾기 코드입니다.",
+          "error"
+        );
+        return;
+      }
+
+      
+
+      try {
+        this.handleSnackbarOpen(
+          "새로운 행이 추가 되었습니다.",
+          "success"
+        );
+        updatedValue.origin = "Y";
+
+        // 상태를 업데이트합니다.
+        const updatedRows = this.state.rows.map((row) => {
+          if (row.id === updatedValue.id) {
+            return updatedValue;
+          }
+          return row;
+        });
+
+        this.setState((prevState) => ({
+          rows: updatedRows,
+          addedrows: [...prevState.addedrows, updatedValue], //추가된 행만 저장한 변수
+        }),()=>{
+          console.log(this.state.addedrows)
+        });
+
+        // 새로운 즐겨찾기 저장시 빈행 추가
+        const lastRow = this.state.rows[this.state.rows.length - 1];
+        const newId = lastRow.id + 1;
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        const empid = user.emp_id;
+        const cocd = updatedValue.co_cd;
+
+        const emptyRow = {
+          id: newId,
+          co_cd: cocd,
+          insert_id: empid,
+          emp_cd: updatedValue.emp_cd,
+          send_yn: "2",
+          origin: "N",
+          use_fg: "",
+          // 기타 필요한 초기화 값들...
+        };
+
+        this.setState((prevState) => ({
+          rows: [...prevState.rows, emptyRow],
+          updatedValue:"",
+        }));
+      } catch (error) {
+        console.error(error);
+        this.handleSnackbarOpen("문제가 발생했습니다.다시 시도해주세요", "error");
+      }
+    }else if(updatedValue.origin === "Y"){
+      console.log("수정 하기 위한 임시저장?")
+      console.log(updatedValue)
+      this.handleSnackbarOpen(
+        "임시저장 되었습니다.",
+        "error"
+      );
+
+      
+      
+    }
+
+  }
+
+
+
+
+
+
+
+  // 1. 주행에서 엔터가 쳐졌을 때만 저장이 실행이 된다.
+  // 2. 값들 중 bookmark_cd,bookmark_nm,use_fg,start_fg,end_fg가 없다면 스낵바를 띄운다.
+
+  // 3. 신규 저장이면 빈 행을 띄운다. seq를 rows에서 max를 찾아 1증가 시켜 수정이 가능하도록 한다.
+  // 5.
+  // saveCellKeyDown = async (params) => {
+  //   console.log(" 저장 시작 ");
+
+  //   const fieldsToCheck = [
+  //     "bookmark_cd",
+  //     "bookmark_nm",
+  //     "use_fg",
+  //     "start_fg",
+  //     "end_fg",
+  //   ];
+
+  //   const allFieldsHaveValue = fieldsToCheck.every((field) => {
+  //     const value = params.row[field];
+  //     return value !== undefined && value !== null && value !== "";
+  //   });
+
+  //   if (!allFieldsHaveValue) {
+  //     this.props.handleSnackbarOpen(
+  //       "필수 입력란을 입력 하지 않았습니다.다시 입력 해주세요.",
+  //       "error"
+  //     );
+  //     return;
+  //   }
+
+  //   if (params.row.origin === "N") {
+  //     console.log("신규 저장하고 새로운행 시작");
+
+  //     // bookmark_cd 중복체크
+  //     const isDuplicate = this.state.rows.some(
+  //       (row) => row.bookmark_cd === params.row.bookmark_cd
+  //     );
+
+  //     if (isDuplicate) {
+  //       this.props.handleSnackbarOpen(
+  //         "이미 존재하는 즐겨찾기 코드입니다.",
+  //         "error"
+  //       );
+  //       return;
+  //     }
+
+  //     try {
+  //       this.props.handleSnackbarOpen(
+  //         "새로운 행이 추가 되었습니다.",
+  //         "success"
+  //       );
+  //       params.row.origin = "Y";
+
+  //       // 상태를 업데이트합니다.
+  //       const updatedRows = this.state.rows.map((row) => {
+  //         if (row.id === params.row.id) {
+  //           return params.row;
+  //         }
+  //         return row;
+  //       });
+
+  //       this.setState((prevState) => ({
+  //         rows: updatedRows,
+  //         addedrows: [...prevState.addedrows, params.row], //추가된 행만 저장한 변수
+  //       }));
+
+  //       // 새로운 즐겨찾기 저장시 빈행 추가
+  //       const lastRow = this.state.rows[this.state.rows.length - 1];
+  //       const newId = lastRow.id + 1;
+  //       const user = JSON.parse(sessionStorage.getItem("user"));
+  //       const empid = user.emp_id;
+  //       const cocd = params.row.co_cd;
+
+  //       const emptyRow = {
+  //         id: newId,
+  //         co_cd: cocd,
+  //         insert_id: empid,
+  //         emp_cd: params.row.emp_cd,
+  //         send_yn: "2",
+  //         origin: "N",
+  //         use_fg: "",
+  //         // 기타 필요한 초기화 값들...
+  //       };
+
+  //       this.setState((prevState) => ({
+  //         rows: [...prevState.rows, emptyRow],
+  //       }));
+  //     } catch (error) {
+  //       console.error(error);
+  //       this.props.handleSnackbarOpen("새로운 행 만들기 실패!!!.", "error");
+  //     }
+  //   }
+
+    //  else if (params.row.origin === 'Y') {
+    //   console.log('수정 시작')
+    //   console.log(params.row)
+    //   if (params.row.use_dt !== null) {
+    //     // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
+    //     const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
+
+    //     if (!isAlreadyFormatted) {
+    //       const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
+    //       const isoDate2 = this.toLocalISOString(selectedDate);
+    //       const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+    //       params.row.use_dt = mysqlDate2;
+    //     }
+    //   }
+    //   // if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
+    //   //   const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
+    //   //   const isoDate2 = this.toLocalISOString(selectedDate);
+    //   //   const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
+    //   //   params.row.use_dt = mysqlDate2;
+    //   // }
+    //   const isoDate2 = this.toLocalISOString(new Date());
+    //   const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
+    //   params.row.modify_dt = mysqlDate;
+
+    //   const user = JSON.parse(sessionStorage.getItem('user'));
+    //   const modifyid = user.emp_id;
+    //   params.row.modify_id = modifyid
+
+    //   params.row.rmk_dc = this.state.selectedRowRmkdc;
+
+    //   try {
+    //     const response = await update("/ace1010/update", params.row)
+    //     if (response.data === 'same time exist at working row') {
+    //       this.DouzoneContainer.current.handleSnackbarOpen('해당 시간은 같은 운행일자의 중복되는 시간입니다.', 'error');
+    //     }
+    //     if (response.data === 'before data exist') {
+    //       this.DouzoneContainer.current.handleSnackbarOpen('입력일 이후에 데이터가 존재하여 입력이불가능합니다', 'error');
+    //     }
+    //     if (response.data === 'same time data exist') {
+    //       this.DouzoneContainer.current.handleSnackbarOpen('입력일의 같은 시간대와 이전 시간대의 운행이 존재하여 입력이 불가능합니다', 'error');
+    //     }
+    //     if (response.data === 'update success') {
+    //       this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 수정되었습니다.', 'success');
+    //     } else if (response.data === 'update failed') {
+    //       this.DouzoneContainer.current.handleSnackbarOpen('운행기록부 수정에 실패하였습니다.', 'error');
+    //     }
+
+    //     // 상태를 업데이트합니다.
+    //     const updatedRows = this.state.rows.map(row => {
+    //       if (row.id === params.row.id) {
+    //         return params.row;
+    //       }
+    //       return row;
+    //     });
+
+    //     this.setState({
+    //       rows: updatedRows
+    //     });
+
+    //   } catch (error) {
+    //     console.error(error);
+    //     this.DouzoneContainer.current.handleSnackbarOpen('업데이트 중 서버로 요청 보내기 실패.', 'error');
+    //   }
+    // }
+    // };
 
   render() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -59,7 +655,6 @@ class Ace1010Bookmark extends Component {
     const authority = user.authorities[0].authority;
 
     const { isModalOpen } = this.state;
-
 
     const columns = [
       {
@@ -70,20 +665,28 @@ class Ace1010Bookmark extends Component {
         headerAlign: "center",
         align: "center",
         sortable: false,
+
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "BOOKMARK_CD",
+        field: "bookmark_cd",
         headerName: "코드",
         width: 70,
         editable: true,
         headerAlign: "center",
         align: "center",
         sortable: false,
+        // 필수 값 배경색 설정
+        cellClassName: (params) => {
+          if (this.state.selectedRowId === params.id) {
+            return "required-field-style";
+          }
+          return "";
+        },
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "BOOKMARK_NM",
+        field: "bookmark_nm",
         headerName: "즐겨찾기명",
         type: "string",
         width: 140,
@@ -91,10 +694,36 @@ class Ace1010Bookmark extends Component {
         align: "center",
         headerAlign: "center",
         sortable: false,
+        // 필수 값 배경색 설정
+        cellClassName: (params) => {
+          if (this.state.selectedRowId === params.id) {
+            return "required-field-style";
+          }
+          return "";
+        },
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "START_TIME",
+        field: "use_fg",
+        headerName: "운행구분",
+        type: "singleSelect",
+        valueOptions: this.state.usefg.map((item) => item.d_nm),
+        width: 100,
+        editable: true,
+        align: "center",
+        headerAlign: "center",
+        sortable: false,
+        // 필수 값 배경색 설정
+        cellClassName: (params) => {
+          if (this.state.selectedRowId === params.id) {
+            return "required-field-style";
+          }
+          return "";
+        },
+        renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
+      },
+      {
+        field: "start_time",
         headerName: "출발시간",
         width: 100,
         editable: true,
@@ -122,9 +751,9 @@ class Ace1010Bookmark extends Component {
           return time;
         },
       },
-      
+
       {
-        field: "END_TIME",
+        field: "end_time",
         headerName: "도착시간",
         width: 100,
         editable: true,
@@ -152,20 +781,9 @@ class Ace1010Bookmark extends Component {
           return time;
         },
       },
+      
       {
-        field: "USE_FG",
-        headerName: "운행구분",
-        type: "singleSelect",
-        valueOptions: this.state.usefg.map((item) => item.d_nm),
-        width: 100,
-        editable: true,
-        align: "center",
-        headerAlign: "center",
-        sortable: false,
-        renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
-      },
-      {
-        field: "START_FG",
+        field: "start_fg",
         headerName: "출발구분",
         width: 100,
         type: "singleSelect",
@@ -174,8 +792,10 @@ class Ace1010Bookmark extends Component {
         align: "center",
         headerAlign: "center",
         sortable: false,
+
+        // 필수 값 배경색 설정
         cellClassName: (params) => {
-          if (this.state.selectedRowforbgc === params.id) {
+          if (this.state.selectedRowId === params.id) {
             return "required-field-style";
           }
           return "";
@@ -183,7 +803,7 @@ class Ace1010Bookmark extends Component {
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "START_ADDR",
+        field: "start_addr",
         headerName: "출발지",
         type: "string",
         width: 140,
@@ -194,7 +814,7 @@ class Ace1010Bookmark extends Component {
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "END_FG",
+        field: "end_fg",
         headerName: "도착구분",
         type: "singleSelect",
         valueOptions: this.state.startendfg.map((item) => item.p_nm),
@@ -203,17 +823,17 @@ class Ace1010Bookmark extends Component {
         align: "center",
         headerAlign: "center",
         sortable: false,
-        renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
-
+        // 필수 값 배경색 설정
         cellClassName: (params) => {
-          if (this.state.selectedRowforbgc === params.id) {
+          if (this.state.selectedRowId === params.id) {
             return "required-field-style";
           }
           return "";
         },
+        renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "END_ADDR",
+        field: "end_addr",
         headerName: "도착지",
         type: "string",
         width: 140,
@@ -224,7 +844,7 @@ class Ace1010Bookmark extends Component {
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
       {
-        field: "MILEAGE_KM",
+        field: "mileage_km",
         headerName: "주행(Km)",
         type: "string",
         width: 100,
@@ -234,29 +854,10 @@ class Ace1010Bookmark extends Component {
         sortable: false,
         renderHeader: (params) => <strong>{params.colDef.headerName}</strong>,
       },
-      
-      
-      
-      
-    ];
-
-    const rows = [
-        
-        { id: 1, index:1,BOOKMARK_CD: "1", BOOKMARK_NM: "즐겨찾기 2", START_TIME: "09:00", END_TIME: "10:00", USE_FG: "운행2", START_FG: "출발2", START_ADDR: "출발지2", END_FG: "도착2", END_ADDR: "도착지2", MILEAGE_KM: 150 },
-        { id: 2, BOOKMARK_CD: "2", BOOKMARK_NM: "즐겨찾기 3", START_TIME: "10:00", END_TIME: "11:00", USE_FG: "운행3", START_FG: "출발3", START_ADDR: "출발지3", END_FG: "도착3", END_ADDR: "도착지3", MILEAGE_KM: 200 },
-        { id: 3, BOOKMARK_CD: "3", BOOKMARK_NM: "즐겨찾기 4", START_TIME: "11:00", END_TIME: "12:00", USE_FG: "운행4", START_FG: "출발4", START_ADDR: "출발지4", END_FG: "도착4", END_ADDR: "도착지4", MILEAGE_KM: 250 },
-        { id: 4, BOOKMARK_CD: "4", BOOKMARK_NM: "즐겨찾기 5", START_TIME: "12:00", END_TIME: "13:00", USE_FG: "운행5", START_FG: "출발5", START_ADDR: "출발지5", END_FG: "도착5", END_ADDR: "도착지5", MILEAGE_KM: 300 },
-        { id: 5, BOOKMARK_CD: "5", BOOKMARK_NM: "즐겨찾기 6", START_TIME: "13:00", END_TIME: "14:00", USE_FG: "운행6", START_FG: "출발6", START_ADDR: "출발지6", END_FG: "도착6", END_ADDR: "도착지6", MILEAGE_KM: 350 },
-        { id: 6, BOOKMARK_CD: "6", BOOKMARK_NM: "즐겨찾기 7", START_TIME: "14:00", END_TIME: "15:00", USE_FG: "운행7", START_FG: "출발7", START_ADDR: "출발지7", END_FG: "도착7", END_ADDR: "도착지7", MILEAGE_KM: 400 },
-        { id: 7, BOOKMARK_CD: "7", BOOKMARK_NM: "즐겨찾기 8", START_TIME: "15:00", END_TIME: "16:00", USE_FG: "운행8", START_FG: "출발8", START_ADDR: "출발지8", END_FG: "도착8", END_ADDR: "도착지8", MILEAGE_KM: 450 },
-        { id: 8, BOOKMARK_CD: "8", BOOKMARK_NM: "즐겨찾기 9", START_TIME: "16:00", END_TIME: "17:00", USE_FG: "운행9", START_FG: "출발9", START_ADDR: "출발지9", END_FG: "도착9", END_ADDR: "도착지9", MILEAGE_KM: 500 },
-        { id: 9, BOOKMARK_CD: "9", BOOKMARK_NM: "즐겨찾기 8", START_TIME: "15:00", END_TIME: "16:00", USE_FG: "운행8", START_FG: "출발8", START_ADDR: "출발지8", END_FG: "도착8", END_ADDR: "도착지8", MILEAGE_KM: 450 },
-        { id: 10, BOOKMARK_CD: "10", BOOKMARK_NM: "즐겨찾기 8", START_TIME: "15:00", END_TIME: "16:00", USE_FG: "운행8", START_FG: "출발8", START_ADDR: "출발지8", END_FG: "도착8", END_ADDR: "도착지8", MILEAGE_KM: 450 },
-        { id: 11, BOOKMARK_CD: "1", BOOKMARK_NM: "즐겨찾기 10", START_TIME: "17:00", END_TIME: "18:00", USE_FG: "운행10", START_FG: "출발10", START_ADDR: "출발지10", END_FG: "도착10", END_ADDR: "도착지10", MILEAGE_KM: 550 },
     ];
 
     return (
-      <div>
+      <div onKeyDown={this.handleKeyDown}>
         <MenuItem onClick={this.handleOpen}>즐겨찾기</MenuItem>
         <Dialog
           open={isModalOpen}
@@ -276,22 +877,15 @@ class Ace1010Bookmark extends Component {
           <DialogContent sx={{ height: "calc(80vh - 64px)", padding: "0px" }}>
             <div style={{ height: "90%", width: "100%" }}>
               <DataGrid
-                
                 ref={this.dataGridRef}
                 disableColumnFilter
                 disableColumnMenu
                 hideFooterPagination
                 hideFooter
-                
-                isCellEditable={(params) => {
-                  // send_yn 필드만 확인
-                  if (params.field === "send_yn") {
-                    // userRole이 ADMIN이 아니면 수정 불가
-                    return authority === "ROLE_ADMIN";
-                  }
-                  // 다른 셀은 기본적으로 수정 가능하다고 가정
-                  return true;
-                }}
+                processRowUpdate={this.processRowUpdatefunc}
+                onCellKeyDown={this.cellkeydown}
+                onRowClick={this.handleRowClick}
+                onCellClick={this.handleCellClick}
                 sx={{
                   "& .MuiDataGrid-columnHeaders": {
                     background: "#cccccc",
@@ -303,9 +897,31 @@ class Ace1010Bookmark extends Component {
                   margin: "5px",
                   overflowY: "auto",
                 }}
-                rows={rows}
+                rows={this.state.rows}
                 columns={columns}
               />
+              {/* 행 추가 버튼 */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "left",
+                  marginTop: "10px",
+                  marginLeft:"10px"
+                }}
+              >
+                <button
+                  onClick={this.handleSaveRowButtonClick}
+                  style={{
+                    backgroundColor: "#f2f2f2",
+                    border: "1px solid #D3D3D3",
+                    height: "25px",
+                    width: "100px",
+                    fontSize: "12px",
+                  }}
+                >
+                  저장
+                </button>
+              </div>
             </div>
 
             <Grid
@@ -343,9 +959,75 @@ class Ace1010Bookmark extends Component {
                 >
                   확인
                 </button>
+
+                <Dialog
+                  open={this.state.isConfirmationModalOpen}
+                  onClose={this.closeConfirmationModal}
+                  maxWidth="xs"
+                  PaperProps={{
+                    style: {
+                      padding: "16px",
+                    },
+                  }}
+                >
+                  <DialogTitle>정말 저장하시겠습니까?</DialogTitle>
+                  <DialogContent>
+                    <Grid container justifyContent="flex-end">
+                      <button
+                        onClick={this.closeConfirmationModal}
+                        style={{
+                          backgroundColor: "#f2f2f2",
+                          border: "1px solid #D3D3D3",
+                          height: "25px",
+                          width: "60px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        취소
+                      </button>
+
+                      <button
+                        onClick={this.handleConfirmation}
+                        style={{
+                          background: "#f2f2f2",
+                          border: "1px solid #D3D3D3",
+                          height: "25px",
+                          width: "60px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        확인
+                      </button>
+                    </Grid>
+                  </DialogContent>
+                </Dialog>
               </Grid>
             </Grid>
           </DialogContent>
+
+          <Snackbar
+            open={this.state.openSnackBar}
+            autoHideDuration={2000}
+            onClose={this.handleSnackbarClose}
+            TransitionComponent={Slide}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <Alert
+              onClose={this.handleSnackbarClose}
+              severity={this.state.severity}
+              sx={{
+                width: "100%",
+                backgroundColor:"#FBFBFB",
+                ".MuiAlert-icon": {
+                  iconColor:"#ffffff",
+                },
+                // color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              {this.state.snackBarMessage}
+            </Alert>
+          </Snackbar>
         </Dialog>
       </div>
     );
