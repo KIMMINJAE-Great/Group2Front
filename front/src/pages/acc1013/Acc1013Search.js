@@ -1,9 +1,11 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
+import SearchIcon from '@mui/icons-material/Search';
 import CodePickerManager from '../../components/codepicker/CodePickerManager';
 import {
   Button,
+  IconButton,
   MenuItem,
   Select,
   TextField,
@@ -49,6 +51,11 @@ const FieldName = styled(Typography)(({ theme }) => ({
 
 class Acc1013Search extends React.Component {
 
+  
+  
+
+
+
   render() {
 
     return (
@@ -80,7 +87,7 @@ class Acc1013Search extends React.Component {
             >
               <CodePickerManager
                 helpId={'CompanyCodePicker'}
-
+                callback={this.props.callback}
                 variant="outlined"
 
               />
@@ -97,9 +104,7 @@ class Acc1013Search extends React.Component {
                 사용여부
               </FieldName>
             </Grid>
-            <Grid
-              item
-              xs={1.7}
+            <Grid item xs={1.7}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -108,20 +113,20 @@ class Acc1013Search extends React.Component {
               }}
             >
               <Select
-                value={this.props.defaultUse}
+                // value={this.props.defaultUse}
                 name="defaultUse"
-                onChange={this.props.onInputChange}
+                onChange={(e) => this.props.handleDefaultUseChange(e.target.value)}
+                value={this.props.searchCom?.defaultUse || ""}
                 variant="outlined"
                 style={{ width: "100%", height: "36px" }}
               >
-                <MenuItem value="use">사용</MenuItem>
-                <MenuItem value="unused">미사용</MenuItem>
+                <MenuItem value="Y">사용</MenuItem>
+                <MenuItem value="N">미사용</MenuItem>
               </Select>
             </Grid>
             <Grid item xs style={{ flexGrow: 1 }} />
-            <Grid
-              item
-              xs={0}
+            <Grid 
+              item xs={0}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -129,11 +134,19 @@ class Acc1013Search extends React.Component {
                 height: "40px",
               }}
             >
+              <IconButton
+                color="black"
+                size="small"
+                sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px' }}
+                onClick={this.props.handleSearch}
+              >
+                <SearchIcon />
+              </IconButton>
               <Button
                 onClick={(e) =>
                   this.props.handleSaveButton(e)
                 }
-                style={{ marginRight: 40, width: "5px" }}
+                style={{ marginLeft: 10,marginRight: 40, width: "5px" }}
                 variant="outlined"
               >
                 저장

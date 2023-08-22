@@ -180,7 +180,8 @@ class CarCodePicker extends React.Component{
       pickerTitle='거래처 코드'
       pickerCodeName='거래처코드'
       pickerName='거래처명'
-
+      callback={this.props.callback}
+      
       //필수 전달 함수!!
       onHandleKeyDown={this.handleKeyDown}
       onhandleKeyDownModal={this.handleKeyDownModal}

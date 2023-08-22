@@ -174,6 +174,8 @@ class CompanyCodePicker extends React.Component{
           pickerTitle='회사코드'
           pickerCodeName='회사코드'
           pickerName='회사이름'
+          callback={this.props.callback}
+          
           //필수 전달 함수!!
           onHandleKeyDown={this.handleKeyDown}
           onhandleKeyDownModal={this.handleKeyDownModal}

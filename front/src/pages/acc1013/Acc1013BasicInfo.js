@@ -154,10 +154,8 @@ handleReg_nbChange = (input) => {
                         item xs={3.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft:'15px'}} >
 
                         <FormControl>
-                          <FormLabel id="demo-radio-buttons-group-label"></FormLabel>
                           <RadioGroup
                             row
-                            aria-labelledby="demo-radio-buttons-group-label"
                             defaultValue="Y"
                             onChange={(e) => this.props.handleUseYnChange(e.target.value)}
                             value={selectedCompanyCards?.use_yn || "Y"|| ""}
