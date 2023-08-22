@@ -152,7 +152,7 @@ class DouzoneContainer extends Component {
       handleOpenBd,
       menus,
       selectedCheckedRows,
-      selectedRows
+      selectedRows,
     } = this.props;
 
     const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
@@ -178,8 +178,10 @@ class DouzoneContainer extends Component {
                 <div style={{ display: 'flex' }}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
                   <DrivingRecordCopy
-                    selectedRows={selectedRows}
+                    selectedRows={this.props.selectedCheckedRows}
                     handleToggleCheckbox={this.props.handleToggleCheckbox}
+                    searchcarforabizpersondrivingcopy={this.props.searchcarforabizpersondrivingcopy}
+                    car_cd={this.props.car_cd}
                   >
                   </DrivingRecordCopy>
                   <Button
