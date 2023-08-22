@@ -289,9 +289,9 @@ class Ace1010 extends Component {
 
   cellkeydown = (params, event) => {
     console.log('셀키다운')
-    console.log(params.field)
-    console.log(params.row.id)
-    console.log(params)
+    // console.log(params.field)
+    // console.log(params.row.id)
+    // console.log(params)
     this.setState({
       editedCell: params.field,
       selectedRowIdFg: params.row.id,
@@ -495,7 +495,8 @@ class Ace1010 extends Component {
     // 출발구분, 도착구분
     if (updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')) {
 
-      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '직접입력') {
+      // if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '직접입력') {
+      if (updatedRow.start_fg === '즐겨찾기') {
         console.log('모달뜨기 직전= 출발구분')
         await this.showModalAndWait();
 
@@ -523,7 +524,7 @@ class Ace1010 extends Component {
 
       }
 
-      if (cellFieldName === 'start_fg' && updatedRow.start_fg === '자택') {
+      if (cellFieldName === 'start_fg') {
         const user = JSON.parse(sessionStorage.getItem("user"));
         const emp_cd = user.emp_cd;
         const co_cd = "1000";
