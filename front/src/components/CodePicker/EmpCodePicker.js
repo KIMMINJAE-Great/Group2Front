@@ -9,9 +9,7 @@ class EmpCodePicker extends React.Component{
           menuItems: [],
 
           selectedIds: [], // 선택된 행의 ID를 저장할 배열 //모달
-    
           selectedValue:'',//선택되는 값 // 드롭다운
-    
           textFieldValue: '', //텍스트필드에 입력할 값 // 드롭다운
         };
       }

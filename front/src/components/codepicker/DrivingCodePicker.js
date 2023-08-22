@@ -143,7 +143,6 @@ class DrivingCodePicker extends React.Component {
           updatedSelectedIds = [...prevState.selectedIds];
         }
       }
-
       return {
         menuItems: updatedContent,
         selectedIds: updatedSelectedIds
