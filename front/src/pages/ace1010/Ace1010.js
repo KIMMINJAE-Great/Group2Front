@@ -549,6 +549,63 @@ class Ace1010 extends Component {
 
 
       }
+      
+      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '자택'){
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        const emp_cd = user.emp_cd;
+        const co_cd = "1000";
+        const start_fg = updatedRow.start_fg;
+
+
+         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+         console.log(response.data);
+         const tmp = response.data;
+
+         updatedRow = {
+           ...updatedRow,
+
+           start_fg: tmp.start_fg,
+           start_addr: tmp.start_addr,
+        
+ 
+         }
+         console.log('프로세스에서 updatedrow 북마크 확힌')
+         console.log(this.state.bookmarkTempRow)
+         console.log(updatedRow)
+
+         return updatedRow;
+      }
+      
+      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '회사'){
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        const emp_cd = user.emp_cd;
+        const co_cd = "1000";
+        const start_fg = updatedRow.start_fg;
+
+         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+         console.log(response.data);
+         const tmp = response.data;
+
+         updatedRow = {
+           ...updatedRow,
+ 
+     
+           start_fg: tmp.start_fg,
+           start_addr: tmp.start_addr,
+    
+ 
+ 
+         }
+         console.log('프로세스에서 updatedrow 북마크 확힌')
+         console.log(this.state.bookmarkTempRow)
+         console.log(updatedRow)
+
+         return updatedRow;
+
+
+      }
     }
 
     // if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
@@ -773,12 +830,7 @@ class Ace1010 extends Component {
           params.row.use_dt = mysqlDate2;
         }
       }
-      // if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
-      //   const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
-      //   const isoDate2 = this.toLocalISOString(selectedDate);
-      //   const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-      //   params.row.use_dt = mysqlDate2;
-      // }
+
       const isoDate2 = this.toLocalISOString(new Date());
       const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
       params.row.modify_dt = mysqlDate;
@@ -882,7 +934,6 @@ class Ace1010 extends Component {
     //카드를 선택한곳의 Mileage_km을 가져오는 함수...
     handleSeletedCardsKmMileage: (data) => {
       this.setState({
-        // cardsMileageKm : mileageData,
         cardsSeq: data
       });
     },
@@ -893,13 +944,13 @@ class Ace1010 extends Component {
       } else {
         this.setState({ cardsMileageKm: data, });
       }
-
     },
+
     //주행거리 계산 함수
     handelCalcMileageKm: () => {
       const { cardsSeq, rows, mileage_km, cardsMileageKm } = this.state;
-
       const updatedRows = [...rows];
+
       if (cardsSeq !== null && cardsSeq !== undefined) {
         const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
         if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
@@ -915,13 +966,13 @@ class Ace1010 extends Component {
         }
       }
     }
-
   }
 
   // 삭제 모달 열기
   handleRowDeleteOpenModal = () => {
     this.setState({ showDeleteModal: true });
   }
+
   // 삭제 모달 닫기
   handleRowDeleteCloseModal = () => {
     this.setState({ showDeleteModal: false });
@@ -1265,39 +1316,10 @@ class Ace1010 extends Component {
 
 
 
-
-
-
-
-
-  // processRowUpdatefunc=(e)=>{
-  //   if(this.props.processRowUpdatefunc){
-  //     this.props.processRowUpdatefunc(e)
-  //   }
-  // }
-
   render() {
     const user = JSON.parse(sessionStorage.getItem('user'));
 
     const authority = user.authorities[0].authority
-
-
-
-    // class douzoneDataGrid{
-    //   render(){
-    //     <dataGrid 
-
-    //       processRowUpdate={this.processRowUpdatefunc}
-    //       //processRowUpdate={this.testProceess}
-    //       onCellKeyDown={this.cellkeydown}
-    //       onRowClick={this.handleRowClick}
-    //       onCellClick={this.handleCellClick}
-    //      />
-    //   }
-    // }
-
-
-
 
     return (
 

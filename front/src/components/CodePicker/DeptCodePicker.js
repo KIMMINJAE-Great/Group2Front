@@ -8,7 +8,6 @@ class DeptCodePicker extends React.Component{
         this.state = {
 
           menuItems: [],
-
     
           selectedIds: [], // 선택된 행의 ID를 저장할 배열 //모달
     
