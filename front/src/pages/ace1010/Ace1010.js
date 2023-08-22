@@ -762,6 +762,12 @@ class Ace1010 extends Component {
     this.DouzoneContainer.current.handleSnackbarOpen(`주행거리 안분 처리가 완료되었습니다.`, 'success');
   }
 
+  searchcarforabizpersondrivingcopy =()=>{
+    console.log('복사 재조회 시작')
+    this.ace1010SearchRef.current.searchcarforabizperson();
+    this.setState({ selectedCheckedRows: [], selectAllCheckbox: false })
+  }
+
   columns = () => {
     return [
       {
@@ -1072,6 +1078,7 @@ class Ace1010 extends Component {
       <DouzoneContainer
         car_cd={this.state.car_cd}
         co_cd={this.state.co_cd}
+        selectedCheckedRows={this.state.selectedCheckedRows}
         ref={this.DouzoneContainer}
         title={this.state.title}
         isAce1010Open={this.state.isAce1010Open} // 기능 모음 표시 여부
@@ -1081,6 +1088,7 @@ class Ace1010 extends Component {
         handleClose={this.handleRowDeleteCloseModal} // 삭제 모달 닫기
         handleConfirm={this.deleteRow}// 삭제 모달의 확인 버튼
         showDelete={''}
+        searchcarforabizpersondrivingcopy={this.searchcarforabizpersondrivingcopy}
         //title="사원 삭제 확인"
         message="정말로 운행기록 정보를 삭제하시겠습니까?"
       // menu={}
