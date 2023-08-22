@@ -186,24 +186,26 @@ class CarCodePicker extends React.Component{
           pickerCodeName='차량코드'
           pickerName='차량명'
           pickerName2='차량번호'
-            //필수 전달 함수!!
-            onHandleKeyDown={this.handleKeyDown}
-            onhandleKeyDownModal={this.handleKeyDownModal}
-            onHandleOnClick={this.handleOnClick}
+          callback={this.props.callback}
 
-            menuItems={this.state.menuItems}
-            selectedIds={this.state.selectedIds}
-            textFieldValue={this.state.textFieldValue}
+          //필수 전달 함수!!
+          onHandleKeyDown={this.handleKeyDown}
+          onhandleKeyDownModal={this.handleKeyDownModal}
+          onHandleOnClick={this.handleOnClick}
 
-            //텍스트필드 헨들러
-            onTextInputChange={this.handleTextInputChange} 
-            onTextFieldChange={this.handleTextFieldChange}
-            
-            //토글 관련 ...
-            selectAllCheckbox={this.state.selectAllCheckbox}
-            handleToggleCheckbox={this.handleToggleCheckbox}
-            handleToggleAllCheckboxes={this.handleToggleAllCheckboxes}
-            resetCheckboxes={this.resetCheckboxes}
+          menuItems={this.state.menuItems}
+          selectedIds={this.state.selectedIds}
+          textFieldValue={this.state.textFieldValue}
+
+          //텍스트필드 헨들러
+          onTextInputChange={this.handleTextInputChange} 
+          onTextFieldChange={this.handleTextFieldChange}
+          
+          //토글 관련 ...
+          selectAllCheckbox={this.state.selectAllCheckbox}
+          handleToggleCheckbox={this.handleToggleCheckbox}
+          handleToggleAllCheckboxes={this.handleToggleAllCheckboxes}
+          resetCheckboxes={this.resetCheckboxes}
           />
       )
   }

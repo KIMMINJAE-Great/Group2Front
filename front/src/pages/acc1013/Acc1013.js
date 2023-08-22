@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import { get, post, update, del } from "../../components/api_url/API_URL";
+import { get, post, update, del, getByQueryString } from "../../components/api_url/API_URL";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { createTheme, Card, CardContent, Checkbox, Typography, Box, Grid } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
@@ -85,10 +85,11 @@ class Acc1013 extends Component {
       jibunAddress: '', //지번 주소
       extraAddress: '', //나머지 주소
 
+      searchCom:null, //검색에필요
       companyCards: [], // 빈 카드리스트
       selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
-      defaultUse: "use",
+      defaultUse: "",// search 에서 사용여부
       readonly: false,
       title: "회사등록",
       //모달d
@@ -182,21 +183,22 @@ class Acc1013 extends Component {
     const { selectedCompanyCards, selectedRead, companyCards } = this.state;
     /* 필수값 유효성 검사 */
     if (!selectedCompanyCards.co_cd) {
-      alert("회사 코드를 입력해주세요.");
-      return;
-    }
-    if (selectedCompanyCards.co_cd.length <= 3 || selectedCompanyCards.co_cd.length >= 5) {
-      alert("회사코드는 4자이어야 합니다. ex) 1000");
-      return;
-    }
-    if (companyCards.includes(selectedCompanyCards.co_cd)) {
-      alert("이미 존재합니다.");
+      this.DouzoneContainer.current.handleSnackbarOpen('회사코드를 입력해 주세요.', 'error');
       return;
     }
     if (!selectedCompanyCards.co_nm) {
-      alert("회사이름을 입력해 주세요.");
+      this.DouzoneContainer.current.handleSnackbarOpen('회사명을 입력해 주세요.', 'error');
       return;
     }
+    if (selectedCompanyCards.co_cd.length <= 3 || selectedCompanyCards.co_cd.length >= 5) {
+      this.DouzoneContainer.current.handleSnackbarOpen("회사코드는 4자이어야 합니다. ex) 1000", 'error');
+      return;
+    }
+    if (companyCards.includes(selectedCompanyCards.co_cd)) {
+      this.DouzoneContainer.current.handleSnackbarOpen('이미 존재합니다.', 'error');
+      return;
+    }
+    
 
     if (selectedRead === "Y") {
       try {
@@ -220,6 +222,7 @@ class Acc1013 extends Component {
       } catch (error) {
         console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
         console.error(error);
+        //같은 회사 코드 등 입력했을경우
         this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
         console.log("회사등록(DB) 중에 오류발생");
       }
@@ -324,15 +327,34 @@ class Acc1013 extends Component {
     });
   };
 
-  //강제로전송..
-  handleDataChange(value) {
-    this.setState({
-      co_cd: value.co_cd,
-      // adr_zp: value.adr_zp,
-      // adr_inp: value.adr_inp,
-      // adr_etc: value.adr_etc,
-    });
+  //서치 콜백  
+  searchCallback = {
+    handleCallBackData: (code) => {
+      this.setState({ co_cd: code, use_yn:'' });
+    },
   }
+
+  /* 조회 했을 때 기능 */
+  handleSearch = async () => {
+    const { selectedCompanyCards, searchCom } = this.state;
+    console.log("@#@#searchCOm 은? "+JSON.stringify(searchCom))
+    console.log("handleSearch 기능 실행!!");
+    try {
+      const queryString = `?co_cd=${this.state.co_cd || ""}&use_yn=${searchCom?.defaultUse || ""}`;
+      const response = await getByQueryString(`/company/getSearchData${queryString}`);
+      console.log(response.data);
+      this.setState({
+        selectedCompanyCards: response.data,
+        content: response.data,
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    
+  };
+
+
 
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
   handleToggleAllCheckboxes = () => {
@@ -584,6 +606,14 @@ class Acc1013 extends Component {
     }));
   };
 
+  handleDefaultUseChange = (value) => {
+    this.setState((prevState) => ({
+      searchCom: {
+        ...prevState.searchCom,
+        defaultUse: value,
+      },
+    }));
+  };
 
   // 회사 카드리스트를 그려줄 함수
   onCardItemDraw = () => {
@@ -721,6 +751,10 @@ class Acc1013 extends Component {
                 companyCards={companyCards}
                 onInputChange={this.handleInputChange}
                 handleSaveButton={this.handleSaveButton}
+                handleDefaultUseChange={this.handleDefaultUseChange}
+                handleSearch={this.handleSearch}
+                callback={this.searchCallback}
+                searchCom={this.state.searchCom}
               ></Acc1013Search>
 
               <div style={{ display: "flex" }}>

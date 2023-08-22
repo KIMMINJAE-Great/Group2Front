@@ -528,7 +528,7 @@ class Acc1012 extends Component {
 
     console.log("handleSearch 기능 실행!!");
     try {
-      const queryString = `?tr_cd=${searchSt.tr_cd || ""}&tr_nm=${searchSt.tr_nm || ""}&tr_fg=${searchSt.tr_fg || ""}`;
+      const queryString = `?tr_cd=${this.state.tr_cd || searchSt.tr_cd ||  ""}&tr_nm=${searchSt.tr_nm || ""}&tr_fg=${searchSt.tr_fg || ""}`;
       const response = await getByQueryString(`/tradeManagement/getSearchData${queryString}`);
       console.log(response.data);
       this.setState({
@@ -540,6 +540,13 @@ class Acc1012 extends Component {
       console.log(error);
     }
   };
+
+  //서치 콜백  
+  searchCallback = {
+    handleCallBackData: (code) => {
+      this.setState({ tr_cd: code, searchSt:"",tr_fg:"" },() => {console.log("@#@#tr_cd: "+code)});
+    },
+  }
 
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
   handleToggleAllCheckboxes = () => {
@@ -705,6 +712,7 @@ class Acc1012 extends Component {
               handleUwChange={this.handleUwChange}
 
               handleSearch={this.handleSearch}
+              callback={this.searchCallback}
             >
 
             </Acc1012Search>

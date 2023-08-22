@@ -59,20 +59,26 @@ class Acd1010Search extends Component {
   };
 
   carSearch = async () => {
-    const { lease_yn } = this.state;
+    const { lease_yn, car_cd} = this.state;
 
     try {
-      const queryString = `?lease_yn=${lease_yn || ""}`;
+      const queryString = `?car_cd=${car_cd || ""}&lease_yn=${lease_yn || ""}`;
       const response = await getByQueryString(`/regcar/carsearch${queryString}`);
       const carCards = response.data;
       console.log(carCards)
+      console.log("response.data가 궁금해")
       this.props.carSearch(carCards);
       // this.clearFields();
     } catch (error) {
       console.log(error);
     }
   };
-
+  //서치 콜백  //car_cd 넘어옴 확인
+  searchCallback = {
+    handleCallBackData: (code) => {
+      this.setState({ car_cd: code, lease_yn:''});
+    },
+  }
 
   render() {
     return (
@@ -88,7 +94,7 @@ class Acd1010Search extends Component {
             xs={1}
             sx={{ backgroundColor: "white", paddingLeft: "5px", marginTop: '2px' }}
           >
-            <CodePickerManager helpId={"CarCodePicker"} variant="outlined" />
+            <CodePickerManager helpId={"CarCodePicker"} variant="outlined" callback={this.searchCallback} />
           </Grid>
 
 

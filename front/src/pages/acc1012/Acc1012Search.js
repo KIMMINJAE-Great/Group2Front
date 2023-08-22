@@ -84,7 +84,7 @@ class Acc1012Search extends Component {
             <Grid item xs={12} display="flex" alignItems="center">
               <Typography variant="subtitle1" sx={{ marginLeft: 4, marginRight: 0, fontSize: '13px', fontWeight: 'bold', width: "5%" }}  >거래처분류</Typography>
 
-              <CodePickerManager helpId={'TradeCodePicker'} variant="outlined" sendData={this.props.sendData} handleToAcc1012FromCodePicker={this.props.handleToAcc1012FromCodePicker} />
+              <CodePickerManager helpId={'TradeCodePicker'} variant="outlined" callback={this.props.callback} />
 
               <Typography variant="subtitle1" sx={{ marginLeft: 8.5, fontSize: '13px', fontWeight: 'bold' }} >사용여부</Typography>
               <Select

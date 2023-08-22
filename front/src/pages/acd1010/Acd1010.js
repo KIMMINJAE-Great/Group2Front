@@ -319,6 +319,8 @@ class Acd1010 extends Component {
     this.handleCloseModal();
   };
 
+  
+
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
   handleToggleAllCheckboxes = () => {
     this.setState((prevState) => {
@@ -598,7 +600,7 @@ class Acd1010 extends Component {
           handleConfirm={this.handleDeleteClick}
           showDelete={''}
           message="정말로 차량 정보를 삭제하시겠습니까?">
-          <Acd1010Search carSearch={this.handleRegcarCards}></Acd1010Search>
+          <Acd1010Search carSearch={this.handleRegcarCards} ></Acd1010Search>
 
           <form onSubmit={this.handleSaveClick}>
             <div>
