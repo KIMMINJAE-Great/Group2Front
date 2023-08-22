@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Button, Grid, IconButton, InputAdornment, TextField } from '@mui/material';
+
 import axios from 'axios';
 
 
@@ -94,11 +94,7 @@ class MileageSeachTextField extends Component {
       selectedLatitude: latitude,
     }, () => {
       this.onSendCoordData(); // 위도 경도를 부모로 보내는 코드 실행!
-      // //확인 
-      // console.log("seletedboundary :" + this.state.selectedBoundary);
-      // console.log("seletedaddr :" + this.state.selectedAddress);
-      // console.log("selectedLongitude :" + this.state.selectedLongitude); 
-      // console.log("selectedLatitude :" + this.state.selectedLatitude);
+
     }
     );
   };
@@ -113,64 +109,66 @@ class MileageSeachTextField extends Component {
   
       return (
         <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        <TextField 
-          name="endFieldValue"
-          value={query}
-          style={{ marginBottom: '3px' }}
-          onChange={this.handleInputChange}
-          inputProps={{style: { height: '5px', fontSize: '12px' }}}
-          InputProps={{ 
-            style: { height: '30px', width: '130px' },
-            endAdornment: (
-              <InputAdornment position="end" style={{ marginRight: 0 }}>
-                <IconButton 
-                  color="black" 
-                  size="small" 
-                  sx={{ borderRadius: 0,  width: '30px', height: '30px' }}
-                  onClick={this.handleGetAddrAndCoord}
-                >
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-        {/* 선택한 주소를 표시하는 텍스트 필드 */}
-        <TextField
-        fullWidth
-          name="selectedAddress"
-          value={selectedAddress}
-          onChange={this.handleSelectedAddressChange}
-          onFocus={this.toggleDropdown}
-          inputProps={{style: { height: '5px', fontSize: '12px' }}}
-          InputProps={{ 
-            style: { height: '30px' },
-          }}
-        />
-        {/* 드롭다운 목록 */}
-        {isDropdownVisible && addresses.length > 0 && (
-          <div style={{ 
-            border: '1px solid #ccc', 
-            position: 'absolute', 
-            zIndex: 1000, 
-            background: 'white', 
-            width: '128px', 
-            // height: '20px', 
-            maxHeight: '150px',
-            overflowY: 'auto',
-            top: '30px',
-          }}>
-            {addresses.map((item, index) => (
-              <div
-                key={index}
-                style={{ padding: '10px', cursor: 'pointer', fontSize: '12px', }}
-                onClick={() => this.selectAddress(item.address, item.boundary)}
+          <Grid container xs={12}>
+            <Grid item xs={10}>
+              <TextField 
+              name="endFieldValue"
+              value={query}
+              style={{ marginBottom: '3px' }}
+              onChange={this.handleInputChange}
+              inputProps={{style: { height: '5px', fontSize: '12px' }}}
+              InputProps={{ 
+                style: { height: '30px', width: '355px' },
+                
+              }}
+              />
+            </Grid>
+            <Grid item xs={1.8}>
+              <Button 
+              onClick={this.handleGetAddrAndCoord}
+              variant='outlined'
+              style={{marginLeft:'5px', marginBottom:'2px' , }}
               >
-                {item.address}
+                찾기              
+              </Button>
+            </Grid>
+          </Grid>
+            {/* 선택한 주소를 표시하는 텍스트 필드 */}
+            <TextField
+            fullWidth
+              name="selectedAddress"
+              value={selectedAddress}
+              onChange={this.handleSelectedAddressChange}
+              onFocus={this.toggleDropdown}
+              inputProps={{style: { height: '5px', fontSize: '12px' }}}
+              InputProps={{ 
+                style: { height: '30px' },
+              }}
+            />
+            {/* 드롭다운 목록 */}
+            {isDropdownVisible && addresses.length > 0 && (
+              <div style={{ 
+                border: '1px solid #ccc', 
+                position: 'absolute', 
+                zIndex: 1000, 
+                background: 'white', 
+                width: '128px', 
+                // height: '20px', 
+                maxHeight: '150px',
+                overflowY: 'auto',
+                top: '30px',
+              }}>
+                {addresses.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{ padding: '10px', cursor: 'pointer', fontSize: '12px', }}
+                    onClick={() => this.selectAddress(item.address, item.boundary)}
+                  >
+                    {item.address}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
       </div>
       );
     }

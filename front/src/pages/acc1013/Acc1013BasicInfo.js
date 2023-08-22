@@ -10,23 +10,17 @@ import Postcode from "../../components/commons/Postcode";
 import dayjs from "dayjs";
 
 import {
-  Button,
-  Card,
-  CardContent,
-  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
   MenuItem,
   Radio,
   RadioGroup,
   Select,
   TextField,
   Typography,
-
 } from "@mui/material";
-import { color, height } from "@mui/system";
+
 
 
 
@@ -119,7 +113,6 @@ handleReg_nbChange = (input) => {
 
 
         <div style={{ display: "flex", float: "left" }}>
-
           <div style={{ flex: 1.5, marginRight: "15px" }}>
             <div>
               <div
@@ -132,12 +125,6 @@ handleReg_nbChange = (input) => {
                 }}
               >
                 <p style={{ height: '3px', marginTop: '5px' }}>기본정보</p>
-                <div>
-
-                  {/* <button onClick={this.props.handleDeleteButton}>삭제</button> */}
-
-
-                </div>
               </div>
               <hr style={{ height: '3px', color: 'black' }} />
             </div>
@@ -180,10 +167,8 @@ handleReg_nbChange = (input) => {
                           </RadioGroup>
                         </FormControl>
                       </Grid>
-
                     </Grid>
                   </Grid>
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 2번째 */}
@@ -202,7 +187,6 @@ handleReg_nbChange = (input) => {
                       </Grid>
                     </Grid>
                   </Grid>
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 3번째 */}
@@ -236,7 +220,6 @@ handleReg_nbChange = (input) => {
                     </Grid>
                   </Grid>
 
-
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 4번째 */}
                     <Grid container>
@@ -251,10 +234,8 @@ handleReg_nbChange = (input) => {
                           variant="outlined" />
                       </Grid>
                       <Grid
-                        item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >
-                        
+                        item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >                        
                       </Grid>
-
                     </Grid>
                   </Grid>
 
@@ -284,6 +265,7 @@ handleReg_nbChange = (input) => {
                       </Grid>
                     </Grid>
                   </Grid>
+
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 6번째 */}
                     <Grid container>
@@ -308,7 +290,6 @@ handleReg_nbChange = (input) => {
                       </Grid>
                     </Grid>
                   </Grid>
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 7번째 */}
@@ -348,10 +329,8 @@ handleReg_nbChange = (input) => {
                           value={selectedCompanyCards?.cp_no || ""}
                           variant="outlined" />
                       </Grid>
-
                     </Grid>
                   </Grid>
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 8번째 */}
@@ -371,7 +350,6 @@ handleReg_nbChange = (input) => {
                             style={{ width: "100%" }}
                             slotProps={{ textField: { size: 'small' } }} />
                         </LocalizationProvider>
-
                       </Grid>
                       <GridItem3 item xs={2} style={{ marginRight: "5px" }} >
                         <FieldName variant="subtitle1">개/폐업일</FieldName>
@@ -405,13 +383,9 @@ handleReg_nbChange = (input) => {
                             style={{ width: "100%" }}
                             slotProps={{ textField: { size: 'small' } }} />
                         </LocalizationProvider>
-
                       </Grid>
-
-
                     </Grid>
                   </Grid>
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 9번째 */}
@@ -434,14 +408,8 @@ handleReg_nbChange = (input) => {
                           value={selectedCompanyCards?.res_nb || ""}
                           variant="outlined" />
                       </Grid>
-                      
-
-
                     </Grid>
                   </Grid>
-
-
-
 
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 10번째 */}
@@ -461,8 +429,6 @@ handleReg_nbChange = (input) => {
                           <Grid xs={0} variant="outlined" style={{ marginLeft: '15px', marginTop: '5px', }}>
                             <Postcode onComplete={this.props.onPostComplete} />
                           </Grid>
-
-
                         </Grid>
                         <Grid item xs={12} container>
                           <Grid
@@ -470,7 +436,6 @@ handleReg_nbChange = (input) => {
                             <MyTextField onChange={(e) => this.props.handleAdrInpChange(e.target.value)}
                               value={selectedCompanyCards?.adr_inp || ""}
                             />
-
                           </Grid>
                           <Grid
                             item xs={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
@@ -482,6 +447,7 @@ handleReg_nbChange = (input) => {
                       </Grid>
                     </Grid>
                   </Grid>
+
                   <Grid container item xs={12} sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}>
                     {/* 12번째 */}
                     <Grid container>
@@ -507,8 +473,7 @@ handleReg_nbChange = (input) => {
                             onChange={(value) => { this.props.handleAcDtChange(value); }}
                             slotProps={{ textField: { size: 'small' } }} />
                         </LocalizationProvider>
-                      </Grid>
-                      
+                      </Grid>                     
                     </Grid>
                   </Grid>
 
@@ -526,8 +491,6 @@ handleReg_nbChange = (input) => {
                       </Grid>
                     </Grid>
                   </Grid>
-
-
                 </Grid>
               </Box>
               <div>
@@ -544,12 +507,9 @@ handleReg_nbChange = (input) => {
                 <hr style={{ height: '3px', color: 'black' }} />
               </div>
             </div>
-
           </div>
         </div>
       </div>
-
-
     );
   }
 }

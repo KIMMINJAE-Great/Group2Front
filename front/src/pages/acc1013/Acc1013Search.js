@@ -2,7 +2,6 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import CodePickerManager from '../../components/codepicker/CodePickerManager';
-
 import {
   Button,
   MenuItem,
@@ -10,8 +9,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
-
 
 //사용자정의함수로 만듦
 const GridItem1 = styled(Grid)(({ theme }) => ({
@@ -52,11 +49,7 @@ const FieldName = styled(Typography)(({ theme }) => ({
 
 class Acc1013Search extends React.Component {
 
-
-
-
   render() {
-
 
     return (
       <div>
@@ -116,6 +109,7 @@ class Acc1013Search extends React.Component {
             >
               <Select
                 value={this.props.defaultUse}
+                name="defaultUse"
                 onChange={this.props.onInputChange}
                 variant="outlined"
                 style={{ width: "100%", height: "36px" }}
