@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { DataGrid, GridToolbar, GridCellParams } from '@mui/x-data-grid';
 import DouzoneContainer from './../../components/douzonecontainer/DouzoneContainer';
-import { del, get, post, update } from '../../components/api_url/API_URL';
+import { del, get, getByQueryString, post, update } from '../../components/api_url/API_URL';
 import { Box, Checkbox, Menu, MenuItem, Select } from '@mui/material';
 import Ace1010Search from './Ace1010Search';
 import './ace1010.css'
@@ -42,6 +42,8 @@ class Ace1010 extends Component {
       // 차량에 대해 운행기록부가 저장되면 다시 데이터를 불러오기 위한 state
       selectedRowId: '',
 
+      selectedRow: '',
+
 
       //  출발구분 용
       selectedRowIdFg: '',
@@ -70,6 +72,10 @@ class Ace1010 extends Component {
       // 일단 플래그
       flag: false,
 
+      // 즐겨찾기 목록 
+      bookmarks: [],
+      bookmarkShowrows: [],
+      bookmarkTempRow: null,
       // Spinner
       loading: false,
 
@@ -275,6 +281,7 @@ class Ace1010 extends Component {
       selectedRowId: params.id,
       selectedRowRmkdc: params.row.rmk_dc,
       selectedRowUseFg: params.row.use_fg,
+      selectedRow: params.row,
       // editingCellName : 
     })
 
@@ -289,10 +296,12 @@ class Ace1010 extends Component {
       editedCell: params.field,
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
+      selectedRow: params.row,
 
     }, () => {
       if (event.key === 'Enter' && params.field === 'after_km') {
         this.saveCellKeyDown(params);
+
       }
     })
 
@@ -308,7 +317,21 @@ class Ace1010 extends Component {
     this.setState({
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
+      selectedRow: params.row,
     });
+  }
+  handleModalNotConfirm = () => {
+    this.setState({
+      showModal: false,
+      inputValueforfg: '',
+      bookmark: [],
+      bookmarkShowrows: [],
+    }, () => {
+
+      console.log('모달에서 입력 끝남')
+
+    });
+
   }
   handleRmkDcChange = (value) => {
     // 현재 상태의 rows 배열을 복사
@@ -330,21 +353,218 @@ class Ace1010 extends Component {
     }
   }
 
-  processRowUpdatefunc = (updatedRow, originalRow) => {
+  //  // 모달을 띄우기
+  //  showModalAndWait = async() => {
+
+  //   const user = JSON.parse(sessionStorage.getItem("user"));
+  //   const emp_cd = user.emp_cd;
+  //   const co_cd = "1000";
+
+
+  //     console.log('모달이 생성되었음');
+
+  //     try {
+  //       const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
+  //       const response = await getByQueryString(
+  //         `/ace1010/abizbookmark${queryString}`
+  //       );
+  //       this.setState(
+  //         {
+  //           bookmarks: response.data,
+  //           showModal : true,
+  //         },
+  //         () => {
+  //           console.log(this.state.bookmarks);
+  //           this.getbookmarks(this.state.bookmarks,user);
+  //         }
+  //       );
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+
+
+  // };
+
+  getbookmarks = (bookmarks, user) => {
+
+    const empcd = user.emp_cd;
+    const cocd = "1000";
+
+    const dataWithIds = bookmarks.map((item, index) => {
+      return {
+        ...item,
+        co_cd: cocd,
+        emp_cd: empcd,
+        id: index + 1,
+      };
+    });
+    this.setState({ bookmarkShowrows: dataWithIds }, () => {
+      console.log(this.state.bookmarkShowrows)
+    });
+
+
+  }
+
+  // 모달을 띄우기
+  showModalAndWait = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const emp_cd = user.emp_cd;
+    const co_cd = "1000";
+
+
+    console.log('모달이 생성되었음');
+
+    try {
+      const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
+      const response = await getByQueryString(
+        `/ace1010/abizbookmark${queryString}`
+      );
+      this.setState(
+        {
+          bookmarks: response.data,
+          showModal: true,
+        },
+        () => {
+          console.log(this.state.bookmarks);
+          this.getbookmarks(this.state.bookmarks, user);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+
+
+    return new Promise((resolve, reject) => {
+      this.resolveShowModal = resolve;  // resolve 함수를 저장
+      this.setState({ showModal: true });
+      console.log('모달이 생성되었음');
+    });
+  }
+
+  //  모달 확인버튼 클릭 후 
+  handleModalConfirm = (bookmarkparams) => {
+    console.log('행 나와아아아앙')
+    console.log(bookmarkparams)
+
+    this.setState({ bookmarkTempRow: bookmarkparams })
+
+    this.setState({
+      showModal: false,
+    }, () => {
+      if (this.resolveShowModal) {
+        this.resolveShowModal(); // 저장된 resolve 함수 실행
+        this.resolveShowModal = null; // resolve 함수 초기화
+        console.log('모달에서 입력 끝남')
+      }
+    });
+  };
+
+  handleModalNotConfirm = () => {
+    this.setState({
+      showModal: false,
+      inputValueforfg: '',
+    }, () => {
+      if (this.resolveShowModal) {
+        this.resolveShowModal();
+        this.resolveShowModal = null;
+        console.log('모달에서 입력 끝남')
+      }
+    });
+
+  }
+
+
+
+
+  processRowUpdatefunc = async (updatedRow, originalRow) => {
     console.log('프로세스 실행')
+    console.log(originalRow)
     console.log(updatedRow)
     console.log(updatedRow.id)
-    console.log(updatedRow.seq_nb)
+    // this.setState({ selectedRow: updatedRow }, () => {
+    //   console.log(this.state.selectedRow); // 업데이트 된 상태를 확인하기 위해 콜백 내에서 확인
+    // });
+
+
 
 
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
     const cellFieldName = this.state.editedCell;
 
+    // 출발구분, 도착구분
+    if (updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')) {
 
+      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '직접입력') {
+        console.log('모달뜨기 직전= 출발구분')
+        await this.showModalAndWait();
+
+        const tmp = this.state.bookmarkTempRow;
+
+        updatedRow = {
+          ...updatedRow,
+
+          use_fg: tmp.use_fg,
+          start_time: tmp.start_time,
+          end_time: tmp.end_time,
+          start_fg: tmp.start_fg,
+          start_addr: tmp.start_addr,
+          end_fg: tmp.end_fg,
+          end_addr: tmp.end_addr,
+          mileage_km: tmp.mileage_km,
+
+
+        }
+        console.log('프로세스에서 updatedrow 북마크 확힌')
+        console.log(this.state.bookmarkTempRow)
+        console.log(updatedRow)
+        // console.log('즐겨찾기 적용 안된 tmpeUpdatedRow')
+        // console.log(tempUpdateRow)
+
+
+        // let updatedTempRow = {
+        //   ...tempUpdateRow,
+
+        //   test: 'test',
+        //   use_fg: bookmarkparams.use_fg,
+        //   start_time: bookmarkparams.start_time,
+        //   end_time: bookmarkparams.end_time,
+        //   start_fg: bookmarkparams.start_fg,
+        //   start_addr: bookmarkparams.start_addr,
+        //   end_fg: bookmarkparams.end_fg,
+        //   end_addr: bookmarkparams.end_addr,
+        //   mileage_km: bookmarkparams.mileage_km,
+        // };
+
+        // console.log('즐겨찾기 적용된 tmpeUpdatedRow')
+        // console.log(updatedTempRow)
+        // console.log('selectedRow의 아이')
+        // 이제 변경된 updatedTempRow를 rows 배열에서 찾아 업데이트합니다.
+        // const updatedRows = this.state.rows.map((row) =>
+        //   row.id === tempUpdateRow.id ? updatedTempRow : row
+
+        // );
+        // console.log(this.state.rows)
+        // console.log(updatedRows)
+
+
+      }
+    }
+
+    // if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
+
+    //   if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '직접입력') {
+    //     console.log('모달뜨기 직전 도착구분')
+    //     await this.showModalAndWait();
+
+    //     //updatedRow.end_fg = this.state.inputValueforfg;
+
+    //   }
+    // }
+
+    //const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
     const mileageKm = Number(updatedRow.mileage_km);
     const updatedRows = [...this.state.rows];
-    console.log('updatedRows의 row의 id 타입')
-    console.log(typeof updatedRows[0].id) // row의 id는 number이다. 
     //  주행전, 후 자동 입력
     if (cellFieldName === 'mileage_km') {
 
@@ -414,7 +634,7 @@ class Ace1010 extends Component {
 
 
     this.setState({
-      // rows: updatedRows,
+      //rows: updatedRows,
       inputValueforfg: ''
     })
 
@@ -769,6 +989,7 @@ class Ace1010 extends Component {
   }
 
   columns = () => {
+
     return [
       {
         field: 'id', headerName: 'No', width: 30, headerAlign: 'center', align: 'center', sortable: false, renderHeader: (params) => (
@@ -846,6 +1067,7 @@ class Ace1010 extends Component {
         ),
 
       },
+
       {
         field: 'start_time',
         headerName: '출발시간',
@@ -1034,6 +1256,11 @@ class Ace1010 extends Component {
         },
       },
     ];
+
+
+
+
+
   }
 
 
@@ -1153,6 +1380,16 @@ class Ace1010 extends Component {
           />
 
         </Box>
+        {this.state.showModal && (
+          <ModalInput
+            onCancel={this.handleModalNotConfirm}
+            showModal={this.state.showModal}
+            rows={this.state.bookmarkShowrows}
+            onConfirm={this.handleModalConfirm}
+          //updatedRowFromBookMark={this.updatedRowFromBookMark()}
+
+          />
+        )}
 
 
 
