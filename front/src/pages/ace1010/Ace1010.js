@@ -549,6 +549,63 @@ class Ace1010 extends Component {
 
 
       }
+      
+      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '자택'){
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        const emp_cd = user.emp_cd;
+        const co_cd = "1000";
+        const start_fg = updatedRow.start_fg;
+
+
+         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+         console.log(response.data);
+         const tmp = response.data;
+
+         updatedRow = {
+           ...updatedRow,
+
+           start_fg: tmp.start_fg,
+           start_addr: tmp.start_addr,
+        
+ 
+         }
+         console.log('프로세스에서 updatedrow 북마크 확힌')
+         console.log(this.state.bookmarkTempRow)
+         console.log(updatedRow)
+
+         return updatedRow;
+      }
+      
+      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '회사'){
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        const emp_cd = user.emp_cd;
+        const co_cd = "1000";
+        const start_fg = updatedRow.start_fg;
+
+         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+         console.log(response.data);
+         const tmp = response.data;
+
+         updatedRow = {
+           ...updatedRow,
+ 
+     
+           start_fg: tmp.start_fg,
+           start_addr: tmp.start_addr,
+    
+ 
+ 
+         }
+         console.log('프로세스에서 updatedrow 북마크 확힌')
+         console.log(this.state.bookmarkTempRow)
+         console.log(updatedRow)
+
+         return updatedRow;
+
+
+      }
     }
 
     // if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
