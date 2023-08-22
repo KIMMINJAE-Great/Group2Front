@@ -518,45 +518,19 @@ class Ace1010 extends Component {
         console.log('프로세스에서 updatedrow 북마크 확힌')
         console.log(this.state.bookmarkTempRow)
         console.log(updatedRow)
-        // console.log('즐겨찾기 적용 안된 tmpeUpdatedRow')
-        // console.log(tempUpdateRow)
-
-
-        // let updatedTempRow = {
-        //   ...tempUpdateRow,
-
-        //   test: 'test',
-        //   use_fg: bookmarkparams.use_fg,
-        //   start_time: bookmarkparams.start_time,
-        //   end_time: bookmarkparams.end_time,
-        //   start_fg: bookmarkparams.start_fg,
-        //   start_addr: bookmarkparams.start_addr,
-        //   end_fg: bookmarkparams.end_fg,
-        //   end_addr: bookmarkparams.end_addr,
-        //   mileage_km: bookmarkparams.mileage_km,
-        // };
-
-        // console.log('즐겨찾기 적용된 tmpeUpdatedRow')
-        // console.log(updatedTempRow)
-        // console.log('selectedRow의 아이')
-        // 이제 변경된 updatedTempRow를 rows 배열에서 찾아 업데이트합니다.
-        // const updatedRows = this.state.rows.map((row) =>
-        //   row.id === tempUpdateRow.id ? updatedTempRow : row
-
-        // );
-        // console.log(this.state.rows)
-        // console.log(updatedRows)
+ 
 
 
       }
-      
-      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '자택'){
+    //출발구분  
+      if(cellFieldName === 'start_fg'){
         const user = JSON.parse(sessionStorage.getItem("user"));
         const emp_cd = user.emp_cd;
         const co_cd = "1000";
         const start_fg = updatedRow.start_fg;
 
-
+        if(updatedRow.start_fg === '자택'){
+       
          const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
          const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
          console.log(response.data);
@@ -564,48 +538,115 @@ class Ace1010 extends Component {
 
          updatedRow = {
            ...updatedRow,
-
            start_fg: tmp.start_fg,
            start_addr: tmp.start_addr,
-        
- 
+      
          }
-         console.log('프로세스에서 updatedrow 북마크 확힌')
-         console.log(this.state.bookmarkTempRow)
-         console.log(updatedRow)
+        //  console.log('프로세스에서 updatedrow 북마크 확힌')
+        //  console.log(this.state.bookmarkTempRow)
+        //  console.log(updatedRow)
 
          return updatedRow;
+
+        }else if(updatedRow.start_fg === '회사'){
+        
+
+           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+           const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+           console.log(response.data);
+           const tmp = response.data;
+  
+           updatedRow = {
+             ...updatedRow,
+             start_fg: tmp.start_fg,
+             start_addr: tmp.start_addr,
+           
+           }
+          //  console.log('프로세스에서 updatedrow 북마크 확힌')
+          //  console.log(this.state.bookmarkTempRow)
+          //  console.log(updatedRow)
+  
+           return updatedRow;
+        }       
       }
-      
-      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '회사'){
+
+      //도착구분 
+      if(cellFieldName === 'end_fg'){
         const user = JSON.parse(sessionStorage.getItem("user"));
         const emp_cd = user.emp_cd;
         const co_cd = "1000";
-        const start_fg = updatedRow.start_fg;
+        const end_fg = updatedRow.end_fg;
 
-         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
-         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+        if(updatedRow.end_fg === '자택'){
+       
+         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&end_fg=${end_fg}`;
+         const response = await getByQueryString(`/ace1010/bookmarkendfg${queryString}`);
          console.log(response.data);
          const tmp = response.data;
 
          updatedRow = {
            ...updatedRow,
+           end_fg: tmp.end_fg,
+           end_addr: tmp.end_addr,
+      
+         }
+        //  console.log('프로세스에서 updatedrow 북마크 확힌')
+        //  console.log(this.state.bookmarkTempRow)
+        //  console.log(updatedRow)
+
+         return updatedRow;
+
+        }else if(updatedRow.end_fg === '회사'){
+        
+
+           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&end_fg=${end_fg}`;
+           const response = await getByQueryString(`/ace1010/bookmarkendfg${queryString}`);
+           console.log(response.data);
+           const tmp = response.data;
+  
+           updatedRow = {
+             ...updatedRow,
+             end_fg: tmp.end_fg,
+             end_addr: tmp.end_addr,
+           
+           }
+          //  console.log('프로세스에서 updatedrow 북마크 확힌')
+          //  console.log(this.state.bookmarkTempRow)
+          //  console.log(updatedRow)
+  
+           return updatedRow;
+        }       
+      }
+      
+      // if(cellFieldName === 'end_fg' && updatedRow.start_fg === '회사'){
+      //   const user = JSON.parse(sessionStorage.getItem("user"));
+      //   const emp_cd = user.emp_cd;
+      //   const co_cd = "1000";
+      //   const start_fg = updatedRow.start_fg;
+
+      //    const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+      //    const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+      //    console.log(response.data);
+      //    const tmp = response.data;
+
+      //    updatedRow = {
+      //      ...updatedRow,
  
      
-           start_fg: tmp.start_fg,
-           start_addr: tmp.start_addr,
+      //      start_fg: tmp.start_fg,
+      //      start_addr: tmp.start_addr,
     
  
  
-         }
-         console.log('프로세스에서 updatedrow 북마크 확힌')
-         console.log(this.state.bookmarkTempRow)
-         console.log(updatedRow)
+      //    }
+      //    console.log('프로세스에서 updatedrow 북마크 확힌')
+      //    console.log(this.state.bookmarkTempRow)
+      //    console.log(updatedRow)
 
-         return updatedRow;
+      //    return updatedRow;
 
 
-      }
+      // }
     }
 
     // if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
