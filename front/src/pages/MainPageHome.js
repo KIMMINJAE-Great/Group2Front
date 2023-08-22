@@ -5,7 +5,7 @@ class MainPageHome extends Component {
     return (
       <img src={LoginImage}
         alt=""
-        style={{ overflowY: 'auto', marginLeft: '200px', marginTop: '20px', width: '60%', height: 'auto', maxHeight: '100%', objectFit: 'cover' }}
+        style={{ marginLeft: '200px', width: '1090px', }}
       />
     )
   }

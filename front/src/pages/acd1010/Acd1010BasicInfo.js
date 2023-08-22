@@ -32,7 +32,7 @@ const MyTextField = styled(TextField)(({ theme }) => ({
 
 const StyledIconButton = styled(IconButton)(() => ({
   backgroundColor: '#F0F0F0', /* 밝은 회색 배경색 */
-  
+
   borderRadius: '50%',
   marginLeft: 10,
   marginTop: -7,
@@ -43,19 +43,19 @@ class Acd1010BasicInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-  //     regCarCards: [],
-  //     regCarCardData: [],
+      //     regCarCards: [],
+      //     regCarCardData: [],
     }
   }
-  
+
 
   render() {
     return (
 
       <div>
         <div style={{ marginRight: "15px" }}>
-       
-          
+
+
           {/* 박스 영역 끝 */}
           {/* 텍스트필드 무리 시작 */}
           <div>
@@ -69,37 +69,37 @@ class Acd1010BasicInfo extends Component {
                     sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}
                   >
                     {/* 1번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>자산계정</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>자산계정</Typography>
                     </Grid>
-                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center"}} >
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <MyTextField
-                        sx={{ width: '100%', ml: 1, mt: 0, mb: 0,  }}
+                        sx={{ width: '100%', ml: 1, mt: 0, mb: 0, }}
                         variant="outlined"
                         size="small"
                         style={{ borderRadius: '0px' }}
-                        inputProps={{ style: { height: '12px',backgroundColor: '#FFF0F5' } }}
+                        inputProps={{ style: { height: '12px', backgroundColor: '#FFF0F5' } }}
                         type="text"
                         name='acct_cd'
-                        onChange={this.props.onInputChange} />        
+                        onChange={this.props.onInputChange} />
                     </Grid>
                     {/* 2번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>자산정보</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>자산정보</Typography>
                     </Grid>
-                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center"}} >
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <MyTextField
                         sx={{ width: '100%', ml: 1, mt: 1, mb: 1, }}
                         variant="outlined"
                         size="small"
-                        inputProps={{ style: { height: '12px',backgroundColor: '#FFF0F5' } }}
+                        inputProps={{ style: { height: '12px', backgroundColor: '#FFF0F5' } }}
                         type="text"
                         name='asset_cd'
                         onChange={this.props.onInputChange} />
                     </Grid>
                   </Grid>
                 </Grid>
-                
+
                 <Grid
                   container
                   item
@@ -108,11 +108,11 @@ class Acd1010BasicInfo extends Component {
                 >
                   {/* 3번 째 */}
                   <Grid container>
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>회계단위</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>회계단위</Typography>
                     </Grid>
                     <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >  
+                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <MyTextField
                         sx={{ width: '100%', ml: 1, mt: 1, mb: 1 }}
                         variant="outlined"
@@ -123,8 +123,8 @@ class Acd1010BasicInfo extends Component {
                         onChange={this.props.onInputChange} />
                     </Grid>
                     {/* 4번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>차량코드</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>차량코드</Typography>
                     </Grid>
                     <Grid
                       item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
@@ -132,7 +132,7 @@ class Acd1010BasicInfo extends Component {
                         sx={{ width: '100%', ml: 1, mt: 1, mb: 1, }}
                         variant="outlined"
                         size="small"
-                        inputProps={{ style: { height: '12px' ,backgroundColor: '#FFF0F5'} }}
+                        inputProps={{ style: { height: '12px', backgroundColor: '#FFF0F5' } }}
                         type="text"
                         name='car_cd'
                         onChange={this.props.onInputChange} />
@@ -148,31 +148,31 @@ class Acd1010BasicInfo extends Component {
                 >
                   {/* 5번 째 */}
                   <Grid container>
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>차량번호</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>차량번호</Typography>
                     </Grid>
                     <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >                    
+                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <MyTextField
-                          sx={{ width: '100%', ml: 1, mt: 1, mb: 1,  }}
-                          variant="outlined"
-                          size="small"
-                          inputProps={{ style: { height: '12px',backgroundColor: '#FFF0F5' } }}
-                          type="text"
-                          name='car_nb'
-                          onChange={this.props.onInputChange} />
-                    </Grid>            
-                    {/* 6번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>차량명</Typography>
-                    </Grid>
-                    <Grid
-                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >  
-                      <MyTextField
-                        sx={{ width: '100%', ml: 1, mt: 1, mb: 1,  }}
+                        sx={{ width: '100%', ml: 1, mt: 1, mb: 1, }}
                         variant="outlined"
                         size="small"
-                        inputProps={{ style: { height: '12px',backgroundColor: '#FFF0F5' } }}
+                        inputProps={{ style: { height: '12px', backgroundColor: '#FFF0F5' } }}
+                        type="text"
+                        name='car_nb'
+                        onChange={this.props.onInputChange} />
+                    </Grid>
+                    {/* 6번 째 */}
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>차량명</Typography>
+                    </Grid>
+                    <Grid
+                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                      <MyTextField
+                        sx={{ width: '100%', ml: 1, mt: 1, mb: 1, }}
+                        variant="outlined"
+                        size="small"
+                        inputProps={{ style: { height: '12px', backgroundColor: '#FFF0F5' } }}
                         type="text"
                         name='car_nm'
                         onChange={this.props.onInputChange} />
@@ -186,38 +186,38 @@ class Acd1010BasicInfo extends Component {
                   xs={12}
                   sx={{ borderBottom: "1px solid lightgray", padding: "4px" }}
                 >
-                {/* 7번 째 */}
-                <Grid container>
-                  <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                    <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>취득일자</Typography>
+                  {/* 7번 째 */}
+                  <Grid container>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>취득일자</Typography>
                     </Grid>
                     <Grid
-                    item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <LocalizationProvider dateAdapter={AdapterDayjs} style>
-                      <div style={{ padding: "5px 0" }}>
-                        <DatePicker
-                          name="opn_dt"
-
-                          onChange={(date) => this.props.onInputChange({ target: { name: 'get_dt', value: date } })}
-                          variant="outlined"
-                          InputProps={{ style: { height: 30, padding: '0 10px' } }}
-                          style={{ width: "100%" }}
-                          slotProps={{ textField: { size: 'small' } }} />
-                      </div>
-                    </LocalizationProvider>
-                  </Grid>
-                  {/* 8번 째 */}
-                  <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                    <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>처분일자</Typography>
-                  </Grid>
-                  <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <LocalizationProvider dateAdapter={AdapterDayjs} style>
-                      <div style={{ padding: "5px 0",width: "45%" }}>
-                        <DatePicker
-                          name="opn_dt"
-                          onChange={(date) => this.props.onInputChange({ target: { name: 'disposal_dt', value: date } })}
-                          variant="outlined"
-                          InputProps={{ style: { height: 30, padding: '0 10px', } }}
+                      item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                      <LocalizationProvider dateAdapter={AdapterDayjs} style>
+                        <div style={{ padding: "5px 0" }}>
+                          <DatePicker
+                            name="opn_dt"
+                            requierd
+                            onChange={(date) => this.props.onInputChange({ target: { name: 'get_dt', value: date } })}
+                            variant="outlined"
+                            InputProps={{ style: { height: 30, padding: '0 10px' } }}
+                            style={{ width: "100%" }}
+                            slotProps={{ textField: { size: 'small' } }} />
+                        </div>
+                      </LocalizationProvider>
+                    </Grid>
+                    {/* 8번 째 */}
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>처분일자</Typography>
+                    </Grid>
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                      <LocalizationProvider dateAdapter={AdapterDayjs} style>
+                        <div style={{ padding: "5px 0", width: "45%" }}>
+                          <DatePicker
+                            name="opn_dt"
+                            onChange={(date) => this.props.onInputChange({ target: { name: 'disposal_dt', value: date } })}
+                            variant="outlined"
+                            InputProps={{ style: { height: 30, padding: '0 10px', } }}
                             style={{ width: "100%" }}
                             slotProps={{ textField: { size: 'small' } }} />
                         </div>
@@ -235,10 +235,10 @@ class Acd1010BasicInfo extends Component {
                 >
                   {/* 9번 째 */}
                   <Grid container>
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>임차구분</Typography>
-                      </Grid>
-                      <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>임차구분</Typography>
+                    </Grid>
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <Select
                         sx={{ width: '100%', ml: 1, height: '75%' }}
                         variant="outlined"
@@ -255,8 +255,8 @@ class Acd1010BasicInfo extends Component {
                       </Select>
                     </Grid>
                     {/* 10번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>임차기간</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>임차기간</Typography>
                     </Grid>
                     <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <LocalizationProvider dateAdapter={AdapterDayjs} style>
@@ -274,7 +274,7 @@ class Acd1010BasicInfo extends Component {
                     </Grid>
                   </Grid>
                 </Grid>
-                
+
 
                 <Grid
                   container
@@ -284,11 +284,11 @@ class Acd1010BasicInfo extends Component {
                 >
                   {/* 11번 째 */}
                   <Grid container>
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
                       <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>보험회사</Typography>
                     </Grid>
-                    <Grid  item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-                    <MyTextField
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                      <MyTextField
                         sx={{ width: '100%', ml: 1, mt: 1, mb: 1 }}
                         variant="outlined"
                         size="small"
@@ -298,10 +298,10 @@ class Acd1010BasicInfo extends Component {
                         onChange={this.props.onInputChange} />
                     </Grid>
                     {/* 12번 째 */}
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>보험기간</Typography>
-                      </Grid>
-                      <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>보험기간</Typography>
+                    </Grid>
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <LocalizationProvider dateAdapter={AdapterDayjs} style>
                         <div style={{ padding: "5px 0" }}>
                           <DatePicker
@@ -327,10 +327,10 @@ class Acd1010BasicInfo extends Component {
                 >
                   {/* 13번 째 */}
                   <Grid container>
-                    <Grid item xs={2} style={{display: "flex",  flexDirection: "row",  alignItems: "center",  justifyContent: "flex-end",  backgroundColor: "#FAFAFA"}}>
-                      <Typography variant="subtitle1" sx={{fontSize: '13px', fontWeight: 'bold' }}>사용여부</Typography>
+                    <Grid item xs={2} style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end", backgroundColor: "#FAFAFA" }}>
+                      <Typography variant="subtitle1" sx={{ fontSize: '13px', fontWeight: 'bold' }}>사용여부</Typography>
                     </Grid>
-                    <Grid  item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
+                    <Grid item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
                       <Select
                         sx={{ width: '100%', ml: 1, height: '75%' }}
                         variant="outlined"

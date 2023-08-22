@@ -549,60 +549,60 @@ class Ace1010 extends Component {
 
 
       }
-      
-      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '자택'){
+
+      if (cellFieldName === 'start_fg' && updatedRow.start_fg === '자택') {
         const user = JSON.parse(sessionStorage.getItem("user"));
         const emp_cd = user.emp_cd;
         const co_cd = "1000";
         const start_fg = updatedRow.start_fg;
 
 
-         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
-         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
-         console.log(response.data);
-         const tmp = response.data;
+        const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+        const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+        console.log(response.data);
+        const tmp = response.data;
 
-         updatedRow = {
-           ...updatedRow,
+        updatedRow = {
+          ...updatedRow,
 
-           start_fg: tmp.start_fg,
-           start_addr: tmp.start_addr,
-        
- 
-         }
-         console.log('프로세스에서 updatedrow 북마크 확힌')
-         console.log(this.state.bookmarkTempRow)
-         console.log(updatedRow)
+          start_fg: tmp.start_fg,
+          start_addr: tmp.start_addr,
 
-         return updatedRow;
+
+        }
+        console.log('프로세스에서 updatedrow 북마크 확힌')
+        console.log(this.state.bookmarkTempRow)
+        console.log(updatedRow)
+
+        return updatedRow;
       }
-      
-      if(cellFieldName === 'start_fg' && updatedRow.start_fg === '회사'){
+
+      if (cellFieldName === 'start_fg' && updatedRow.start_fg === '회사') {
         const user = JSON.parse(sessionStorage.getItem("user"));
         const emp_cd = user.emp_cd;
         const co_cd = "1000";
         const start_fg = updatedRow.start_fg;
 
-         const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
-         const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
-         console.log(response.data);
-         const tmp = response.data;
+        const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
+        const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
+        console.log(response.data);
+        const tmp = response.data;
 
-         updatedRow = {
-           ...updatedRow,
- 
-     
-           start_fg: tmp.start_fg,
-           start_addr: tmp.start_addr,
-    
- 
- 
-         }
-         console.log('프로세스에서 updatedrow 북마크 확힌')
-         console.log(this.state.bookmarkTempRow)
-         console.log(updatedRow)
+        updatedRow = {
+          ...updatedRow,
 
-         return updatedRow;
+
+          start_fg: tmp.start_fg,
+          start_addr: tmp.start_addr,
+
+
+
+        }
+        console.log('프로세스에서 updatedrow 북마크 확힌')
+        console.log(this.state.bookmarkTempRow)
+        console.log(updatedRow)
+
+        return updatedRow;
 
 
       }
@@ -669,10 +669,15 @@ class Ace1010 extends Component {
 
       } else if (updatedRow.origin === 'N') {
 
-        if (updatedRow.before_km) {
+        if (updatedRow.id === 1 && updatedRow.seq_nb === 0) {
+          console.log('기초거리 출력')
+          console.log(this.state.startacc_km)
+          console.log('N이면서 전 행이 있을 때')
+          updatedRow.before_km = this.state.startacc_km;
           updatedRow.mileage_km = mileageKm
-          updatedRow.after_km = mileageKm + Number(updatedRow.before_km)
+          updatedRow.after_km = mileageKm + Number(this.state.startacc_km)
         } else {
+          console.log('뭐징')
           const maxId = Math.max(...updatedRows.map(row => row.id)) - 1;
           const rowWithMaxId = updatedRows.find(row => row.id === maxId);
           //id가 0이라면 그 전 행이 없다 그러면 after_km가 없고 그러면 굳이 설정해줄 필요는 없다
@@ -1033,7 +1038,7 @@ class Ace1010 extends Component {
     this.DouzoneContainer.current.handleSnackbarOpen(`주행거리 안분 처리가 완료되었습니다.`, 'success');
   }
 
-  searchcarforabizpersondrivingcopy =()=>{
+  searchcarforabizpersondrivingcopy = () => {
     console.log('복사 재조회 시작')
     this.ace1010SearchRef.current.searchcarforabizperson();
     this.setState({ selectedCheckedRows: [], selectAllCheckbox: false })
