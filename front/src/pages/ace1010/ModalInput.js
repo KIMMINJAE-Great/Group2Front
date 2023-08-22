@@ -9,7 +9,7 @@ class ModalInput extends Component {
     super(props);
     this.state = {
       inputValue: '',
-      
+
     };
   }
 
@@ -21,7 +21,7 @@ class ModalInput extends Component {
     this.props.onConfirm(bookmarkparams);
   }
 
-  onRowDoubleClick = (params,event) => {
+  onRowDoubleClick = (params, event) => {
     console.log(event)
     console.log(params.row)
     console.log("/..............................e더블클릭실행");
@@ -156,7 +156,7 @@ class ModalInput extends Component {
           return time;
         },
       },
-    
+
       {
         field: "start_fg",
         headerName: "출발구분",
@@ -231,26 +231,26 @@ class ModalInput extends Component {
       },
     ];
 
-    
 
 
-    
+
+
     return (
       <div>
         <div >
           <Dialog open={this.props.showModal}
-          close={this.props.handleModalNotConfirm}
-          maxWidth="lg"
-          PaperProps={{
-            style: {
-              width: "100vw",
-              height: "70vh",
-            },
-          }}>
+            close={this.props.handleModalNotConfirm}
+            maxWidth="lg"
+            PaperProps={{
+              style: {
+                width: "100vw",
+                height: "70vh",
+              },
+            }}>
             <DialogTitle sx={{ fontWeight: "bold" }}>
               즐겨찾기 목록
             </DialogTitle>
-            <DialogContent  sx={{ height: "calc(80vh - 64px)", padding: "4px" }}>
+            <DialogContent sx={{ height: "calc(80vh - 64px)", padding: "4px" }}>
               <div style={{ height: "90%", width: "100%" }}>
                 <DataGrid
                   ref={this.dataGridRef}
@@ -272,31 +272,31 @@ class ModalInput extends Component {
                   }}
                   columns={columns}
                   rows={this.props.rows}  // 여기에 표시할 데이터 행을 설정해야 합니다.
-                  // ... (다른 DataGrid 옵션 설정)
+                // ... (다른 DataGrid 옵션 설정)
                 />
                 <Grid
-              container
-              justifyContent="center"
-              alignItems="center"
-              mt={2}
-              mb={0}
-              ml={0}
-            >
-              <Grid item mb={0}>
-                <button
-                  onClick={this.props.onCancel}
-                  style={{
-                    backgroundColor: "#f2f2f2",
-                    border: "1px solid #D3D3D3",
-                    height: "25px",
-                    width: "60px",
-                    fontSize: "12px",
-                  }}
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  mt={2}
+                  mb={0}
+                  ml={0}
                 >
-                  취소
-                </button>
-              </Grid>
-            </Grid>
+                  <Grid item mb={0}>
+                    <button
+                      onClick={this.props.onCancel}
+                      style={{
+                        backgroundColor: "#f2f2f2",
+                        border: "1px solid #D3D3D3",
+                        height: "25px",
+                        width: "60px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      취소
+                    </button>
+                  </Grid>
+                </Grid>
               </div>
 
             </DialogContent>
