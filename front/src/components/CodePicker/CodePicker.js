@@ -4,13 +4,8 @@ import { Box } from '@mui/system';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import DialogTitle from '@mui/material/DialogTitle';
-import Checkbox from '@mui/material/Checkbox';
-import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-import { LocalizationProvider } from '@mui/lab';
-import AdapterDayjs from '@mui/lab/AdapterDayjs';
-import DatePicker from '@mui/lab/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 
@@ -47,7 +42,6 @@ class CodePicker extends React.Component {
 
     });
   };
-
 
   //모달의 체크 버튼에서 확인 눌렀을때 담당하는 함수 =>이름으로.
   saveModalCheckedItemsValue = () => {
@@ -120,6 +114,7 @@ class CodePicker extends React.Component {
       selectedColor: null,
     }, () => { this.props.resetCheckboxes() });
   };
+
   // 모달 닫기 함수
   closeModal = () => {
     // 체크박스 상태 초기화
@@ -137,8 +132,7 @@ class CodePicker extends React.Component {
     e.preventDefault();
     this.props.resetCheckboxes();
   };
-
-
+  //모달창메뉴에서 아이템 클릭
   handleMenuItemClick = (value) => {
     this.setState({
       selectedValue: value,
@@ -161,7 +155,11 @@ class CodePicker extends React.Component {
 
       if (this.props.callback && this.props.callback.handleCallBackData) {
         const firstItem = this.props.menuItems[0];
-        await this.props.callback.handleCallBackData(firstItem[codeField]);
+        if (firstItem && firstItem[codeField]) {
+          await this.props.callback.handleCallBackData(firstItem[codeField]);
+        } else {
+            console.error("firstItem or car_cd is undefined.");
+        }
       }
       if (this.props.menuItems.length === 1) {
         this.handleSearchDataIsItemOne();
@@ -193,7 +191,7 @@ class CodePicker extends React.Component {
         return item[valueField];
     }
   }
-
+  //메뉴아이템 popover에서삭제
   deleteMenuItem = (valueToDelete) => {
     const updatedMenuItems = this.state.menuItems.filter(
       item => item[this.props.codeField] !== valueToDelete
@@ -201,6 +199,7 @@ class CodePicker extends React.Component {
     this.setState({ menuItems: updatedMenuItems });
   };
 
+  //텍스트필드값 핸들러
   handleOnChange = (event) => {
     this.props.onTextInputChange(event);
     this.setState({ selectedValue: event.target.value });
@@ -231,7 +230,6 @@ class CodePicker extends React.Component {
                 height: 30
               }
             }}
-
             variant="outlined"
             onKeyDown={(e) => this.handleKeyDown(e, this.props.textFieldValue)}
             name="textFieldValue"
@@ -248,8 +246,6 @@ class CodePicker extends React.Component {
               onClick={this.handleDropDown}
               style={{ cursor: 'pointer' }}
             >
-
-
             </ExpandMoreIcon>
             {/* 여러개데이터가 검색되면 이게 먼저 실행되어야함 */}
             <EventNoteOutlinedIcon
@@ -269,7 +265,6 @@ class CodePicker extends React.Component {
             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             style={{ marginLeft: '-159px' }}
           >
-
             {/* popover 렌더링 */}
             {/* 운행기록부의 경우에는 차량의 코드가 필요하므로 ... */}
             {(this.state.menuItems || []).map((item, index) => (
@@ -288,7 +283,6 @@ class CodePicker extends React.Component {
               </MenuItem>
             ))
             }
-
           </Popover>
         </div>
 
@@ -315,9 +309,7 @@ class CodePicker extends React.Component {
               </Grid>
               <hr />
             </DialogTitle>
-
-
-            <DialogContent style={{ minHeight: '9vh' }}>
+            <DialogContent style={{ minHeight: '10vh' }}>
 
               <div style={{ display: 'flex', marginTop: 0 }}>
                 <Box sx={{ maxWidth: '100%', maxHeight: '100%', width: '100%', margin: 'auto', border: '1px solid #D3D3D3', padding: '10px', ml: 0.5 }}>
@@ -345,7 +337,7 @@ class CodePicker extends React.Component {
 
                     <Grid item xs={12} display="flex" alignItems="center">
                       <Grid container>
-                        <Grid item xs={8.1}></Grid>
+                        <Grid item xs={2.1}></Grid>
                         <Grid item xs={0}>
                           <Typography variant="subtitle1" sx={{ ml: 9, mt: 0.5, mr: 0.2, fontSize: '12px', fontWeight: 'bold' }} style={{ marginRight: '15px' }}>전체</Typography>
                         </Grid>
@@ -353,7 +345,6 @@ class CodePicker extends React.Component {
                           <FormControlLabel control={
                             <input
                               type="checkbox"
-
                               checked={this.props.selectAllCheckbox}
                               onChange={() => this.props.handleToggleAllCheckboxes()}
                             />
@@ -368,12 +359,9 @@ class CodePicker extends React.Component {
               <Grid container alignItems="center" marginBottom={-6}>
                 <Grid item xs={12} display="flex" justifyContent="flex-end" marginTop={1} >
                   <button onClick={this.handleResetCheck} style={{ backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', height: '24px', width: '10%', fontSize: '11px', fontWeight: 'bold' }}>초기화</button>
-
                 </Grid>
               </Grid>
-
             </DialogContent>
-
             <DialogContent>
               {/* Instead of DataGrid, use a regular Grid for table-like layout */}
               <div style={{ minHeight: 310, width: '100%', overflow: 'auto', }}>

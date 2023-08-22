@@ -25,12 +25,12 @@ class MileageTableView extends Component {
 
         return (
             <div>
-                <table style={{ marginTop: "5px", width:"450px" }} border="1">
+                <table style={{ marginTop: "7px", width:"490px" }} border="1">
                     <thead>
                         <tr>
-                            <th style={{ width: "70px" }}>No</th>
-                            <th style={{ width: "148px" }}>경로</th>
-                            <th style={{ width: "239px" }}>거리(km)</th>
+                            <th style={{ width: "70px" ,height:"34px"}}>No</th>
+                            <th style={{ width: "148px" }}>경로(출발구분)</th>
+                            <th style={{ width: "239px" }}>주행후(km)</th>
                         </tr>
                     </thead>
                     <tbody>

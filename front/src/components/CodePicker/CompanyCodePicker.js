@@ -107,11 +107,9 @@ class CompanyCodePicker extends React.Component{
         ...item,
         checked: newSelectAllCheckbox,
       }));
-
       const selectedchecked = newSelectAllCheckbox
         ? [...updatedContent]
         : [];
-
       return {
         selectAllCheckbox: newSelectAllCheckbox,
         menuItems: updatedContent,

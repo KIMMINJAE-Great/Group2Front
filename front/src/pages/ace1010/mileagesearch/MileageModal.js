@@ -4,7 +4,7 @@ import { Alert, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, Ico
 import MileageSeachTextField from "./MileageSeachTextField";
 import MileageSearchBtn from "./MileageSearchBtn";
 import MileageTableView from "./MileageTableView";
-import { CircularProgress } from "@mui/material";
+
 class MileageModal extends Component {
   constructor(props) {
     super(props);
@@ -54,6 +54,7 @@ class MileageModal extends Component {
   handleCloseSnackbar = () => {
     this.setState({ openSnackBar: false });
   };
+
   // 모달 열기 함수
   openModal = () => {    
     if(this.state.mileageCards.length === 0){
@@ -62,6 +63,7 @@ class MileageModal extends Component {
     }
     this.setState({ isModalOpen: true });
   };
+
   // 모달 닫기 함수
   closeModal = () => {
     this.setState({ isModalOpen: false, });
@@ -73,7 +75,6 @@ class MileageModal extends Component {
     distanceBased: '',
     distanceFree: '', });
     this.props.callback.handelCalcMileageKm();
-
   };
 
   //카드 클릭
@@ -91,9 +92,7 @@ class MileageModal extends Component {
         // endFieldValue: selectedCard.end_addr,
       });
     }
-  };
-
-  
+  };  
 
   // startCoords와 endCoords를 각각 저장해야한다!
   handleCoordData = (fieldType, longitude, latitude) => {
@@ -138,20 +137,21 @@ class MileageModal extends Component {
             PaperProps={{
               style: {
                 width: "50vw",
-                height: "45vh",
+                height: "52vh",
               },
             }}
           >
             {/* 최상단 */}
             <DialogTitle style={{ marginLeft: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "-23px", fontWeight: "bold", }}>
-              주행거리 검색
+              
+              <Typography fontSize={31}>주행거리 검색</Typography>
               <hr />
             </DialogTitle>
 
             {/* div 두 영역으로 나눔 */}
             <div style={{ display: "flex", flexDirection: "row", height: "50vh" }}>
               {/* 왼쪽인 카드리스트 */}
-              <DialogContent style={{ width: "10px", maxWidth: "20vw", maxHeight: "610px", overflow: "auto" }}>
+              <DialogContent style={{ width: "10px", maxWidth: "20vw", maxHeight: "360px", overflow: "auto" }}>
                 <Grid container >
                   {mileageCards.map((item, index) => (
                     <Grid style={{ height: '70px', marginBottom: "20px", }} key={index}>
@@ -199,16 +199,19 @@ class MileageModal extends Component {
                 </Grid>
               </DialogContent>
               {/* 출발지,상세주소,도착지,상세주소  */}
-              <DialogContent style={{ borderLeft: '1px solid black', overflowX: 'auto', maxWidth: '550px' }}>
-
+              <DialogContent style={{ borderLeft: '1px solid black', overflowX: 'auto', maxWidth: '550px',maxHeight: '410px' }}>
                 <div >
                   <Grid container item xs={12}>
-                    <Grid container alignItems="center" style={{ marginBottom: "6px" }}>
+                    <Grid container style={{ marginBottom: "6px" }}>
                       <Grid item xs={2.5} >
-                        출발지<br></br>
-                        상세주소
+                        <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                          출발지
+                        </Grid>
+                        <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'1px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                          상세주소
+                        </Grid>
                       </Grid>
-                      <Grid item xs={9.5}>
+                      <Grid item xs={9.3} style={{marginLeft:'5px'}}>
                         {/* 주행거리 검색 택스트필드!! */}
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedItems.start_addr}
@@ -218,13 +221,17 @@ class MileageModal extends Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container item xs={12}>
+                  <Grid container item xs={12} style={{marginTop:'10px'}}>
                     <Grid container style={{ marginBottom: "6px" }}>
-                      <Grid item xs={2.5} style={{ marginTop: '5px' }}>
-                        도착지<br />
-                        상세주소
+                      <Grid item xs={2.5} >
+                        <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                          출발지
+                        </Grid>
+                        <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'1px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                          상세주소
+                        </Grid>
                       </Grid>
-                      <Grid item xs={9.5}>
+                      <Grid item xs={9.3} style={{marginLeft:'5px'}}>
                         {/* 주행거리 검색 택스트필드!! */}
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedItems.end_addr}
@@ -238,7 +245,7 @@ class MileageModal extends Component {
                     <Grid container>
                       <Grid item xs={8}>
                       </Grid>
-                      <Grid item xs={4} style={{ marginTop: '5px' }}>
+                      <Grid item xs={4} display="flex" justifyContent="flex-end" style={{ marginTop: '5px'}}>
                         {/* 주행거리 검색 버튼 */}
                         <MileageSearchBtn
                           onSendDistanceData={this.handleDistanceData}
@@ -264,8 +271,7 @@ class MileageModal extends Component {
                             distanceRealtime={this.state.distanceRealtime}
                             distanceBased={this.state.distanceBased}
                             distanceFree={this.state.distanceFree}
-                          />
-                         
+                          />                      
                         }
                       </Grid>
                     </Grid>
@@ -283,8 +289,6 @@ class MileageModal extends Component {
             </Grid>
           </Dialog>
         </div>
-
-
 
         <Snackbar
           open={this.state.openSnackBar}

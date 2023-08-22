@@ -178,7 +178,7 @@ class DouzoneContainer extends Component {
                 <div style={{ display: 'flex' }}>
                   {/* 복사 TEST  위치 이동하여도 됨! */}
                   <DrivingRecordCopy
-                    selectedRows={selectedRows}
+                    selectedRows={this.props.selectedCheckedRows}
                     handleToggleCheckbox={this.props.handleToggleCheckbox}
                   >
                   </DrivingRecordCopy>
