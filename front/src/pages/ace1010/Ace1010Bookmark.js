@@ -163,12 +163,6 @@ class Ace1010Bookmark extends Component {
     }
   };
 
-  // handleKeyDown = (e) => {
-  //   if (e.key === 'ArrowDown' && !this.state.hasArrowDownEvent) {
-  //     this.setState({ hasArrowDownEvent: true });
-  //     this.props.handleArrowDown(); // 원하는 로직 실행
-  //   }
-  // };
 
 
   handleKeyDown = (event) => {
@@ -183,11 +177,7 @@ class Ace1010Bookmark extends Component {
     }
   };
 
-  //여기부터 하세용
-  // get 으로 emp_cd를 보내서 로그인한 사원의 emp_cd를 갖는 즐겨찾기 객체를 가져온다
-  // 그걸담아서 즐겨찾기에 뿌려준다.
-  // 없으면 빈행을 추가
-  // 내일 부모함수에 this.props.abizbookmark 할수있는거 만들어 그리고 여기엔 객체담아
+ 
   handleOpen = async (event) => {
     event.preventDefault();
 
@@ -305,60 +295,63 @@ handleSnackbarOpen = (message, severity = "success") => {
       selectedRowUseFg: params.row.use_fg,
     });
   };
-  // cellkeydown = (params, event) => {
-  //   console.log("셀키다운");
-  //   console.log(params.field);
-  //   console.log(params.row.id);
-  //   console.log(params);
-  //   console.log(event.key)
-    // if (event.key === "Tab") {
-    //   // 특정 필드에서만 처리하고자 할 때
-    // if (params.field !== "bookmark_cd") {
-    //   event.preventDefault(); // 기본 Tab 동작을 막습니다.
-    // }
-    //     this.setState(
-    //       {
-    //         editedCell: params.field,
-    //         selectedRowIdFg: params.row.id,
-    //         selectedCellFg: params.field,
-    //       }
-    //       // ,
-    //       // () => {
-    //       //   // saveCellKeyDown 호출
-    //       //   this.saveCellKeyDown(params);
-    //       // }
-    //     );
-      
-    // }
+  handleCellClick = (params, event) => {
+ 
+    this.setState({
+      selectedRowIdFg: params.row.id,
+      selectedCellFg: params.field,
+      selectedRow: params.row,
+    });
+  }
+  cellkeydown = (params, event) => {
+    console.log('셀키다운')
+    this.setState({
+      editedCell: params.field,
+      selectedRowIdFg: params.row.id,
+      selectedCellFg: params.field,
+      selectedRow: params.row,
 
-  // };
+    })
+
+  }
 
 
-  processRowUpdatefunc = (updatedRow, originalRow) => {
+  processRowUpdatefunc = async (updatedRow, originalRow) => {
     console.log(updatedRow);
     console.log(originalRow);
 
-    //  // bookmark_cd 중복체크
-    //  const isDuplicate = this.state.rows.some(
-    //   (row) => row.bookmark_cd === updatedRow.bookmark_cd
-    // );
+    const cellFieldName = this.state.editedCell;
 
-    // if (isDuplicate||(updatedRow.bookmark_cd===originalRow.bookmark_cd)) {
-    //   this.handleSnackbarOpen(
-    //     "이미 존재하는 즐겨찾기 코드입니다.",
-    //     "error"
-    //   );
-    //     // 이전 bookmark_cd 값으로 변경
-    //     updatedRow.bookmark_cd = originalRow.bookmark_cd;
+    //직전행선지
+    if(updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')){
 
+              // 현재 셀이 'start_fg'이고 값이 '직전행선지'인 경우
+          if (cellFieldName === 'start_fg' && updatedRow.start_fg === '직전행선지') {
+            // 이전 행의 인덱스를 찾습니다.
+            const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+            if (previousRowIndex !== -1) {
+              // 이전 행의 'start_addr' 값을 가져옵니다.
+              const previousStartfg = this.state.rows[previousRowIndex].start_fg;
+              const previousAddr = this.state.rows[previousRowIndex].start_addr;
 
-    //   this.setState(
-    //     () => ({
-    //       updatedRow: updatedRow,
-    //     })
-    //   );
-    //   return;
-    // }
+              // 현재 행의 'start_addr' 값을 이전 행의 'start_addr'로 업데이트합니다.
+              updatedRow.start_fg = previousStartfg;
+              updatedRow.start_addr = previousAddr;
+            }
+          }else if(cellFieldName === 'end_fg' && updatedRow.end_fg === '직전행선지'){
+            const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+            if (previousRowIndex !== -1) {
+              // 이전 행의 'end_addr' 값을 가져옵니다.
+              const previousEndfg = this.state.rows[previousRowIndex].end_fg;
+              const previousAddr = this.state.rows[previousRowIndex].end_addr;
+
+              // 현재 행의 'end_addr' 값을 이전 행의 'end_addr'로 업데이트합니다.
+              updatedRow.end_fg = previousEndfg;
+              updatedRow.end_addr = previousAddr;
+            }
+
+          }
+  }
 
     
 
@@ -476,7 +469,7 @@ handleSnackbarOpen = (message, severity = "success") => {
       console.log(updatedValue)
       this.handleSnackbarOpen(
         "임시저장 되었습니다.",
-        "error"
+        "success"
       );
 
       
@@ -486,174 +479,9 @@ handleSnackbarOpen = (message, severity = "success") => {
   }
 
 
-
-
-
-
-
-  // 1. 주행에서 엔터가 쳐졌을 때만 저장이 실행이 된다.
-  // 2. 값들 중 bookmark_cd,bookmark_nm,use_fg,start_fg,end_fg가 없다면 스낵바를 띄운다.
-
-  // 3. 신규 저장이면 빈 행을 띄운다. seq를 rows에서 max를 찾아 1증가 시켜 수정이 가능하도록 한다.
-  // 5.
-  // saveCellKeyDown = async (params) => {
-  //   console.log(" 저장 시작 ");
-
-  //   const fieldsToCheck = [
-  //     "bookmark_cd",
-  //     "bookmark_nm",
-  //     "use_fg",
-  //     "start_fg",
-  //     "end_fg",
-  //   ];
-
-  //   const allFieldsHaveValue = fieldsToCheck.every((field) => {
-  //     const value = params.row[field];
-  //     return value !== undefined && value !== null && value !== "";
-  //   });
-
-  //   if (!allFieldsHaveValue) {
-  //     this.props.handleSnackbarOpen(
-  //       "필수 입력란을 입력 하지 않았습니다.다시 입력 해주세요.",
-  //       "error"
-  //     );
-  //     return;
-  //   }
-
-  //   if (params.row.origin === "N") {
-  //     console.log("신규 저장하고 새로운행 시작");
-
-  //     // bookmark_cd 중복체크
-  //     const isDuplicate = this.state.rows.some(
-  //       (row) => row.bookmark_cd === params.row.bookmark_cd
-  //     );
-
-  //     if (isDuplicate) {
-  //       this.props.handleSnackbarOpen(
-  //         "이미 존재하는 즐겨찾기 코드입니다.",
-  //         "error"
-  //       );
-  //       return;
-  //     }
-
-  //     try {
-  //       this.props.handleSnackbarOpen(
-  //         "새로운 행이 추가 되었습니다.",
-  //         "success"
-  //       );
-  //       params.row.origin = "Y";
-
-  //       // 상태를 업데이트합니다.
-  //       const updatedRows = this.state.rows.map((row) => {
-  //         if (row.id === params.row.id) {
-  //           return params.row;
-  //         }
-  //         return row;
-  //       });
-
-  //       this.setState((prevState) => ({
-  //         rows: updatedRows,
-  //         addedrows: [...prevState.addedrows, params.row], //추가된 행만 저장한 변수
-  //       }));
-
-  //       // 새로운 즐겨찾기 저장시 빈행 추가
-  //       const lastRow = this.state.rows[this.state.rows.length - 1];
-  //       const newId = lastRow.id + 1;
-  //       const user = JSON.parse(sessionStorage.getItem("user"));
-  //       const empid = user.emp_id;
-  //       const cocd = params.row.co_cd;
-
-  //       const emptyRow = {
-  //         id: newId,
-  //         co_cd: cocd,
-  //         insert_id: empid,
-  //         emp_cd: params.row.emp_cd,
-  //         send_yn: "2",
-  //         origin: "N",
-  //         use_fg: "",
-  //         // 기타 필요한 초기화 값들...
-  //       };
-
-  //       this.setState((prevState) => ({
-  //         rows: [...prevState.rows, emptyRow],
-  //       }));
-  //     } catch (error) {
-  //       console.error(error);
-  //       this.props.handleSnackbarOpen("새로운 행 만들기 실패!!!.", "error");
-  //     }
-  //   }
-
-    //  else if (params.row.origin === 'Y') {
-    //   console.log('수정 시작')
-    //   console.log(params.row)
-    //   if (params.row.use_dt !== null) {
-    //     // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
-    //     const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
-
-    //     if (!isAlreadyFormatted) {
-    //       const selectedDate = params.row.use_dt;  // DatePicker에서 선택한 날짜
-    //       const isoDate2 = this.toLocalISOString(selectedDate);
-    //       const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-    //       params.row.use_dt = mysqlDate2;
-    //     }
-    //   }
-    //   // if (params.row.use_dt !== null && typeof params.row.use_dt === 'string') {
-    //   //   const selectedDate = new Date(params.row.use_dt);  // 문자열을 Date 객체로 변환
-    //   //   const isoDate2 = this.toLocalISOString(selectedDate);
-    //   //   const mysqlDate2 = isoDate2.slice(0, 19).replace('T', ' ');
-    //   //   params.row.use_dt = mysqlDate2;
-    //   // }
-    //   const isoDate2 = this.toLocalISOString(new Date());
-    //   const mysqlDate = isoDate2.slice(0, 19).replace('T', ' ');
-    //   params.row.modify_dt = mysqlDate;
-
-    //   const user = JSON.parse(sessionStorage.getItem('user'));
-    //   const modifyid = user.emp_id;
-    //   params.row.modify_id = modifyid
-
-    //   params.row.rmk_dc = this.state.selectedRowRmkdc;
-
-    //   try {
-    //     const response = await update("/ace1010/update", params.row)
-    //     if (response.data === 'same time exist at working row') {
-    //       this.DouzoneContainer.current.handleSnackbarOpen('해당 시간은 같은 운행일자의 중복되는 시간입니다.', 'error');
-    //     }
-    //     if (response.data === 'before data exist') {
-    //       this.DouzoneContainer.current.handleSnackbarOpen('입력일 이후에 데이터가 존재하여 입력이불가능합니다', 'error');
-    //     }
-    //     if (response.data === 'same time data exist') {
-    //       this.DouzoneContainer.current.handleSnackbarOpen('입력일의 같은 시간대와 이전 시간대의 운행이 존재하여 입력이 불가능합니다', 'error');
-    //     }
-    //     if (response.data === 'update success') {
-    //       this.DouzoneContainer.current.handleSnackbarOpen('운행기록부가 수정되었습니다.', 'success');
-    //     } else if (response.data === 'update failed') {
-    //       this.DouzoneContainer.current.handleSnackbarOpen('운행기록부 수정에 실패하였습니다.', 'error');
-    //     }
-
-    //     // 상태를 업데이트합니다.
-    //     const updatedRows = this.state.rows.map(row => {
-    //       if (row.id === params.row.id) {
-    //         return params.row;
-    //       }
-    //       return row;
-    //     });
-
-    //     this.setState({
-    //       rows: updatedRows
-    //     });
-
-    //   } catch (error) {
-    //     console.error(error);
-    //     this.DouzoneContainer.current.handleSnackbarOpen('업데이트 중 서버로 요청 보내기 실패.', 'error');
-    //   }
-    // }
-    // };
-
   render() {
     const user = JSON.parse(sessionStorage.getItem("user"));
-
-    const authority = user.authorities[0].authority;
-
+    
     const { isModalOpen } = this.state;
 
     const columns = [

@@ -206,7 +206,6 @@ class Ace1010Search extends Component {
           <IconButton type="submit" color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
             <SearchIcon />
           </IconButton>
-          <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
 
           <Snackbar
             open={this.state.openSnackBar}

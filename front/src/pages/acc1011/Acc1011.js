@@ -251,6 +251,8 @@ class Acc1011 extends Component {
           roadAddress: "",
           jibunAddress: "",
           selectedchecked: [], // 선택된 체크박스 초기화
+          selectAllCheckbox: false,
+          selectAllCheckbox: [],
         });
         this.DouzoneContainer.current.handleSnackbarOpen('부서 삭제가 완료됐습니다', 'success');
       }
@@ -366,6 +368,7 @@ class Acc1011 extends Component {
       };
     }, () => {
       console.log(this.state.selectedchecked);
+      console.log(this.state.selectAllCheckbox)
     });
   };
   // 체크박스 토글 처리하는 함수
