@@ -1,127 +1,91 @@
 import React, { Component } from 'react';
 
 
-import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
-
-import { Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, MenuItem, Radio, RadioGroup, Typography } from '@mui/material';
-import DrivingRecordCopy from '../ace1010/DrivingRecordCopy';
 
 
 class Acd1011 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedValue: 'option1',
-      startDate: new Date(),
-      endDate: new Date(),
-      weekendDates: []
+      hours: '18',
+      minutes: '00',
+      isOpen: false
     };
-  }
-  // 주말 확인 함수
-  isWeekend(date) {    
-    const day = date.getDay();
-    return day === 0 || day === 6;
-    // 일요일(0) 또는 토요일(6)이면 true를 반환!!
-  }
 
-  // 주말을 제외한 날짜 리스트를 반환하는 함수
-  getDatesWeekends(startDate, endDate) {    
-    let currentDate = new Date(startDate);
-    const dateArray = [];
-    // 반환할 dateArray 배열을 초기화
 
-    while (currentDate <= endDate) {
-      // startDate부터 endDate까지의 날짜를 순회
-      if (!this.isWeekend(currentDate)) {
-        // 만약 현재 날짜가 주말이 아니라면,
-        dateArray.push(new Date(currentDate));
-        // dateArray에 추가
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-      // 다음 날짜로
-    }
-    return dateArray;
-    // 주말을 제외한 날짜 배열을 반환
+    this.handleMinutesChange = this.handleMinutesChange.bind(this);
+    this.toggleOpen = this.toggleOpen.bind(this);
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
-  // 확인 버튼을 클릭했을 때 실행될 함수
-  handleCopyDrivingRecord = () => {
-    const { startDate, endDate } = this.state;
-    const filteredDates = this.getDatesWeekends(startDate, endDate);
-    // 주말을 제외한 날짜 배열을 가져옴
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
 
-    axios.post('YOUR_BACKEND_ENDPOINT', { dates: filteredDates })
-      .then(response => {
-        console.log('Data successfully sent to server:', response.data);
-      })
-      .catch(error => {
-        console.error('Error sending data:', error);
-    });
-    //주말제외값 저장
-    this.setState({ weekendDates: filteredDates });
-    // LocalStorage에 저장
-    localStorage.setItem('selectedDates', JSON.stringify(filteredDates));
-    // 콘솔에 해당 날짜들을 출력.
-    console.log('Copying data for:', filteredDates);
-    
-    this.closeModal();
-  };
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  setWrapperRef(node) {
+    this.wrapperRef = node;
+  }
 
 
-
-  handleStartDateChange = (selectedDate) => {
-    const endDate = new Date(this.state.endDate);
-    if (selectedDate > endDate) {
-        alert("시작 날짜는 끝 날짜보다 뒤에 있을 수 없습니다.");
-        return;
+  handleClickOutside(event) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({ isOpen: false });
     }
-    this.setState({ startDate: selectedDate });
-  };
-  handleEndDateChange = (selectedDate) => {
-    const startDate = new Date(this.state.startDate);
-    if (selectedDate < startDate) {
-        alert("끝 날짜는 시작 날짜보다 앞설 수 없습니다.");
-        return;
-    }
-    this.setState({ endDate: selectedDate });
-  };
+  }
 
+  handleHoursChange(e) {
+    this.setState({ hours: e.target.value });
+  }
 
-  handleOptionChange = (event) => {
-    this.setState({
-      selectedValue: event.target.value
-    });
-  };
+  handleMinutesChange(e) {
+    this.setState({ minutes: e.target.value });
+  }
 
-  openModal = () => {
-    this.setState({
-      isModalOpen: true
-    });
-  };
+  toggleOpen() {
+    this.setState({ isOpen: !this.state.isOpen });
+  }
 
-  closeModal = () => {
-    this.setState({
-      isModalOpen: false,
-    });
-  };
-
-
-
-  
- 
-  
   render() {
+    const a = "setWrapperRef"
+    this[a]()
+    const hours = [];
+    for (let i = 0; i <= 23; i++) {
+      hours.push(i < 10 ? '0' + i : '' + i);
+    }
 
-    // 컴포넌트를 렌더링하는 메서드입니다.
-    const { startDate, endDate } = this.state;
-    // state에서 startDate와 endDate를 가져옵니다.
+    const minutes = [];
+    for (let i = 0; i <= 59; i++) {
+      minutes.push(i < 10 ? '0' + i : '' + i);
+    }
 
     return (
-      <div>
-        <DrivingRecordCopy></DrivingRecordCopy>
-        
-        
+      <div ref={this.setWrapperRef}>
+        <div onClick={this.toggleOpen}>
+          현재 시간: {this.state.hours}:{this.state.minutes}
+        </div>
+        {this.state.isOpen && (
+          <div>
+            <label>시간:
+              <select value={this.state.hours} onChange={this.handleHoursChange.bind(this)}>
+                {hours.map((hour, index) =>
+                  <option key={index} value={hour}>{hour}</option>
+                )}
+              </select>
+            </label>
+            <label>분:
+              <select value={this.state.minutes} onChange={this.handleMinutesChange}>
+                {minutes.map((minute, index) =>
+                  <option key={index} value={minute}>{minute}</option>
+                )}
+              </select>
+            </label>
+          </div>
+        )}
 
 
       </div>

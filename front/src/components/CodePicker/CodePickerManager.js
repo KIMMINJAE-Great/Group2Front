@@ -11,16 +11,14 @@ import DrivingCodePicker from "./DrivingCodePicker";
 // 1. 사용할 곳에 <CodePickerManager /> helpId 입력
 // ex) <CodePickerManager helpId={"DrivingCodePicker"} />
 
-// 2. (기존의 코드피커를 복사하여)사용하고자 하는 코드피커를 새로 만듭니다.
-// ex) DrivingCodePicker.js 
-
-// 3. 필수 전달 함수, 구성값, 상태값을 자식인 CodePicker.js 로 보내주고 함수의 내용을 일부 수정합니다.
+// 2. 필수 전달 함수, 구성값, 상태값을 자식인 CodePicker.js 로 보내주고 함수의 내용을 일부 수정합니다.
 // ex) <CodePicker valueField='car_nm' codeField='car_cd' valueField2='car_nb' ...필수전달코드... />
 // ex) 서버로 보내는 엔드포인트와 배열의 연산 등에 필요한 인자값 수정
 
-// 4. 사용한 곳에서 필요한 데이터가 있다면 콜백함수를 추가로 작성합니다.
+// 3. 사용한 곳에서 필요한 데이터가 있다면 콜백함수를 추가로 작성합니다.
 // ex) <CodePicker callback={this.props.callback}  ...필수전달코드.../>
-// 4-1. 콜백을 할 객체를 만들고 필요한 콜백함수를 작성하고, onChange를 넣어줍니다.
+
+// 4. 콜백을 할 객체를 만들고 필요한 콜백함수를 작성하고, onChange를 넣어줍니다.
 // ex) searchCallback = {  콜백함수 : (e) => { this.setState({변화값: e}, 콜백함수2 : (e) => { this.setState({변화값2: e} );
 // ex) <CodePickerManager onChange={(e) => {}} callback={this.searchCallback} helpId={"DrivingCodePicker"} 
 

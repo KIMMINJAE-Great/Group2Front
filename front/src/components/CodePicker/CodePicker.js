@@ -110,21 +110,27 @@ class CodePicker extends React.Component {
     const { selectAllCheckbox } = this.props;
     this.setState({
       isModalOpen: true,
+      selectedValue:'',
+
       modalTextFieldValue: '', // 모달 열때마다 모달안의 TextField를 초기화
       selectedColor: null,
-    }, () => { this.props.resetCheckboxes() });
+    }, () => { this.props.resetCheckboxes()});// this.props.handleResetTextFieldAndResult 
   };
 
   // 모달 닫기 함수
-  closeModal = () => {
+  closeModal = async () => {
     // 체크박스 상태 초기화
+    console.log("실행됨");
+    await this.props.handleResetTextFieldAndResult('');
+    console.log("실행됨");
     const updatedMenuItems = this.state.menuItems.map(item => {
       return { ...item, checked: false };
     });
     this.setState({
+      selectedValue:'',
       menuItems: updatedMenuItems,
       isModalOpen: false
-    });
+    });//
   };
 
   // 체크박스 상태 초기화

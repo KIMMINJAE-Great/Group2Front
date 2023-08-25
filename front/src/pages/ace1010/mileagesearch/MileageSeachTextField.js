@@ -26,7 +26,8 @@ class MileageSeachTextField extends Component {
       this.setState({ query: this.props.SearchKeyword });
     }
   }
-
+  
+  //위도와 경도 찾는 코드!
   handleGetAddrAndCoord = async () => {
     const { query } = this.state;
     try {
@@ -75,9 +76,12 @@ class MileageSeachTextField extends Component {
   toggleDropdown = () => {
     this.setState(prevState => ({ isDropdownVisible: !prevState.isDropdownVisible }));
   };
+
+  //드롭다운에서 주소 선택을 누르면 실행되는 코드
   selectAddress = (address, boundary) => {
+    // boundary의 배열이 아니거나, 배열의 길이가 2보다 작을 때 
     if (!Array.isArray(boundary) || boundary.length < 2) {
-      console.error("Invalid boundary value.");
+      console.error("유효하지 않음");
       return;
     }
   
@@ -93,16 +97,28 @@ class MileageSeachTextField extends Component {
       selectedLongitude: longitude, 
       selectedLatitude: latitude,
     }, () => {
-      this.onSendCoordData(); // 위도 경도를 부모로 보내는 코드 실행!
-
+      this.handleSendCoordData(); // 위도 경도를 부모로 보내는 코드 실행!
+      this.handleSendAddr1Data(); // 상세주소(addr1)을 부모로 보내는 코드 실행!
+      this.handleSendAddrData(); //쿼리값...즉 출발지와 도착지 값 보내는 코드 실행!
     }
     );
   };
   //위도 경도를 부모로 보내는 코드!
-  onSendCoordData = () => {
+  handleSendCoordData = () => {
     const { selectedLongitude, selectedLatitude } = this.state;
     this.props.onSendCoordData(selectedLongitude, selectedLatitude);
   };
+  // 상세주소를 부모로 보내는 코드!
+  handleSendAddr1Data = () => {
+    const {selectedAddress} = this.state;
+    this.props.onSendAddr1Data(selectedAddress);
+  }
+  //쿼리값...즉 출발지와 도착지 값 보내는 코드!
+  handleSendAddrData = () => {
+    const {query} = this.state;
+    this.props.onSendAddrData(query);
+  }
+  
 
     render() {
       const { query, boundary, addresses, error, isDropdownVisible, selectedAddress  } = this.state;
