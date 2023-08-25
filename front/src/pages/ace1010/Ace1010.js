@@ -42,7 +42,6 @@ class Ace1010 extends Component {
 
       // 차량에 대해 운행기록부가 저장되면 다시 데이터를 불러오기 위한 state
       selectedRowId: '',
-
       selectedRow: '',
 
 
@@ -86,6 +85,7 @@ class Ace1010 extends Component {
       cardsMileageKm: '', // 주행거리 검색 콜백으로 바뀌는 mileage_km
       cardsSeq: '',        // 주행거리 검색 에서 선택한 카드리스트  의 seq_nb
       MileageFunction: {}, //주행거리 검색에서 사용할 함수 집합
+
 
       beforeKm: '',
 
@@ -131,7 +131,8 @@ class Ace1010 extends Component {
       >안분</Ace1010DivisionDistance>,
       <MileageModal
         callback={this.MileageFunction}
-        content={this.state.selectedCheckedRows}>주행거리 검색</MileageModal>,
+        content={this.state.selectedCheckedRows}
+      >주행거리 검색</MileageModal>,
       <Ace1010Bookmark>즐겨찾기</Ace1010Bookmark>
     ]
   }
@@ -906,13 +907,14 @@ class Ace1010 extends Component {
     //선택한 카드의 배열 정보는 seq_nb로 찾아서 mileageModal에 handelCardClick에 있다.
     //선택한 KM의 정보는 TableView에서 가져온다....
 
-    //카드를 선택한곳의 Mileage_km을 가져오는 함수...
-    handleSeletedCardsKmMileage: (data) => {
+    //카드를 선택한곳의 seq_nb
+    //ace1010.js ->MileageModal.js // 눌린 카드리스트의 seq_nb값 가져오기
+    handleGetSeqNbBySeletedCard: (data) => {
       this.setState({
         cardsSeq: data
       });
     },
-    //ace1010.js -> MileageModal.js // mileage변경
+    //ace1010.js -> MileageTableView.js // mileage변경
     handleCallBackMileageData: (data) => {
       if (data == 0) {
         alert('값을 다시 입력해주세요.');
@@ -920,23 +922,54 @@ class Ace1010 extends Component {
         this.setState({ cardsMileageKm: data, });
       }
     },
+    //ace
+    handleCallBackAddrData : (start_addr1, end_arrd1, start_addr, end_addr) => {
+      this.setState({
+        startAddr1 : start_addr1,
+        endAddr1 : end_arrd1,
+        startAddr: start_addr,
+        endAddr: end_addr,
+        
+      },()=> {console.log("@@@@콜백함수안에있는 addr1",this.state.endAddr);});
+      
+    },
 
     //주행거리 계산 함수
     handelCalcMileageKm: () => {
-      const { cardsSeq, rows, mileage_km, cardsMileageKm } = this.state;
+      const { cardsSeq, rows, mileage_km, cardsMileageKm, startAddr1, endAddr1, startAddr, endAddr } = this.state;
       const updatedRows = [...rows];
+      // this.processRowUpdatefunc();
+      // updatedRows = {
+      //   ...updatedRows,
 
+      //   use_fg: tmp.use_fg,
+      //   start_time: tmp.start_time,
+      //   end_time: tmp.end_time,
+      //   start_fg: tmp.start_fg,
+      //   start_addr: tmp.start_addr,
+      //   end_fg: tmp.end_fg,
+      //   end_addr: tmp.end_addr,
+      //   mileage_km: tmp.mileage_km,
+      // }
+      console.log("if가 실행되기전 addr"+startAddr);
       if (cardsSeq !== null && cardsSeq !== undefined) {
         const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
         if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
           //(조건에 부합하는 요소가 없다면 -1을 반환이므로)
           updatedRows[rowIndex].mileage_km = Number(cardsMileageKm);
-          // updatedRows[rowIndex].after_km = Number(updatedRows[rowIndex].before_km) + Number(cardsMileageKm);
+          console.log("함수안에 있는거야 Addr1"+startAddr1);
+          updatedRows[rowIndex].start_addr1 = startAddr1;
+          updatedRows[rowIndex].end_addr1 =endAddr1;
+          updatedRows[rowIndex].start_addr= startAddr;
+          updatedRows[rowIndex].end_addr = endAddr;
 
           this.setState({
             rows: updatedRows,
             mileage_km: cardsMileageKm,
-            // after_km: updatedRows[rowIndex].after_km
+            start_addr1:startAddr1,
+            end_addr1:endAddr1,
+            start_addr:startAddr,
+            end_addr:endAddr
           });
         }
       }

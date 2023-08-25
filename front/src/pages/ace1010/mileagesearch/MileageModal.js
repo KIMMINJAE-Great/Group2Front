@@ -12,10 +12,17 @@ class MileageModal extends Component {
       isModalOpen: false,
       openSnackBar: false,
 
-      startName: '',
-      endName: '',
-      startCoords: '',
-      endCoords: '',
+      // startName: '', 필요없음
+      // endName: '',
+      
+      startCoords: '', //시작 좌표
+      endCoords: '', //도착 좌표
+
+      startAddr:'', //검색어: 출발지(검색쿼리값)
+      endAddr:'', //검색어:도착지(검색쿼리값)
+      startAddr1:'', //상세주소 :출발지의
+      endAddr1:'', //상세주소 : 도착지의
+
       distanceRealtime: '',
       distanceBased: '',
       distanceFree: '',
@@ -40,11 +47,6 @@ class MileageModal extends Component {
     console.log("모달 디드마운트 : " + this.state.mileageCards);
   }
 
-  // 모달의 열림/닫힘 상태를 관리하는 state 추가
-  state = {
-    isModalOpen: false,
-  };
-
    // Snackbar 표시 함수
    showErrorSnackbar = () => {
     this.setState({ openSnackBar: true });
@@ -57,8 +59,13 @@ class MileageModal extends Component {
 
   // 모달 열기 함수
   openModal = () => {    
-    if(this.state.mileageCards.length === 0){
-      this.showErrorSnackbar()
+    if(this.state.mileageCards.length === 0 ){
+      this.showErrorSnackbar();
+      return
+    }
+    if(!this.state.mileageCards[0].hasOwnProperty('start_addr')){
+      alert('올바른 운행기록을 선택해주세요.');
+      //아직 한 행을 전체 등록하기 전에, 등록하는 기능은 구현하지 못하였습니다.)
       return
     }
     this.setState({ isModalOpen: true });
@@ -70,11 +77,17 @@ class MileageModal extends Component {
   };
 
   //확인 눌렀을 때 . . .  상태값 저장할수있는 추가 로직 작성가능성
-  saveModalCheckedItems = () => {
-    this.setState({ isModalOpen: false,distanceRealtime: '',
-    distanceBased: '',
-    distanceFree: '', });
-    this.props.callback.handelCalcMileageKm();
+  saveModalCheckedItems = async () => {
+    const { startAddr, startAddr1, endAddr, endAddr1 } = this.state;
+
+    this.setState({ 
+      isModalOpen: false,distanceRealtime: '',
+      distanceBased: '',
+      distanceFree: '', 
+    });
+    await this.props.callback.handleCallBackAddrData(startAddr1, endAddr1, startAddr, endAddr); 
+    this.props.callback.handelCalcMileageKm(); // 마일리지 키로미터 계산 로직
+
   };
 
   //카드 클릭
@@ -82,8 +95,11 @@ class MileageModal extends Component {
     const selectedCard = this.state.mileageCards.find(item => item.seq_nb === seq_nb);
     console.log("selectedCard이다." + JSON.stringify(selectedCard));
     console.log("selectedCard의 km이다.." + JSON.stringify(selectedCard.mileage_km));
-
-    this.props.callback.handleSeletedCardsKmMileage(selectedCard.seq_nb); //확인 버튼의 함수로 옮겨야 할듯 나중에....
+    
+    //seq_nb값 가져오는 코드 ace1010으로 (카드클릭할때)
+    this.props.callback.handleGetSeqNbBySeletedCard(selectedCard.seq_nb); 
+    //addr1 들 보내는 코드 ace1010으로
+    
     if (selectedCard) {
       this.setState({
         selectedCardSeqNb: seq_nb, //카드색상때문에
@@ -107,6 +123,33 @@ class MileageModal extends Component {
     }
   };
 
+  //상세주소를 각각 저장 해야 한다!
+  handleAddr1Data = (fieldType, addr1) => {
+    if(fieldType ==='start') {
+      this.setState({
+        startAddr1: addr1
+      })
+    } else if (fieldType === 'end') {
+      this.setState({
+        endAddr1: addr1
+      })
+    }
+  }
+
+  //주소 검색지(query값)를 각각 저장 해야 한다!
+  handleAddrData = (fieldType, addr) => {
+    if(fieldType ==='start') {
+      this.setState({
+        startAddr: addr
+      })
+    } else if (fieldType === 'end') {
+      this.setState({
+        endAddr: addr
+      })
+    }
+  }
+
+  //실시간, 기초, 무료 
   handleDistanceData = (Realtime, Based, free) => {
     this.setState({
       distanceRealtime: Realtime,
@@ -115,16 +158,12 @@ class MileageModal extends Component {
       tableShow: true
     });
   };
-
+  
   render() {
     console.log("content 마일모달: " + JSON.stringify(this.props.mileageCards))
     const { mileageCards, selectedItems } = this.state;
     const { distanceRealtime, distanceBased, distanceFree } = this.state;
-    // console.log("스타트 위도경도" + this.state.startCoords);
-    // console.log("엔드 위도경도" + this.state.endCoords);
-    // console.log("distanceRealtime : " + distanceRealtime);
-    // console.log("distanceBased : " + distanceBased);
-    // console.log("distanceFree : " + distanceFree);
+
     return (
       <div style={{ width: '500px' }}>
         <MenuItem onClick={this.openModal}>주행거리 검색</MenuItem>
@@ -216,6 +255,8 @@ class MileageModal extends Component {
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedItems.start_addr}
                           onSendCoordData={(longitude, latitude) => this.handleCoordData('start', longitude, latitude)}
+                          onSendAddr1Data={(addr1) => this.handleAddr1Data('start', addr1)} //addr1데이터 보내는놈
+                          onSendAddrData={(addr) => this.handleAddrData('start', addr)}
                         />
                         {/*  */}
                       </Grid>
@@ -236,6 +277,8 @@ class MileageModal extends Component {
                         <MileageSeachTextField
                           SearchKeyword={this.state.selectedItems.end_addr}
                           onSendCoordData={(longitude, latitude) => this.handleCoordData('end', longitude, latitude)}
+                          onSendAddr1Data={(addr1) => this.handleAddr1Data('end', addr1)}
+                          onSendAddrData={(addr) => this.handleAddrData('end', addr)}
                         />
                         {/*  */}
                       </Grid>

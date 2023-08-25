@@ -97,7 +97,32 @@ class CompanyCodePicker extends React.Component{
           }
     });
   };
-
+  //텍스트필드 비우고 빈값으로 검색(초기화면은 모든 코드목록이여야 하므로!)하는 코드~
+  handleResetTextFieldAndResult = async () => {
+    return new Promise(async (resolve, reject) => {
+      this.setState({
+        TextFieldValue: '',
+        ModalTextValue: ''
+      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+        try {
+        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+        if (response.data.length === 1) {
+          this.setState({
+            menuItems: response.data,
+            selectedIds: response.data
+          }, resolve);
+        } else {
+          this.setState({
+            menuItems: response.data,
+            selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
+          }, resolve);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  });
+};
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
   handleToggleAllCheckboxes = () => {
     this.setState((prevState) => {
@@ -138,6 +163,7 @@ class CompanyCodePicker extends React.Component{
 
   // 모든 체크박스의 상태를 해제
   resetCheckboxes = () => {
+    this.setState({textFieldValue:''})
     this.setState(prevState => {        
         const updatedContent = prevState.menuItems.map(item => ({ ...item, checked: false }));
 
@@ -187,9 +213,11 @@ class CompanyCodePicker extends React.Component{
           onTextFieldChange={this.handleTextFieldChange}
           onHandleOnClick={this.handleOnClick}
           //토글 관련 함수...
-
+          handleResetTextFieldAndResult={this.handleResetTextFieldAndResult}
           handleToggleCheckbox={this.handleToggleCheckbox}
           handleToggleAllCheckboxes={this.handleToggleAllCheckboxes}
+
+          
           selectAllCheckbox={this.state.selectAllCheckbox}
           resetCheckboxes={this.resetCheckboxes}
           />
