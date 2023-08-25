@@ -524,7 +524,7 @@ class Ace1010 extends Component {
 
 
 
-      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직접입력') {
+      if (updatedRow.start_fg === '즐겨찾기' || updatedRow.end_fg === '즐겨찾기') {
         console.log('모달뜨기 직전= 출발구분')
         await this.showModalAndWait();
 
