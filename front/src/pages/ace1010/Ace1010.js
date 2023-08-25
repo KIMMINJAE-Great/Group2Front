@@ -464,8 +464,67 @@ class Ace1010 extends Component {
     // 출발구분, 도착구분
     if (updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')) {
 
-      // if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직전도착지' && updatedRow.start_fg !== '직접입력') {
-      if (updatedRow.start_fg === '즐겨찾기') {
+
+
+      // 현재 셀이 'start_fg'이고 값이 '직전행선지'인 경우
+      if (cellFieldName === 'start_fg' && updatedRow.start_fg === '직전행선지') {
+        // 이전 행의 인덱스를 찾습니다.
+        const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+        if (previousRowIndex !== -1) {
+          // 이전 행의 'start_addr' 값을 가져옵니다.
+          const previousStartfg = this.state.rows[previousRowIndex].start_fg;
+          const previousAddr = this.state.rows[previousRowIndex].start_addr;
+
+          // 현재 행의 'start_addr' 값을 이전 행의 'start_addr'로 업데이트합니다.
+          updatedRow.start_fg = previousStartfg;
+          updatedRow.start_addr = previousAddr;
+        }
+
+        // 업데이트된 값을 새로운 변수에 저장
+        this.setState(
+          () => ({
+            updatedValue: updatedRow,
+          }),
+          () => {
+            console.log(this.state.updatedValue);
+          }
+        );
+
+        return updatedRow;
+      } else if (cellFieldName === 'end_fg' && updatedRow.end_fg === '직전행선지') {
+        const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+        if (previousRowIndex !== -1) {
+          // 이전 행의 'end_addr' 값을 가져옵니다.
+          const previousEndfg = this.state.rows[previousRowIndex].end_fg;
+          const previousAddr = this.state.rows[previousRowIndex].end_addr;
+
+          // 현재 행의 'end_addr' 값을 이전 행의 'end_addr'로 업데이트합니다.
+          updatedRow.end_fg = previousEndfg;
+          updatedRow.end_addr = previousAddr;
+          console.log(previousEndfg)
+        }
+        // 업데이트된 값을 새로운 변수에 저장
+        this.setState(
+          () => ({
+            updatedValue: updatedRow,
+          }),
+          () => {
+            console.log(this.state.updatedValue);
+          }
+        );
+
+        return updatedRow;
+
+      }
+
+
+
+
+
+
+
+
+      if (updatedRow.start_fg !== '자택' && updatedRow.start_fg !== '회사' && updatedRow.start_fg !== '거래처' && updatedRow.start_fg !== '직접입력') {
         console.log('모달뜨기 직전= 출발구분')
         await this.showModalAndWait();
 
@@ -923,15 +982,15 @@ class Ace1010 extends Component {
       }
     },
     //ace
-    handleCallBackAddrData : (start_addr1, end_arrd1, start_addr, end_addr) => {
+    handleCallBackAddrData: (start_addr1, end_arrd1, start_addr, end_addr) => {
       this.setState({
-        startAddr1 : start_addr1,
-        endAddr1 : end_arrd1,
+        startAddr1: start_addr1,
+        endAddr1: end_arrd1,
         startAddr: start_addr,
         endAddr: end_addr,
-        
-      },()=> {console.log("@@@@콜백함수안에있는 addr1",this.state.endAddr);});
-      
+
+      }, () => { console.log("@@@@콜백함수안에있는 addr1", this.state.endAddr); });
+
     },
 
     //주행거리 계산 함수
@@ -951,25 +1010,25 @@ class Ace1010 extends Component {
       //   end_addr: tmp.end_addr,
       //   mileage_km: tmp.mileage_km,
       // }
-      console.log("if가 실행되기전 addr"+startAddr);
+      console.log("if가 실행되기전 addr" + startAddr);
       if (cardsSeq !== null && cardsSeq !== undefined) {
         const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
         if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
           //(조건에 부합하는 요소가 없다면 -1을 반환이므로)
           updatedRows[rowIndex].mileage_km = Number(cardsMileageKm);
-          console.log("함수안에 있는거야 Addr1"+startAddr1);
+          console.log("함수안에 있는거야 Addr1" + startAddr1);
           updatedRows[rowIndex].start_addr1 = startAddr1;
-          updatedRows[rowIndex].end_addr1 =endAddr1;
-          updatedRows[rowIndex].start_addr= startAddr;
+          updatedRows[rowIndex].end_addr1 = endAddr1;
+          updatedRows[rowIndex].start_addr = startAddr;
           updatedRows[rowIndex].end_addr = endAddr;
 
           this.setState({
             rows: updatedRows,
             mileage_km: cardsMileageKm,
-            start_addr1:startAddr1,
-            end_addr1:endAddr1,
-            start_addr:startAddr,
-            end_addr:endAddr
+            start_addr1: startAddr1,
+            end_addr1: endAddr1,
+            start_addr: startAddr,
+            end_addr: endAddr
           });
         }
       }
