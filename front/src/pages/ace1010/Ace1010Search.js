@@ -21,13 +21,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-// import dayjs from 'dayjs';
-// import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
-// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-
 import SearchIcon from '@mui/icons-material/Search';
 import { getByQueryString, post } from "../../components/api_url/API_URL";
 import { Component } from "react";
@@ -206,7 +199,6 @@ class Ace1010Search extends Component {
           <IconButton type="submit" color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
             <SearchIcon />
           </IconButton>
-          <Button sx={{ width: 60, fontSize: 10, marginTop: 0.5, marginRight: 0.1 }} onClick={this.handleclearFields}>비우기</Button>
 
           <Snackbar
             open={this.state.openSnackBar}

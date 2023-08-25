@@ -20,6 +20,7 @@ import MileageModal from './mileagesearch/MileageModal';
 // ];
 import ModalInput from './ModalInput';
 import DrivingRecordCopy from './DrivingRecordCopy';
+import Ace1010SendYn from './Ace1010SendYn';
 
 class Ace1010 extends Component {
 
@@ -282,16 +283,13 @@ class Ace1010 extends Component {
       selectedRowRmkdc: params.row.rmk_dc,
       selectedRowUseFg: params.row.use_fg,
       selectedRow: params.row,
-      // editingCellName : 
+
     })
 
   }
 
   cellkeydown = (params, event) => {
     console.log('셀키다운')
-    // console.log(params.field)
-    // console.log(params.row.id)
-    // console.log(params)
     this.setState({
       editedCell: params.field,
       selectedRowIdFg: params.row.id,
@@ -307,13 +305,7 @@ class Ace1010 extends Component {
 
   }
   handleCellClick = (params, event) => {
-    // console.log('셀 클릭')
-    // console.log(params.row.id)
-    console.log("집중해야하는값!!" + params.field);
-    //mileageserach를 위해   
-    // if(params.field === 'mileage_km'){
-    //   this.MileageFunction.handleSeletedMileageKmRowAndColumn(params.row.id, params.field); 
-    // }
+
     this.setState({
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
@@ -353,37 +345,6 @@ class Ace1010 extends Component {
     }
   }
 
-  //  // 모달을 띄우기
-  //  showModalAndWait = async() => {
-
-  //   const user = JSON.parse(sessionStorage.getItem("user"));
-  //   const emp_cd = user.emp_cd;
-  //   const co_cd = "1000";
-
-
-  //     console.log('모달이 생성되었음');
-
-  //     try {
-  //       const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
-  //       const response = await getByQueryString(
-  //         `/ace1010/abizbookmark${queryString}`
-  //       );
-  //       this.setState(
-  //         {
-  //           bookmarks: response.data,
-  //           showModal : true,
-  //         },
-  //         () => {
-  //           console.log(this.state.bookmarks);
-  //           this.getbookmarks(this.state.bookmarks,user);
-  //         }
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-
-
-  // };
 
   getbookmarks = (bookmarks, user) => {
 
@@ -474,7 +435,14 @@ class Ace1010 extends Component {
 
   }
 
-
+  updateSendYnSnackBar = () => {
+    this.setState({ loading: true });
+    this.ace1010SearchRef.current.searchcarforabizperson();
+    setTimeout(() => {
+      this.setState({ loading: false, selectedCheckedRows: [], selectAllCheckbox: false });
+    }, 1000)
+    this.DouzoneContainer.current.handleSnackbarOpen(`운행기록이 마감되었습니다.`, 'success');
+  }
 
 
   processRowUpdatefunc = async (updatedRow, originalRow) => {
@@ -618,48 +586,8 @@ class Ace1010 extends Component {
           return updatedRow;
         }
       }
-
-      // if(cellFieldName === 'end_fg' && updatedRow.start_fg === '회사'){
-      //   const user = JSON.parse(sessionStorage.getItem("user"));
-      //   const emp_cd = user.emp_cd;
-      //   const co_cd = "1000";
-      //   const start_fg = updatedRow.start_fg;
-
-      //    const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
-      //    const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
-      //    console.log(response.data);
-      //    const tmp = response.data;
-
-      //    updatedRow = {
-      //      ...updatedRow,
-
-
-      //      start_fg: tmp.start_fg,
-      //      start_addr: tmp.start_addr,
-
-
-
-      //    }
-      //    console.log('프로세스에서 updatedrow 북마크 확힌')
-      //    console.log(this.state.bookmarkTempRow)
-      //    console.log(updatedRow)
-
-      //    return updatedRow;
-
-
-      // }
     }
 
-    // if (updatedRow.id === this.state.selectedRowIdFg && cellFieldName === 'end_fg') {
-
-    //   if (updatedRow.end_fg !== '자택' && updatedRow.end_fg !== '회사' && updatedRow.end_fg !== '거래처' && updatedRow.end_fg !== '직전도착지' && updatedRow.end_fg !== '직접입력') {
-    //     console.log('모달뜨기 직전 도착구분')
-    //     await this.showModalAndWait();
-
-    //     //updatedRow.end_fg = this.state.inputValueforfg;
-
-    //   }
-    // }
 
     //const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
     const mileageKm = Number(updatedRow.mileage_km);
@@ -1112,14 +1040,20 @@ class Ace1010 extends Component {
             />
           </div>
         ),
-        renderCell: (params) => (
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <Checkbox
-              checked={this.state.selectedCheckedRows.some(selectedRow => selectedRow.id === params.id)}
-              onChange={() => this.handleToggleCheckbox(params.row)} // 전체 row 정보를 전달
-            />
-          </div>
-        ),
+        renderCell: (params) => {
+          if (params.row.send_yn === '1') {
+            return <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>마감</div>;
+          }
+
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <Checkbox
+                checked={this.state.selectedCheckedRows.some(selectedRow => selectedRow.id === params.id)}
+                onChange={() => this.handleToggleCheckbox(params.row)}
+              />
+            </div>
+          );
+        },
 
       },
 
@@ -1339,26 +1273,26 @@ class Ace1010 extends Component {
       {
         field: 'send_yn',
         headerName: '마감여부',
-        type: 'singleSelect',
-        valueOptions: this.state.sendyn.map(item => item.s_nm),
+        type: 'string',
+
         width: 140,
-        editable: true,
+        //editable: 'true',
         align: 'center',
         headerAlign: 'center',
         sortable: false, renderHeader: (params) => (
           <strong>{params.colDef.headerName}</strong>
         ),
-
         valueGetter: (params) => {
-          return params.row.send_yn === '마감' ? '마감' : '미마감';
-        },
+          if (params.value === '1') {
+            return '마감';
+          } else if (params.value === '2') {
+            return '미마감';
+          }
+          return params.value;  // 기본값 반환 (1 또는 2가 아닌 경우 원래 값 출력)
+        }
+
       },
     ];
-
-
-
-
-
   }
 
 
@@ -1385,6 +1319,9 @@ class Ace1010 extends Component {
         handleConfirm={this.deleteRow}// 삭제 모달의 확인 버튼
         showDelete={''}
         searchcarforabizpersondrivingcopy={this.searchcarforabizpersondrivingcopy}
+        sendYn={<Ace1010SendYn
+          selectedCheckedRows={this.state.selectedCheckedRows}
+          updateSendYnSnackBar={this.updateSendYnSnackBar}></Ace1010SendYn>}
         //title="사원 삭제 확인"
         message="정말로 운행기록 정보를 삭제하시겠습니까?"
       // menu={}
@@ -1403,17 +1340,7 @@ class Ace1010 extends Component {
           disableColumnFilter
           disableColumnMenu
           hideFooterPagination hideFooter
-          // 마감여부에 따라 수정 못하게 하기
-          //isCellEditable={(params) => params.row.send_yn === '2'}
-          isCellEditable={(params) => {
-            // send_yn 필드만 확인
-            if (params.field === 'send_yn') {
-              // userRole이 ADMIN이 아니면 수정 불가
-              return authority === 'ROLE_ADMIN';
-            }
-            // 다른 셀은 기본적으로 수정 가능하다고 가정
-            return true;
-          }}
+          isCellEditable={(params) => params.row.send_yn !== '1'}
           processRowUpdate={this.processRowUpdatefunc}
           onCellKeyDown={this.cellkeydown}
           onRowClick={this.handleRowClick}

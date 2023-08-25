@@ -24,7 +24,7 @@ class Acc1010Search extends Component {
     super(props);
     this.state = {
       company: 1000,
-      status: "",
+      status: "재직",
       nameIdEmail: ""
     };
   }

@@ -96,7 +96,6 @@ class Acc1010Mauth extends React.Component {
       { field: 'menucd', headerName: '메뉴 코드', width: 150 },
       { field: 'subItem', headerName: '메뉴 이름', width: 200 },
       { field: 'insertid', headerName: '권한 부여자', width: 150 },
-      { field: 'insertip', headerName: '권한 부여자 IP', width: 150 },
       { field: 'insertdt', headerName: '권한 허가 날짜', width: 150 },
       {
         field: 'permission',
@@ -117,7 +116,7 @@ class Acc1010Mauth extends React.Component {
       },
     ];
 
-    return <div style={{ width: 1200 }}>
+    return <div style={{ width: 1000 }}>
       <DataGrid rows={rows} columns={columns} hideFooterPagination hideFooter />
     </div>
   }

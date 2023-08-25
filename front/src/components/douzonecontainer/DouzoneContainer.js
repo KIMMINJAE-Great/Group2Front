@@ -153,6 +153,7 @@ class DouzoneContainer extends Component {
       menus,
       selectedCheckedRows,
       selectedRows,
+      sendYn,
     } = this.props;
 
     const { isAce1010Open, functionCollection } = this.props; // Ace1010.js의 상태 가져오기
@@ -175,7 +176,8 @@ class DouzoneContainer extends Component {
             <div className="container-header-left">{this.props.title}</div>
             <div className="container-header-right">
               {isAce1010Open && ( // Ace1010.js 상태에 따라 버튼 조건부 렌더링
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', justifyContent: "space-between" }}>
+
                   {/* 복사 TEST  위치 이동하여도 됨! */}
                   <DrivingRecordCopy
                     selectedRows={this.props.selectedCheckedRows}
@@ -184,7 +186,9 @@ class DouzoneContainer extends Component {
                     car_cd={this.props.car_cd}
                   >
                   </DrivingRecordCopy>
+                  {sendYn}
                   <Button
+                    sx={{ minWidth: '90px' }}
                     id="basic-button"
                     // aria-controls={open ? 'basic-menu' : undefined}
                     // aria-haspopup="true"
@@ -194,6 +198,7 @@ class DouzoneContainer extends Component {
                     기능모음
                   </Button>
                   <Menu
+                    sx={{ width: '200px' }}
                     id="basic-menu"
                     anchorEl={this.state.funcVowel}
                     open={Boolean(this.state.funcVowel)}
