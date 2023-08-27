@@ -103,6 +103,14 @@ class Ace1010Search extends Component {
     const formattedLastUse = LastUse_dt.format('YYYY-MM-DD');
     let carforabizperson
     try {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+
+      const co_cd = user.co_cd;
+      const use_dt = LastUse_dt.format('YYYYMMDD');
+      const queryString2 = `?car_cd=${car_cd}&co_cd=${co_cd}&use_dt=${use_dt}`;
+      const reponseForkf = await getByQueryString(`/ace1010/selectLastAfterKm${queryString2}`)
+      this.props.setLastAfterKm(reponseForkf.data);
+
       const queryString = `?car_cd=${car_cd}&startDate=${formattedFirstUse}&endDate=${formattedLastUse}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
       console.log('검색직후 ')
@@ -116,6 +124,11 @@ class Ace1010Search extends Component {
         carforabizperson = response.data;
         this.props.searchcarforabizperson(carforabizperson, car_cd);
       }
+      //  기초거리 혹은 기록의 마지막 after_km가져오기
+
+
+
+
       const response2 = await post('/ace1010/selectStartaccKm', { car_cd }); // 두 번째 엔드포인트 호출
       const startacc_km = response2.data.startacc_km
       this.props.setStartacckm(startacc_km)

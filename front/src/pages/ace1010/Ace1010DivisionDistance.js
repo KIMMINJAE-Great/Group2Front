@@ -126,22 +126,24 @@ class Ace1010DivisionDistance extends Component {
         console.log('안분에서 기초거리 갖고오기')
         console.log(response.data)
 
-        let accumulatedMileage = response.data;
+        // let accumulatedMileage = response.data;
 
-        const newRows = rows.map((row, index) => {
-          if (index === 0) {
-            row.before_km = accumulatedMileage;
-            row.after_km = response.data + row.mileage_km;
-          } else {
-            accumulatedMileage += Number(rows[index - 1].mileage_km);
-            row.before_km = accumulatedMileage;
-            row.after_km = row.before_km + row.mileage_km;
-          }
-          return row;
-        });
-        const currentAfterKm = newRows[newRows.length - 1].after_km;
+        // const newRows = rows.map((row, index) => {
+        //   // if (index === 0) {
+        //   //   row.before_km = row.before_km
+
+        //   //   // row.before_km = accumulatedMileage;
+        //   //   // row.after_km = response.data + row.mileage_km;
+        //   // } else {
+        //   accumulatedMileage += Number(rows[index - 1].mileage_km);
+        //   row.before_km = accumulatedMileage;
+        //   row.after_km = row.before_km + row.mileage_km;
+        //   // }
+        //   return row;
+        // });
+        const currentAfterKm = rows[rows.length - 1].after_km;
         // 업데이트 된 rows를 state에 반영
-        this.setState({ rows: newRows, currentAfterKm: currentAfterKm });
+        this.setState({ rows: rows, currentAfterKm: currentAfterKm });
 
       })
       .catch((error) => {

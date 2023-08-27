@@ -92,6 +92,7 @@ class Ace1010 extends Component {
 
       startacc_km: 0,
 
+      lastAfterKm: '',
 
     }
     this.DouzoneContainer = React.createRef();
@@ -183,6 +184,14 @@ class Ace1010 extends Component {
     this.setState({ startacc_km: value })
   }
 
+  setLastAfterKm = (value) => {
+
+    this.setState({ lastAfterKm: value }, () => {
+      console.log('스테이트 변화')
+      console.log(this.state.lastAfterKm)
+    })
+  }
+
 
   // 차량 조회 후 rows에 abizcar_person 데이터 입력
   searchcarforabizperson = (carforabizperson, car_cd) => {
@@ -245,6 +254,7 @@ class Ace1010 extends Component {
           origin: 'N',
           rmk_dc: '',
           use_fg: '',
+          before_km: this.state.lastAfterKm,
 
         };
 
@@ -265,6 +275,7 @@ class Ace1010 extends Component {
           origin: 'N',
           rmk_dc: '',
           use_fg: '',
+          before_km: this.state.lastAfterKm,
         };
         this.setState({ rows: [emptyRow] });
       }
@@ -639,15 +650,15 @@ class Ace1010 extends Component {
             end_addr: tmp.end_addr,
 
           }
-          //  console.log('프로세스에서 updatedrow 북마크 확힌')
-          //  console.log(this.state.bookmarkTempRow)
-          //  console.log(updatedRow)
+
 
           return updatedRow;
         }
+
+
+
       }
     }
-
 
     //const rowIndex = this.state.rows.findIndex((row) => row.id === updatedRow.id);
     const mileageKm = Number(updatedRow.mileage_km);
@@ -699,32 +710,10 @@ class Ace1010 extends Component {
 
       } else if (updatedRow.origin === 'N') {
 
-        if (updatedRow.id === 1 && updatedRow.seq_nb === 0) {
-          console.log('기초거리 출력')
-          console.log(this.state.startacc_km)
-          console.log('N이면서 전 행이 있을 때')
-          updatedRow.before_km = this.state.startacc_km;
-          updatedRow.mileage_km = mileageKm
-          updatedRow.after_km = mileageKm + Number(this.state.startacc_km)
-        } else {
-          console.log('뭐징')
-          const maxId = Math.max(...updatedRows.map(row => row.id)) - 1;
-          const rowWithMaxId = updatedRows.find(row => row.id === maxId);
-          //id가 0이라면 그 전 행이 없다 그러면 after_km가 없고 그러면 굳이 설정해줄 필요는 없다
-          const afterKmForBeforeKm = rowWithMaxId ? rowWithMaxId.after_km : 0;
-
-          updatedRow.before_km = afterKmForBeforeKm
-          updatedRow.mileage_km = mileageKm
-          updatedRow.after_km = Number(afterKmForBeforeKm) + mileageKm
-        }
-
-
+        updatedRow.after_km = mileageKm + Number(updatedRow.before_km)
 
       }
     }
-
-
-
     this.setState({
       //rows: updatedRows,
       inputValueforfg: ''
@@ -836,6 +825,7 @@ class Ace1010 extends Component {
             origin: 'N',
             use_fg: '',
             rmk_dc: '',
+            before_km: this.state.lastAfterKm,
             // 기타 필요한 초기화 값들...
           };
 
@@ -910,7 +900,7 @@ class Ace1010 extends Component {
         this.DouzoneContainer.current.handleSnackbarOpen('업데이트 중 서버로 요청 보내기 실패.', 'error');
       }
     }
-
+    this.ace1010SearchRef.current.searchcarforabizperson();
   }
   // 모든 체크박스
   handleToggleAllCheckboxes = () => {
@@ -1051,11 +1041,14 @@ class Ace1010 extends Component {
     const deleteRows = this.state.selectedCheckedRows;
     console.log(deleteRows)
     const rows = this.state.rows;
+    const user = JSON.parse(sessionStorage.getItem('user'));
 
+    const co_cd = user.co_cd;
     const finaleDeleteRows = deleteRows.map(row => {
       return {
         seq_nb: row.seq_nb,
         car_cd: row.car_cd,
+        co_cd: co_cd,
       }
     })
     // 삭제할 운행기록을 오름차순으로 정렬
@@ -1425,13 +1418,20 @@ class Ace1010 extends Component {
           handleBeforeKmChange={this.handleBeforeKmChange}
           setStartacckm={this.setStartacckm}
           ref={this.ace1010SearchRef}
-          searchcarforabizperson={this.searchcarforabizperson}>
+          searchcarforabizperson={this.searchcarforabizperson}
+          setLastAfterKm={this.setLastAfterKm}>
+
         </Ace1010Search>
         {/* <DrivingRecordCopy selectedRows={this.state.newSelectedCheckedRows} /> */}
         <DataGrid
           disableColumnFilter
           disableColumnMenu
-          hideFooterPagination hideFooter
+          // hideFooterPagination hideFooter
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10, page: 0 },
+            },
+          }}
           isCellEditable={(params) => params.row.send_yn !== '1'}
           processRowUpdate={this.processRowUpdatefunc}
           onCellKeyDown={this.cellkeydown}
