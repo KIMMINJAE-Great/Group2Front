@@ -179,20 +179,19 @@ class DouzoneContainer extends Component {
                 <div style={{ display: 'flex', justifyContent: "space-between" }}>
 
                   {/* 복사 TEST  위치 이동하여도 됨! */}
-                  <DrivingRecordCopy
-                    selectedRows={this.props.selectedCheckedRows}
-                    handleToggleCheckbox={this.props.handleToggleCheckbox}
-                    searchcarforabizpersondrivingcopy={this.props.searchcarforabizpersondrivingcopy}
-                    car_cd={this.props.car_cd}
-                  >
-                  </DrivingRecordCopy>
+                  <Button sx={{ width: '50px', marginRight: '10px' }}>
+                    <DrivingRecordCopy
+                      selectedRows={this.props.selectedCheckedRows}
+                      handleToggleCheckbox={this.props.handleToggleCheckbox}
+                      searchcarforabizpersondrivingcopy={this.props.searchcarforabizpersondrivingcopy}
+                      car_cd={this.props.car_cd}
+                    >
+                    </DrivingRecordCopy>
+                  </Button>
                   {sendYn}
                   <Button
                     sx={{ minWidth: '90px' }}
                     id="basic-button"
-                    // aria-controls={open ? 'basic-menu' : undefined}
-                    // aria-haspopup="true"
-                    // aria-expanded={open ? 'true' : undefined}
                     onClick={this.handleClick}
                   >
                     기능모음
