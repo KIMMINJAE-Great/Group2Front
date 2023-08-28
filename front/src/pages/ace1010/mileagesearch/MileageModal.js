@@ -176,7 +176,7 @@ class MileageModal extends Component {
             PaperProps={{
               style: {
                 width: "50vw",
-                height: "52vh",
+                height: "54vh",
               },
             }}
           >
@@ -238,7 +238,7 @@ class MileageModal extends Component {
                 </Grid>
               </DialogContent>
               {/* 출발지,상세주소,도착지,상세주소  */}
-              <DialogContent style={{ borderLeft: '1px solid black', overflowX: 'auto', maxWidth: '550px',maxHeight: '410px' }}>
+              <DialogContent style={{ borderLeft: '1px solid black', overflowX: 'auto', maxWidth: '550px',maxHeight: '427px' }}>
                 <div >
                   <Grid container item xs={12}>
                     <Grid container style={{ marginBottom: "6px" }}>
@@ -266,7 +266,7 @@ class MileageModal extends Component {
                     <Grid container style={{ marginBottom: "6px" }}>
                       <Grid item xs={2.5} >
                         <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-                          출발지
+                          도착지
                         </Grid>
                         <Grid style={{fontSize:'18px', backgroundColor:'#FBF5EF', marginBottom:'1px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                           상세주소
