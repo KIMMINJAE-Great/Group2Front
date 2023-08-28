@@ -235,6 +235,7 @@ class Acc1013 extends Component {
       }
     }
     this.getCardList();
+    this.handleResetBasicInfo();
   };
 
   //삭제 버튼을 눌렀을 때 실행할 함수
@@ -388,6 +389,41 @@ class Acc1013 extends Component {
         return { content: updatedContent, selectedchecked: selectedchecked };
       })
   }
+
+  handleResetBasicInfo = () => {
+
+    this.setState({
+      selectedCompanyCards: {
+      co_cd:'',
+      co_nm:'',
+      co_nk:'',
+      emp_nm:'',
+      use_yn:'',
+      lng:'',
+      adm_cd:'',
+      bz_type:'',
+      bz_item:'',
+      co_tel:'',
+      co_fax:'',
+      reg_nb:'',
+      cp_ct:'',
+      cp_no:'',
+      adr_zp:'',
+      adr_inp:'',
+      adr_etc:'',
+      est_dt:'',
+      opn_dt:'',
+      cls_dt:'',
+      ceo_nm:'',
+      res_nb:'',
+      ac_per:'',
+      ac_dt:'',
+      acc_type:'',
+      }
+    });
+  }
+
+
 
   //onChange핸들함수
   handleCoCdChange = (value, emp) => {
