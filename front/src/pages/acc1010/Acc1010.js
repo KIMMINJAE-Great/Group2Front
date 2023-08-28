@@ -142,7 +142,7 @@ class Acc1010 extends Component {
                 this.setState({ errorMessage: error.response.data })
                 this.DouzoneContainer.current.handleSnackbarOpen(error.response.data, 'error');
             }
-
+            this.firstEmpCard()
             // 기존 사원 수정
         } else {
             try {
