@@ -49,11 +49,11 @@ class DrivingCodePicker extends React.Component {
   //모달에서 엔터쳤을때.(정상작동확인)
   handleKeyDownModal = async (e, textFieldValue) => {
     e.preventDefault();
-      return new Promise(async (resolve, reject) => {
-        this.setState({
-          modalTextFieldValue: textFieldValue
-        }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
-          try {
+    return new Promise(async (resolve, reject) => {
+      this.setState({
+        modalTextFieldValue: textFieldValue
+      }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
+        try {
           const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
           if (response.data.length === 1) {
             this.setState({
@@ -92,7 +92,6 @@ class DrivingCodePicker extends React.Component {
             selectedIds: response.data,
           });
         }
-        console.log(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -109,24 +108,24 @@ class DrivingCodePicker extends React.Component {
         ModalTextValue: ''
       }, async () => { // 상태가 업데이트된 후 이 콜백 함수가 실행됨
         try {
-        const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
-        if (response.data.length === 1) {
-          this.setState({
-            menuItems: response.data,
-            selectedIds: response.data
-          }, resolve);
-        } else {
-          this.setState({
-            menuItems: response.data,
-            selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
-          }, resolve);
+          const response = await get(`/codepicker/regcar/searchinfo?value=${encodeURIComponent(this.state.modalTextFieldValue)}`);
+          if (response.data.length === 1) {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: response.data
+            }, resolve);
+          } else {
+            this.setState({
+              menuItems: response.data,
+              selectedIds: [] // 다시 검색이 일어나면 선택된 항목들을 초기화..
+            }, resolve);
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
+      });
     });
-  });
-};
+  };
   // @@@@@@@@@@@@@@@ 체크 박스 @@@@@@@@@@@@@@@@@@@@@@
   handleToggleAllCheckboxes = () => {
     this.setState((prevState) => {
@@ -177,12 +176,12 @@ class DrivingCodePicker extends React.Component {
     });
   }
 
-  
+
 
 
   // 모든 체크박스의 상태를 해제
   resetCheckboxes = () => {
-    this.setState({textFieldValue:''})
+    this.setState({ textFieldValue: '' })
     this.setState(prevState => {
       const updatedContent = prevState.menuItems.map(item => ({ ...item, checked: false }));
 

@@ -25,14 +25,14 @@ class Acc1011Search extends Component {
     this.state = {
       company: "1000", //default값을 1000으로
       status: "",
-     
+
     };
   }
   clearFields = () => {
     this.setState({
       company: "",
       status: "",
-     
+
     });
   };
 
@@ -43,7 +43,6 @@ class Acc1011Search extends Component {
       const queryString = `?company=${company || ""}&status=${status || ""}`;
       const response = await getByQueryString(`/depmanagement/deptsearch${queryString}`);
       const departmentCards = response.data;
-      console.log(departmentCards)
       this.props.deptSearch(departmentCards);
       this.clearFields();
     } catch (error) {
@@ -93,7 +92,7 @@ class Acc1011Search extends Component {
             </Select>
           </Grid>
 
-         
+
         </Grid>
         <IconButton color="black" size="small" sx={{ borderRadius: 0, backgroundColor: '#FAFAFA', border: '1px solid #D3D3D3', ml: 3, width: '30px', height: '30px', marginRight: '10px', marginTop: '5px' }}>
           <SearchIcon onClick={this.deptSearch} />

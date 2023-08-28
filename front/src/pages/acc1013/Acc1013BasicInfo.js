@@ -63,47 +63,44 @@ const FieldName = styled(Typography)(({ theme }) => ({
 
 class Acc1013BasicInfo extends React.Component {
 
-/*  사업자번호 포맷 형식 */
-cleanUpInputReg(input) {
-  if (input) {
-    return input.replace(/[^0-9]/g, "").slice(0, 10);
-  }
-  return "";
-}
-
-formatRegistrationNumber(input) {
-  const cleanUpInputReg = this.cleanUpInputReg(input);
-
-  let formattedReg = cleanUpInputReg;
-
-  if (cleanUpInputReg.length > 3) {
-    formattedReg = formattedReg.slice(0, 3) + "-" + formattedReg.slice(3);
-  }
-  if (cleanUpInputReg.length > 5) {
-    formattedReg = formattedReg.slice(0, 6) + "-" + formattedReg.slice(6);
-  }
-
-  return formattedReg;
-}
-handleReg_nbChange = (input) => {
-  const formattedValue = this.formatPhoneNumber(input);
-  this.setState({
-    selectedSt: {
-      ...this.state.selectedSt,
-      tr_pn: formattedValue  // Update 'tr_pn' instead of 'reg_nb'
+  /*  사업자번호 포맷 형식 */
+  cleanUpInputReg(input) {
+    if (input) {
+      return input.replace(/[^0-9]/g, "").slice(0, 10);
     }
-  });
-};
+    return "";
+  }
+
+  formatRegistrationNumber(input) {
+    const cleanUpInputReg = this.cleanUpInputReg(input);
+
+    let formattedReg = cleanUpInputReg;
+
+    if (cleanUpInputReg.length > 3) {
+      formattedReg = formattedReg.slice(0, 3) + "-" + formattedReg.slice(3);
+    }
+    if (cleanUpInputReg.length > 5) {
+      formattedReg = formattedReg.slice(0, 6) + "-" + formattedReg.slice(6);
+    }
+
+    return formattedReg;
+  }
+  handleReg_nbChange = (input) => {
+    const formattedValue = this.formatPhoneNumber(input);
+    this.setState({
+      selectedSt: {
+        ...this.state.selectedSt,
+        tr_pn: formattedValue  // Update 'tr_pn' instead of 'reg_nb'
+      }
+    });
+  };
 
 
 
   render() {
 
-    console.log("readonlY:" + this.props.readonly);
     const { selectedCompanyCards, selectedRead } = this.props;
     var readonly = selectedRead === "N";
-    console.log("자식 콘솔 :co_cd:" + this.props.co_cd);
-    console.log("emp_nm: "+this.props.emp_nm);
 
 
 
@@ -140,7 +137,7 @@ handleReg_nbChange = (input) => {
                       </GridItem1>
                       <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField onChange={(e) => this.props.handleCoCdChange(e.target.value , this.props.emp_nm)}
+                        <MyTextField onChange={(e) => this.props.handleCoCdChange(e.target.value, this.props.emp_nm)}
                           value={selectedCompanyCards?.co_cd || ""}
                           variant="outlined"
                           inputProps={{ readOnly: this.props.readonly, style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
@@ -151,14 +148,14 @@ handleReg_nbChange = (input) => {
                         <FieldName variant="subtitle1" >사용여부</FieldName>
                       </GridItem3>
                       <Grid
-                        item xs={3.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft:'15px'}} >
+                        item xs={3.8} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: '15px' }} >
 
                         <FormControl>
                           <RadioGroup
                             row
                             defaultValue="Y"
                             onChange={(e) => this.props.handleUseYnChange(e.target.value)}
-                            value={selectedCompanyCards?.use_yn || "Y"|| ""}
+                            value={selectedCompanyCards?.use_yn || "Y" || ""}
                           >
                             <FormControlLabel value="Y" control={<Radio />} label="사용" />
                             <FormControlLabel value="N" control={<Radio />} label="미사용" />
@@ -232,7 +229,7 @@ handleReg_nbChange = (input) => {
                           variant="outlined" />
                       </Grid>
                       <Grid
-                        item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >                        
+                        item xs={1.7} style={{ display: "flex", flexDirection: "row", alignItems: "right" }} >
                       </Grid>
                     </Grid>
                   </Grid>
@@ -276,7 +273,7 @@ handleReg_nbChange = (input) => {
                           value={selectedCompanyCards?.co_tel || ""}
                           variant="outlined" />
                       </Grid>
-                      
+
                       <GridItem3 item xs={2} >
                         <FieldName variant="subtitle1">대표팩스</FieldName>
                       </GridItem3>
@@ -297,7 +294,7 @@ handleReg_nbChange = (input) => {
                       </GridItem1>
                       <Grid
                         item xs={4} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <MyTextField 
+                        <MyTextField
                           onChange={(e) => this.props.handleRegNbChange(e.target.value)}
                           value={selectedCompanyCards?.reg_nb || ""}
                           inputProps={{ style: { backgroundColor: readonly ? '#F2F2F2' : '#FEF4F4' } }}
@@ -314,7 +311,7 @@ handleReg_nbChange = (input) => {
                           value={selectedCompanyCards?.cp_ct || ""}
                           variant="outlined"
                           style={{ width: "100%", height: "33px", marginLeft: "10px" }}
-                          
+
                         >
                           <MenuItem value="개인">개인</MenuItem>
                           <MenuItem value="법인">법인</MenuItem>
@@ -460,7 +457,7 @@ handleReg_nbChange = (input) => {
                       </Grid>
                       <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
-                        <Typography variant="subtitle1" style={{marginRight:'5px'}}>기</Typography>
+                        <Typography variant="subtitle1" style={{ marginRight: '5px' }}>기</Typography>
                       </Grid>
                       <Grid
                         item xs={0} style={{ display: "flex", flexDirection: "row", alignItems: "center", }} >
@@ -471,7 +468,7 @@ handleReg_nbChange = (input) => {
                             onChange={(value) => { this.props.handleAcDtChange(value); }}
                             slotProps={{ textField: { size: 'small' } }} />
                         </LocalizationProvider>
-                      </Grid>                     
+                      </Grid>
                     </Grid>
                   </Grid>
 

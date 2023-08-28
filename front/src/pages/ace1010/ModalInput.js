@@ -22,9 +22,7 @@ class ModalInput extends Component {
   }
 
   onRowDoubleClick = (params, event) => {
-    console.log(event)
-    console.log(params.row)
-    console.log("/..............................e더블클릭실행");
+
     const bookmarkparams = params.row
     this.handleConfirm(bookmarkparams)
   }

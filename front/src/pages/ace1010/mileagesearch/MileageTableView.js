@@ -6,12 +6,12 @@ class MileageTableView extends Component {
         this.state = {
             selectedRoute: null
         };
-    }    
+    }
 
     handleRouteClick = (route) => {
         this.setState({ selectedRoute: route });
         this.props.callback.handleCallBackMileageData(route.distance);  //Ace1010.js에 있는 콜백함수 실행!
-        console.log("viewTest에서 콜백 들어갈값 route.distance:" +route.distance);
+
     }
 
     render() {
@@ -25,10 +25,10 @@ class MileageTableView extends Component {
 
         return (
             <div>
-                <table style={{ marginTop: "7px", width:"490px" }} border="1">
+                <table style={{ marginTop: "7px", width: "490px" }} border="1">
                     <thead>
                         <tr>
-                            <th style={{ width: "70px" ,height:"34px"}}>No</th>
+                            <th style={{ width: "70px", height: "34px" }}>No</th>
                             <th style={{ width: "148px" }}>경로(출발구분)</th>
                             <th style={{ width: "239px" }}>주행(km)</th>
                         </tr>
@@ -36,9 +36,9 @@ class MileageTableView extends Component {
                     <tbody>
                         {routes.map(route => (
                             <tr key={route.id} onClick={() => this.handleRouteClick(route)}>
-                                <td style={{ textAlign: "center", height:"50px" }}>{route.id}</td>
-                                <td style={{ textAlign: "center", height:"50px" }}>{route.name}</td>
-                                <td style={{ textAlign: "center", height:"50px" }}>{route.distance}</td>
+                                <td style={{ textAlign: "center", height: "50px" }}>{route.id}</td>
+                                <td style={{ textAlign: "center", height: "50px" }}>{route.name}</td>
+                                <td style={{ textAlign: "center", height: "50px" }}>{route.distance}</td>
                             </tr>
                         ))}
                     </tbody>

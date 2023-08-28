@@ -131,7 +131,6 @@ class DouzoneContainer extends Component {
 
   handleOpenBd = () => {
     this.setState({ isModalOpen: true });
-    console.log("handleOpenBd 실행됨!!!")
   };
   closeModal = () => {
     this.setState({ isModalOpen: false }); // isModalOpen 상태를 false로 변경하여 모달 닫기

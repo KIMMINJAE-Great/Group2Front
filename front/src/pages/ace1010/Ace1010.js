@@ -180,15 +180,13 @@ class Ace1010 extends Component {
     }
   }
   setStartacckm = (value) => {
-    console.log('... : ' + value)
     this.setState({ startacc_km: value })
   }
 
   setLastAfterKm = (value) => {
 
     this.setState({ lastAfterKm: value }, () => {
-      console.log('스테이트 변화')
-      console.log(this.state.lastAfterKm)
+      console.log('')
     })
   }
 
@@ -285,10 +283,7 @@ class Ace1010 extends Component {
 
   // 행이 클릭되면 여러 요소를 저장 하여 활용
   handleRowClick = (params, event) => {
-    console.log('행클릭')
-    console.log(params.rmk_dc);
-    console.log(params.row.rmk_dc);
-    console.log(params.row)
+
     // 행 클릭시 필수 셀 빨간색 입히는 setState
     this.setState({
       selectedRowId: params.id,
@@ -301,7 +296,6 @@ class Ace1010 extends Component {
   }
 
   cellkeydown = (params, event) => {
-    console.log('셀키다운')
     this.setState({
       editedCell: params.field,
       selectedRowIdFg: params.row.id,
@@ -332,7 +326,7 @@ class Ace1010 extends Component {
       bookmarkShowrows: [],
     }, () => {
 
-      console.log('모달에서 입력 끝남')
+      console.log('')
 
     });
 
@@ -372,7 +366,7 @@ class Ace1010 extends Component {
       };
     });
     this.setState({ bookmarkShowrows: dataWithIds }, () => {
-      console.log(this.state.bookmarkShowrows)
+      console.log('')
     });
 
 
@@ -385,7 +379,6 @@ class Ace1010 extends Component {
     const co_cd = "1000";
 
 
-    console.log('모달이 생성되었음');
 
     try {
       const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
@@ -398,7 +391,6 @@ class Ace1010 extends Component {
           showModal: true,
         },
         () => {
-          console.log(this.state.bookmarks);
           this.getbookmarks(this.state.bookmarks, user);
         }
       );
@@ -411,14 +403,12 @@ class Ace1010 extends Component {
     return new Promise((resolve, reject) => {
       this.resolveShowModal = resolve;  // resolve 함수를 저장
       this.setState({ showModal: true });
-      console.log('모달이 생성되었음');
     });
   }
 
   //  모달 확인버튼 클릭 후 
   handleModalConfirm = (bookmarkparams) => {
-    console.log('행 나와아아아앙')
-    console.log(bookmarkparams)
+
 
     this.setState({ bookmarkTempRow: bookmarkparams })
 
@@ -428,7 +418,6 @@ class Ace1010 extends Component {
       if (this.resolveShowModal) {
         this.resolveShowModal(); // 저장된 resolve 함수 실행
         this.resolveShowModal = null; // resolve 함수 초기화
-        console.log('모달에서 입력 끝남')
       }
     });
   };
@@ -441,7 +430,6 @@ class Ace1010 extends Component {
       if (this.resolveShowModal) {
         this.resolveShowModal();
         this.resolveShowModal = null;
-        console.log('모달에서 입력 끝남')
       }
     });
 
@@ -458,16 +446,6 @@ class Ace1010 extends Component {
 
 
   processRowUpdatefunc = async (updatedRow, originalRow) => {
-    console.log('프로세스 실행')
-    console.log(originalRow)
-    console.log(updatedRow)
-    console.log(updatedRow.id)
-    // this.setState({ selectedRow: updatedRow }, () => {
-    //   console.log(this.state.selectedRow); // 업데이트 된 상태를 확인하기 위해 콜백 내에서 확인
-    // });
-
-
-
 
     // 엔터가 이루어질때 field의 이름을 가져온다 becuase oncellkeydown이 processRowUpdate보다 먼저 일어나기 떄문
     const cellFieldName = this.state.editedCell;
@@ -497,7 +475,7 @@ class Ace1010 extends Component {
             updatedValue: updatedRow,
           }),
           () => {
-            console.log(this.state.updatedValue);
+            console.log('');
           }
         );
 
@@ -512,7 +490,7 @@ class Ace1010 extends Component {
           // 현재 행의 'end_addr' 값을 이전 행의 'end_addr'로 업데이트합니다.
           updatedRow.end_fg = previousEndfg;
           updatedRow.end_addr = previousAddr;
-          console.log(previousEndfg)
+
         }
         // 업데이트된 값을 새로운 변수에 저장
         this.setState(
@@ -520,7 +498,7 @@ class Ace1010 extends Component {
             updatedValue: updatedRow,
           }),
           () => {
-            console.log(this.state.updatedValue);
+            console.log('');
           }
         );
 
@@ -536,7 +514,7 @@ class Ace1010 extends Component {
 
 
       if (updatedRow.start_fg === '즐겨찾기' || updatedRow.end_fg === '즐겨찾기') {
-        console.log('모달뜨기 직전= 출발구분')
+
         await this.showModalAndWait();
 
         const tmp = this.state.bookmarkTempRow;
@@ -555,9 +533,7 @@ class Ace1010 extends Component {
 
 
         }
-        console.log('프로세스에서 updatedrow 북마크 확힌')
-        console.log(this.state.bookmarkTempRow)
-        console.log(updatedRow)
+
 
 
 
@@ -573,7 +549,7 @@ class Ace1010 extends Component {
 
           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
           const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
-          console.log(response.data);
+
           const tmp = response.data;
 
           updatedRow = {
@@ -582,9 +558,6 @@ class Ace1010 extends Component {
             start_addr: tmp.start_addr,
 
           }
-          //  console.log('프로세스에서 updatedrow 북마크 확힌')
-          //  console.log(this.state.bookmarkTempRow)
-          //  console.log(updatedRow)
 
           return updatedRow;
 
@@ -593,7 +566,7 @@ class Ace1010 extends Component {
 
           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&start_fg=${start_fg}`;
           const response = await getByQueryString(`/ace1010/bookmarkstartfg${queryString}`);
-          console.log(response.data);
+
           const tmp = response.data;
 
           updatedRow = {
@@ -602,9 +575,7 @@ class Ace1010 extends Component {
             start_addr: tmp.start_addr,
 
           }
-          //  console.log('프로세스에서 updatedrow 북마크 확힌')
-          //  console.log(this.state.bookmarkTempRow)
-          //  console.log(updatedRow)
+
 
           return updatedRow;
         }
@@ -621,7 +592,7 @@ class Ace1010 extends Component {
 
           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&end_fg=${end_fg}`;
           const response = await getByQueryString(`/ace1010/bookmarkendfg${queryString}`);
-          console.log(response.data);
+
           const tmp = response.data;
 
           updatedRow = {
@@ -630,9 +601,6 @@ class Ace1010 extends Component {
             end_addr: tmp.end_addr,
 
           }
-          //  console.log('프로세스에서 updatedrow 북마크 확힌')
-          //  console.log(this.state.bookmarkTempRow)
-          //  console.log(updatedRow)
 
           return updatedRow;
 
@@ -641,7 +609,7 @@ class Ace1010 extends Component {
 
           const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}&end_fg=${end_fg}`;
           const response = await getByQueryString(`/ace1010/bookmarkendfg${queryString}`);
-          console.log(response.data);
+
           const tmp = response.data;
 
           updatedRow = {
@@ -669,18 +637,17 @@ class Ace1010 extends Component {
       if (updatedRow.origin === 'Y') {
 
         // 오리진이 y이지만 맨마지막 행일 떄 오류발생
-        console.log('마일리지까지 들어옴')
+
         //가정 1 첫 빈행일 때 즉 id가 1일때
         //가정 2 id가 1이상일때
 
-        console.log('요청 전')
+
         // 스피너 적용
         this.setState({ loading: true });
         var finalresponse;
         post('/ace1010/autocalcmileage', updatedRow)
           .then((response) => {
-            console.log('주행 요청 후 데이터 출력')
-            console.log(response.data)
+
             if (response.data > 0) {
               finalresponse = response.data;
               setTimeout(() => {
@@ -705,7 +672,7 @@ class Ace1010 extends Component {
         // })
 
 
-        console.log('요청후')
+
 
 
       } else if (updatedRow.origin === 'N') {
@@ -734,10 +701,7 @@ class Ace1010 extends Component {
   // 4. 신규 저장시 seq_nb를 0에서 1로 바꾼다.
   // 5. 
   saveCellKeyDown = async (params) => {
-    console.log(' 저장 시작 ')
-    console.log(params)
-    console.log(params.row)
-    console.log(params.field)
+
     const fieldsToCheck = ['use_dt', 'start_fg', 'end_fg'];
 
     const allFieldsHaveValue = fieldsToCheck.every(field => {
@@ -754,12 +718,11 @@ class Ace1010 extends Component {
 
 
     if (params.row.origin == 'N') {
-      console.log('신규 저장 시작')
+
       const isoDate = this.toLocalISOString(new Date());  // 현재 시간을 로컬 타임존을 고려한 ISO 형식으로 변환
       const mysqlDate = isoDate.slice(0, 19).replace('T', ' ');
       params.row.insert_dt = mysqlDate;
-      console.log('운행일자가 어떻게 바뀌는지 보는')
-      console.log(params.row.use_dt)
+
       if (params.row.use_dt !== null) {
         // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
         const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
@@ -842,8 +805,7 @@ class Ace1010 extends Component {
       }
 
     } else if (params.row.origin === 'Y') {
-      console.log('수정 시작')
-      console.log(params.row)
+
       if (params.row.use_dt !== null) {
         // use_dt가 이미 yyyy-MM-dd HH:mm:ss 형식인지 검사
         const isAlreadyFormatted = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(params.row.use_dt);
@@ -979,7 +941,7 @@ class Ace1010 extends Component {
         startAddr: start_addr,
         endAddr: end_addr,
 
-      }, () => { console.log("@@@@콜백함수안에있는 addr1", this.state.endAddr); });
+      }, () => { console.log(""); });
 
     },
 
@@ -1000,13 +962,12 @@ class Ace1010 extends Component {
       //   end_addr: tmp.end_addr,
       //   mileage_km: tmp.mileage_km,
       // }
-      console.log("if가 실행되기전 addr" + startAddr);
+
       if (cardsSeq !== null && cardsSeq !== undefined) {
         const rowIndex = updatedRows.findIndex(row => row.seq_nb === cardsSeq);
         if (rowIndex !== -1) { //"선택된 행 ID와 일치하는 행이 updatedRows 배열 안에 있다면..."
           //(조건에 부합하는 요소가 없다면 -1을 반환이므로)
           updatedRows[rowIndex].mileage_km = Number(cardsMileageKm);
-          console.log("함수안에 있는거야 Addr1" + startAddr1);
           updatedRows[rowIndex].start_addr1 = startAddr1;
           updatedRows[rowIndex].end_addr1 = endAddr1;
           updatedRows[rowIndex].start_addr = startAddr;
@@ -1039,7 +1000,6 @@ class Ace1010 extends Component {
   // 운행기록 삭제
   deleteRow = async () => {
     const deleteRows = this.state.selectedCheckedRows;
-    console.log(deleteRows)
     const rows = this.state.rows;
     const user = JSON.parse(sessionStorage.getItem('user'));
 
@@ -1053,8 +1013,6 @@ class Ace1010 extends Component {
     })
     // 삭제할 운행기록을 오름차순으로 정렬
     finaleDeleteRows.sort((a, b) => a.seq_nb - b.seq_nb);
-    console.log('삭제될 운행기록들')
-    console.log(finaleDeleteRows)
     this.setState({ loading: true })
     del(`/ace1010/deleteabizcarperson`, { data: finaleDeleteRows })
       .then((response) => {
@@ -1079,11 +1037,9 @@ class Ace1010 extends Component {
   }
   //  안분하고 spinner 사용하기 위해 
   updateLoadingStateTrue = () => {
-    console.log('스피너 작동')
     this.setState({ loading: true });
   }
   updateLoadingStateFalse = () => {
-    console.log('스피너 종료')
     this.setState({ loading: false });
   }
   researchAfterSaveDivisionDistance = () => {
@@ -1094,7 +1050,6 @@ class Ace1010 extends Component {
   }
 
   searchcarforabizpersondrivingcopy = () => {
-    console.log('복사 재조회 시작')
     this.ace1010SearchRef.current.searchcarforabizperson();
     this.setState({ selectedCheckedRows: [], selectAllCheckbox: false })
   }

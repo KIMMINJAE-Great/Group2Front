@@ -104,7 +104,6 @@ class DrivingRecordCopy extends Component {
 
       post('/ace1010/selectedCopy', requestData)
         .then(response => {
-          console.log('Data successfully sent to server:', response.data);
           this.props.searchcarforabizpersondrivingcopy();
         })
         .catch(error => {
@@ -137,7 +136,6 @@ class DrivingRecordCopy extends Component {
 
       post('/ace1010/selectedCopy', requestData)
         .then(response => {
-          console.log('Data successfully sent to server:', response.data);
           this.props.searchcarforabizpersondrivingcopy();
         })
         .catch(error => {

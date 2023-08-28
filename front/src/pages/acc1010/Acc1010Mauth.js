@@ -23,8 +23,6 @@ class Acc1010Mauth extends React.Component {
 
   // 메뉴권한 등록 및 삭제
   handleCheckboxChange = (event, params) => {
-    console.log("params........" + params)
-    console.log("Checked state: ", event.target.checked);
 
     const isChecked = event.target.checked;
     const menucd = params.row.menucd;
@@ -48,17 +46,15 @@ class Acc1010Mauth extends React.Component {
           },
         }));
         const result = response.data;
-        console.log(result);
 
       } catch (error) {
-        console.log(error + "메뉴 권한 등록 에러")
+        console.log(error)
       }
 
       // 메뉴 권한 삭제
     } else {
       try {
         const response = del(`/emp/deletemauth/${empcd}/${menucd}`)
-        console.log(response.data)
         this.setState(prevState => ({
           permission: {
             ...prevState.permission,
@@ -66,7 +62,7 @@ class Acc1010Mauth extends React.Component {
           },
         }));
       } catch (error) {
-        console.log(error + "메뉴 권한 삭제 에러")
+        console.log(error)
       }
     }
   }

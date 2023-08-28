@@ -108,7 +108,6 @@ class Acc1012 extends Component {
       showAcc1012Trade: false,
       showAcc1012TdManage: false,
     });
-    console.log("handleMoveBasic 실행됨 !!!");
   };
 
   handleMoveTrade = () => {
@@ -117,7 +116,6 @@ class Acc1012 extends Component {
       showAcc1012Trade: true,
       showAcc1012TdManage: false,
     });
-    console.log("handleMoveTrade 실행됨 !!!")
   }
 
   handleMoveTdManage = () => {
@@ -126,7 +124,6 @@ class Acc1012 extends Component {
       showAcc1012Trade: false,
       showAcc1012TdManage: true,
     });
-    console.log("handleMoveTdManage 실행됨 !!!")
   }
 
   // 모달 열기
@@ -150,7 +147,6 @@ class Acc1012 extends Component {
 
   /* 카드를 클릭했을때 */
   handleCardClick = async (tr_cd, index) => {
-    console.log(tr_cd);
 
     try {
       const response = await post(`/tradeManagement/getst`, {
@@ -213,7 +209,6 @@ class Acc1012 extends Component {
   handleSaveClick = async (e) => {
     e.preventDefault();
     const { selectedSt, newTrade } = this.state;
-    console.log("handleSaveClick   실행")
     /* 필수값 유효성 검사 */
     if (!selectedSt.tr_fg) {
       this.DouzoneContainer.current.handleSnackbarOpen('거래처구분을 선택해 주세요.', 'error');
@@ -250,13 +245,11 @@ class Acc1012 extends Component {
     } else {
       try {
         const response = await update('/tradeManagement/updateSt', selectedSt);
-        console.log(response.data);
         //this.setState({ complete: '수정되었습니다.' })
         this.DouzoneContainer.current.handleSnackbarOpen('거래처 수정이 완료되었습니다.', 'success');
 
       } catch (error) {
         this.DouzoneContainer.current.handleSnackbarOpen('거래처 수정중 에러가 발생했습니다.', 'error');
-        console.log('사원 수정 에러 : ' + error)
       }
 
     }
@@ -273,7 +266,6 @@ class Acc1012 extends Component {
           `/tradeManagement/deleteSt`,
           { data: selectedchecked }
         );
-        console.log(response.data);
 
         const newCardList = stradeCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.tr_cd === item.tr_cd)
@@ -295,7 +287,6 @@ class Acc1012 extends Component {
         const response = await del(
           `/tradeManagement/deleteSt/${selectedSt.tr_cd}`
         );
-        console.log("서버 응답", response.data);
 
         // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
         const newCardList = stradeCards.filter(
@@ -320,7 +311,7 @@ class Acc1012 extends Component {
     this.handleCloseModal();
   };
 
-  
+
 
   /* 변경된 값 필드에 저장 => 거래처구분 */
   handleTr_fgChange = (value) => {
@@ -526,11 +517,9 @@ class Acc1012 extends Component {
   handleSearch = async () => {
     const { searchSt } = this.state;
 
-    console.log("handleSearch 기능 실행!!");
     try {
-      const queryString = `?tr_cd=${this.state.tr_cd || searchSt.tr_cd ||  ""}&tr_nm=${searchSt.tr_nm || ""}&tr_fg=${searchSt.tr_fg || ""}`;
+      const queryString = `?tr_cd=${this.state.tr_cd || searchSt.tr_cd || ""}&tr_nm=${searchSt.tr_nm || ""}&tr_fg=${searchSt.tr_fg || ""}`;
       const response = await getByQueryString(`/tradeManagement/getSearchData${queryString}`);
-      console.log(response.data);
       this.setState({
         stradeCards: response.data,
         content: response.data,
@@ -544,7 +533,7 @@ class Acc1012 extends Component {
   //서치 콜백  
   searchCallback = {
     handleCallBackData: (code) => {
-      this.setState({ tr_cd: code, searchSt:"",tr_fg:"" },() => {console.log("@#@#tr_cd: "+code)});
+      this.setState({ tr_cd: code, searchSt: "", tr_fg: "" }, () => { console.log("") });
     },
   }
 
@@ -568,7 +557,7 @@ class Acc1012 extends Component {
         selectedchecked: selectedchecked,
       };
     }, () => {
-      console.log(this.state.selectedchecked);
+      console.log('');
     });
   };
   // 체크박스 토글 처리하는 함수
@@ -583,7 +572,7 @@ class Acc1012 extends Component {
         return { content: updatedContent, selectedchecked: selectedchecked };
       },
       () => {
-        console.log(this.state.selectedchecked);
+        console.log('');
       }
     );
   };
@@ -708,7 +697,7 @@ class Acc1012 extends Component {
               handleSc_Tr_fgChange={this.handleSc_Tr_fgChange}
               handleSc_Tr_cdChange={this.handleSc_Tr_cdChange}
               handleSc_Tr_nmChange={this.handleSc_Tr_nmChange}
-              
+
               handleUwChange={this.handleUwChange}
 
               handleSearch={this.handleSearch}

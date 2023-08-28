@@ -85,7 +85,7 @@ class Acc1013 extends Component {
       jibunAddress: '', //지번 주소
       extraAddress: '', //나머지 주소
 
-      searchCom:null, //검색에필요
+      searchCom: null, //검색에필요
       companyCards: [], // 빈 카드리스트
       selectedCompanyCards: '', // 카드리스트 선택된것..?
       companyCardData: [], //카드리스트에서 딱 하나 [0] 배열이다!!
@@ -140,12 +140,9 @@ class Acc1013 extends Component {
 
   //카드 클릭시 입력됨 (회사 코드로)
   handleCardClick = async (co_cd, index) => {
-    console.log('co_cd............' + co_cd)
     try {
       const response = await post("/company/selectCard", { co_cd: co_cd });
 
-      console.log("카드리스트 클릭됨!");
-      console.log("co_cd" + co_cd);
       this.setState({
         selectedCompanyCards: response.data,
         selectedRead: "N",
@@ -154,11 +151,9 @@ class Acc1013 extends Component {
         readonly: true,
       });
 
-      console.log("!!companyCardData!!" + this.state.companyCardData);
 
     } catch (error) {
       console.error(error);
-      console.log("카드리스트 클릭 중에 오류발생");
     }
   };
 
@@ -171,7 +166,7 @@ class Acc1013 extends Component {
         [e.target.name]: e.target.value,
       },
       () => {
-        console.log(this.state[e.target.name]); // 상태 업데이트 확인
+        console.log(''); // 상태 업데이트 확인
       }
     );
   };
@@ -198,12 +193,11 @@ class Acc1013 extends Component {
       this.DouzoneContainer.current.handleSnackbarOpen('이미 존재합니다.', 'error');
       return;
     }
-    
+
 
     if (selectedRead === "Y") {
       try {
         const response = await post("/company/save", selectedCompanyCards);
-        console.log("post이후" + JSON.stringify(selectedCompanyCards));
         let updatedSelectedCompanyCards = {
           ...selectedCompanyCards,
           est_dt: selectedCompanyCards.est_dt || '',
@@ -218,13 +212,10 @@ class Acc1013 extends Component {
         }));
         this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 등록이 완료됐습니다', 'success');
 
-        console.log("저장을 누르기 전의 co_cd: " + this.state.co_cd);
       } catch (error) {
-        console.log("저장을 눌렀을떄!!는??co_cd" + this.state.co_cd);
         console.error(error);
         //같은 회사 코드 등 입력했을경우
         this.DouzoneContainer.current.handleSnackbarOpen('회사 등록중 에러가 발생했습니다.', 'error');
-        console.log("회사등록(DB) 중에 오류발생");
       }
     } else {
       try {
@@ -250,7 +241,6 @@ class Acc1013 extends Component {
         const response = await del("/company/delete",
           { data: selectedchecked }
         );
-        console.log("회사정보(DB) 삭제가 정상 실행" + response.data);
 
         const newCardList = companyCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.co_cd === item.co_cd)
@@ -270,7 +260,6 @@ class Acc1013 extends Component {
       } else if (selectedchecked.length == 1) {
         // 서버에 DELETE 요청 보내기
         const response = await del(`/company/delete/${selectedCompanyCards.co_cd}`);
-        console.log("서버 응답", response.data);
 
         const newCardList = companyCards.filter(
           (item) => item.co_cd !== selectedCompanyCards.co_cd
@@ -291,7 +280,6 @@ class Acc1013 extends Component {
     catch (error) {
       console.error(error);
       this.DouzoneContainer.current.handleSnackbarOpen('회사 정보 삭제중 에러가 발생했습니다.', 'error');
-      console.log("회사정보(DB) 삭제중에 오류발생");
     }
     this.handleCloseModal();
   };
@@ -332,18 +320,16 @@ class Acc1013 extends Component {
   //서치 콜백  
   searchCallback = {
     handleCallBackData: (code) => {
-      this.setState({ co_cd: code, use_yn:'' });
+      this.setState({ co_cd: code, use_yn: '' });
     },
   }
 
   /* 조회 했을 때 기능 */
   handleSearch = async () => {
     const { selectedCompanyCards, searchCom } = this.state;
-    console.log("handleSearch 기능 실행!!");
     try {
       const queryString = `?co_cd=${this.state.co_cd || ""}&use_yn=${searchCom?.defaultUse || ""}`;
       const response = await getByQueryString(`/company/getSearchData${queryString}`);
-      console.log(response.data);
       this.setState({
         selectedCompanyCards: response.data,
         content: response.data,
@@ -375,7 +361,7 @@ class Acc1013 extends Component {
         selectedchecked: selectedchecked,
       };
     }, () => {
-      console.log(this.state.selectedchecked);
+      console.log('');
     });
   };
   // 체크박스 토글 처리하는 함수
@@ -394,31 +380,31 @@ class Acc1013 extends Component {
 
     this.setState({
       selectedCompanyCards: {
-      co_cd:'',
-      co_nm:'',
-      co_nk:'',
-      emp_nm:'',
-      use_yn:'',
-      lng:'',
-      adm_cd:'',
-      bz_type:'',
-      bz_item:'',
-      co_tel:'',
-      co_fax:'',
-      reg_nb:'',
-      cp_ct:'',
-      cp_no:'',
-      adr_zp:'',
-      adr_inp:'',
-      adr_etc:'',
-      est_dt:'',
-      opn_dt:'',
-      cls_dt:'',
-      ceo_nm:'',
-      res_nb:'',
-      ac_per:'',
-      ac_dt:'',
-      acc_type:'',
+        co_cd: '',
+        co_nm: '',
+        co_nk: '',
+        emp_nm: '',
+        use_yn: '',
+        lng: '',
+        adm_cd: '',
+        bz_type: '',
+        bz_item: '',
+        co_tel: '',
+        co_fax: '',
+        reg_nb: '',
+        cp_ct: '',
+        cp_no: '',
+        adr_zp: '',
+        adr_inp: '',
+        adr_etc: '',
+        est_dt: '',
+        opn_dt: '',
+        cls_dt: '',
+        ceo_nm: '',
+        res_nb: '',
+        ac_per: '',
+        ac_dt: '',
+        acc_type: '',
       }
     });
   }
@@ -567,7 +553,6 @@ class Acc1013 extends Component {
     }));
   };
   handleEstDtChange = (value) => {
-    console.log('est_dt찍어보기.... : ' + value);
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,
@@ -576,7 +561,6 @@ class Acc1013 extends Component {
     }));
   };
   handleOpnDtChange = (value) => {
-    console.log('개업찍어보기.... : ' + value);
     this.setState((prevState) => ({
       selectedCompanyCards: {
         ...prevState.selectedCompanyCards,

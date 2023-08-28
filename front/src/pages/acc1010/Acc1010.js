@@ -93,7 +93,6 @@ class Acc1010 extends Component {
                 }));
 
                 this.setState({ employeeCards, content: response.data });
-                console.log(response);
             } catch (error) {
                 console.log(error);
             }
@@ -108,7 +107,6 @@ class Acc1010 extends Component {
 
     //  주소 찾기
     handlePostComplete = (data) => {
-        console.log(data)
 
         this.setState(prevState => ({
             selectedCard: {
@@ -128,7 +126,6 @@ class Acc1010 extends Component {
 
         //신규 사원 등록
         if (selectedCard.newEmp === 'Y') {
-            console.log("....................empregiser : " + selectedCard)
             try {
                 const response = await post('/emp/register', selectedCard);
                 this.setState({
@@ -138,7 +135,6 @@ class Acc1010 extends Component {
                 //this.setState({ complete: '완료되었습니다.' })
                 this.DouzoneContainer.current.handleSnackbarOpen('사원 등록이 완료되었습니다.', 'success');
             } catch (error) {
-                console.log('사원 등록 에러 : ' + error)
                 this.setState({ errorMessage: error.response.data })
                 this.DouzoneContainer.current.handleSnackbarOpen(error.response.data, 'error');
             }
@@ -147,16 +143,12 @@ class Acc1010 extends Component {
         } else {
             try {
                 const response = await update('/emp/update', selectedCard);
-                console.log(response.data);
                 //this.setState({ complete: '' })
                 //this.setState({ complete: '수정되었습니다.' })
                 this.DouzoneContainer.current.handleSnackbarOpen('사원수정이 완료되었습니다.', 'success');
             } catch (error) {
                 this.DouzoneContainer.current.handleSnackbarOpen('사원 수정 에러', 'error');
             }
-
-            console.log('기존 회원 수정')
-            console.log('Update 요청보내기');
         }
 
 
@@ -173,7 +165,6 @@ class Acc1010 extends Component {
                 const response = await del(
                     `/emp/delete`, { data: selectedchecked }
                 );
-                console.log("서버 응답 : ", response.data);
 
                 const newCardList = employeeCards.filter(
                     (item) => !selectedchecked.some((checkedItem) => checkedItem.emp_cd === item.emp_cd)
@@ -189,7 +180,6 @@ class Acc1010 extends Component {
                 this.firstEmpCard();
             } else {
                 const response = await del(`/emp/delete/${selectedCard.emp_cd}`);
-                console.log("서버 응답 : ", response.data);
 
                 const newCardList = employeeCards.filter(
                     (item) => item.emp_cd !== selectedCard.emp_cd
@@ -205,7 +195,6 @@ class Acc1010 extends Component {
             }
         } catch (error) {
             this.DouzoneContainer.current.handleSnackbarOpen('사원 삭제 실패하였습니다.', 'error');
-            console.log('사원 등록 에러 : ' + error);
         }
 
         this.handleCloseModal();
@@ -248,10 +237,9 @@ class Acc1010 extends Component {
             // const queryString = `?emp_cd=${emp_cd}`;
             const response = await getByQueryString(`/emp/getmauth/${emp_cd}`);
             const getmauth = response.data;
-            console.log(getmauth);
             this.setState({ mauth: Array.isArray(getmauth) ? getmauth : [] }); //some을 쓰기 위해 항상 배열로 만듬
         } catch (error) {
-            console.log(error + "메뉴권한 가져오기 실패");
+            console.log(error);
         }
     }
 
@@ -462,7 +450,6 @@ class Acc1010 extends Component {
                 selectedchecked: selectedchecked,
             };
         }, () => {
-            console.log(this.state.selectedchecked);
         });
     };
     // 체크박스 토글 처리하는 함수
@@ -477,7 +464,7 @@ class Acc1010 extends Component {
                 return { content: updatedContent, selectedchecked: selectedchecked };
             },
             () => {
-                console.log(this.state.selectedchecked);
+                console.log('');
             }
         );
     };
@@ -594,7 +581,6 @@ class Acc1010 extends Component {
         // const authority = user.authorities && user.authorities.length > 0 ? user.authorities[0].authority : null;
         const authority = user.authorities[0].authority
 
-        console.log(authority);
 
         const { employeeCards, title } = this.state;
 

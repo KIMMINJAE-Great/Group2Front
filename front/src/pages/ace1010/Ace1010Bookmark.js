@@ -73,13 +73,13 @@ class Ace1010Bookmark extends Component {
     this.dataGridRef = React.createRef();
   }
 
- 
+
   componentDidMount() {
     this.getstartendfg();
     document.addEventListener('keydown', this.handleKeyDown)
     this.getsendyn();
     this.getusefg();
-    
+
   }
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown);
@@ -88,19 +88,19 @@ class Ace1010Bookmark extends Component {
     try {
       const response = await get("/ace1010/startendfg");
       this.setState({ startendfg: response.data });
-    } catch (error) {}
+    } catch (error) { }
   };
   getsendyn = async () => {
     try {
       const response = await get("/ace1010/sendyn");
       this.setState({ sendyn: response.data });
-    } catch (error) {}
+    } catch (error) { }
   };
   getusefg = async () => {
     try {
       const response = await get("/ace1010/usefg");
       this.setState({ usefg: response.data });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   closeModal = () => {
@@ -129,36 +129,36 @@ class Ace1010Bookmark extends Component {
     // const {updatedValue} = this.state;
 
     //수정
-   
-    // 저장 동작 또는 원하는 다른 동작 수행
-    try{
 
-      if(this.state.updatedValue.origin ==='Y'){
-        console.log("수정하러 디비로~");
-        const response = await update("/ace1010/updatebookmark",this.state.updatedValue);
+    // 저장 동작 또는 원하는 다른 동작 수행
+    try {
+
+      if (this.state.updatedValue.origin === 'Y') {
+
+        const response = await update("/ace1010/updatebookmark", this.state.updatedValue);
 
         this.setState((prevState) => ({
           // rows: [...prevState.rows, emptyRow],
-          updatedValue:"",
+          updatedValue: "",
         }));
 
-  
-  
-       
-      }else{
-        const response = await post("/ace1010/insertbookmark",this.state.addedrows);
 
-      console.log(response.data)
 
-      this.setState({addedrows:[],})
+
+      } else {
+        const response = await post("/ace1010/insertbookmark", this.state.addedrows);
+
+
+
+        this.setState({ addedrows: [], })
 
 
       }
-      
-      
 
 
-    }catch{
+
+
+    } catch {
 
     }
   };
@@ -169,23 +169,22 @@ class Ace1010Bookmark extends Component {
     if (event.key === 'ArrowDown') {
       event.stopPropagation();
       // ArrowDown 키 이벤트 처리 로직
-      console.log('ArrowDown key pressed');
+
     } else if (event.key === 'ArrowUp') {
       event.stopPropagation();
       // ArrowUp 키 이벤트 처리 로직
-      console.log('ArrowUp key pressed');
+
     }
   };
 
- 
+
   handleOpen = async (event) => {
     event.preventDefault();
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const emp_cd = user.emp_cd;
     const co_cd = "1000";
-    console.log("있나요?................................");
-    console.log(emp_cd);
+
 
     try {
       const queryString = `?emp_cd=${emp_cd}&co_cd=${co_cd}`;
@@ -199,7 +198,7 @@ class Ace1010Bookmark extends Component {
           isModalOpen: open,
         },
         () => {
-          console.log(this.state.bookmarks);
+
           this.getabizcarbookmark(this.state.bookmarks);
         }
       );
@@ -209,23 +208,23 @@ class Ace1010Bookmark extends Component {
   };
 
 
- //  스낵바 닫기
- handleSnackbarClose = (event, reason) => {
-  if (reason === "clickaway") {
-    return;
-  }
+  //  스낵바 닫기
+  handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
 
-  this.setState({
-    openSnackBar: false,
-  });
-};
-handleSnackbarOpen = (message, severity = "success") => {
-  this.setState({
-    openSnackBar: true,
-    snackBarMessage: message,
-    severity: severity,
-  });
-};
+    this.setState({
+      openSnackBar: false,
+    });
+  };
+  handleSnackbarOpen = (message, severity = "success") => {
+    this.setState({
+      openSnackBar: true,
+      snackBarMessage: message,
+      severity: severity,
+    });
+  };
 
 
 
@@ -268,8 +267,7 @@ handleSnackbarOpen = (message, severity = "success") => {
       };
 
       this.setState({ rows: [...dataWithIds, emptyRow] });
-      console.log(dataWithIds);
-      console.log(emptyRow);
+
     } else {
       // 차량등 등록되어 있지만 운행기록이 없을 때
       // 빈 행을 생성
@@ -288,7 +286,7 @@ handleSnackbarOpen = (message, severity = "success") => {
 
   // 행이 클릭되면 여러 요소를 저장 하여 활용
   handleRowClick = (params, event) => {
-    console.log(params.row);
+
     // 행 클릭시 필수 셀 빨간색 입히는 setState
     this.setState({
       selectedRowId: params.id,
@@ -296,7 +294,7 @@ handleSnackbarOpen = (message, severity = "success") => {
     });
   };
   handleCellClick = (params, event) => {
- 
+
     this.setState({
       selectedRowIdFg: params.row.id,
       selectedCellFg: params.field,
@@ -304,7 +302,7 @@ handleSnackbarOpen = (message, severity = "success") => {
     });
   }
   cellkeydown = (params, event) => {
-    console.log('셀키다운')
+
     this.setState({
       editedCell: params.field,
       selectedRowIdFg: params.row.id,
@@ -317,43 +315,42 @@ handleSnackbarOpen = (message, severity = "success") => {
 
 
   processRowUpdatefunc = async (updatedRow, originalRow) => {
-    console.log(updatedRow);
-    console.log(originalRow);
+
 
     const cellFieldName = this.state.editedCell;
 
     //직전행선지
-    if(updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')){
+    if (updatedRow.id === this.state.selectedRowIdFg && (cellFieldName === 'start_fg' || cellFieldName === 'end_fg')) {
 
-              // 현재 셀이 'start_fg'이고 값이 '직전행선지'인 경우
-          if (cellFieldName === 'start_fg' && updatedRow.start_fg === '직전행선지') {
-            // 이전 행의 인덱스를 찾습니다.
-            const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
-            if (previousRowIndex !== -1) {
-              // 이전 행의 'start_addr' 값을 가져옵니다.
-              const previousStartfg = this.state.rows[previousRowIndex].start_fg;
-              const previousAddr = this.state.rows[previousRowIndex].start_addr;
+      // 현재 셀이 'start_fg'이고 값이 '직전행선지'인 경우
+      if (cellFieldName === 'start_fg' && updatedRow.start_fg === '직전행선지') {
+        // 이전 행의 인덱스를 찾습니다.
+        const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+        if (previousRowIndex !== -1) {
+          // 이전 행의 'start_addr' 값을 가져옵니다.
+          const previousStartfg = this.state.rows[previousRowIndex].start_fg;
+          const previousAddr = this.state.rows[previousRowIndex].start_addr;
 
-              // 현재 행의 'start_addr' 값을 이전 행의 'start_addr'로 업데이트합니다.
-              updatedRow.start_fg = previousStartfg;
-              updatedRow.start_addr = previousAddr;
-            }
-          }else if(cellFieldName === 'end_fg' && updatedRow.end_fg === '직전행선지'){
-            const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
-            if (previousRowIndex !== -1) {
-              // 이전 행의 'end_addr' 값을 가져옵니다.
-              const previousEndfg = this.state.rows[previousRowIndex].end_fg;
-              const previousAddr = this.state.rows[previousRowIndex].end_addr;
+          // 현재 행의 'start_addr' 값을 이전 행의 'start_addr'로 업데이트합니다.
+          updatedRow.start_fg = previousStartfg;
+          updatedRow.start_addr = previousAddr;
+        }
+      } else if (cellFieldName === 'end_fg' && updatedRow.end_fg === '직전행선지') {
+        const previousRowIndex = this.state.rows.findIndex(row => row.id === updatedRow.id - 1);
+        if (previousRowIndex !== -1) {
+          // 이전 행의 'end_addr' 값을 가져옵니다.
+          const previousEndfg = this.state.rows[previousRowIndex].end_fg;
+          const previousAddr = this.state.rows[previousRowIndex].end_addr;
 
-              // 현재 행의 'end_addr' 값을 이전 행의 'end_addr'로 업데이트합니다.
-              updatedRow.end_fg = previousEndfg;
-              updatedRow.end_addr = previousAddr;
-            }
+          // 현재 행의 'end_addr' 값을 이전 행의 'end_addr'로 업데이트합니다.
+          updatedRow.end_fg = previousEndfg;
+          updatedRow.end_addr = previousAddr;
+        }
 
-          }
-  }
+      }
+    }
 
-    
+
 
     // 업데이트된 값을 새로운 변수에 저장
     this.setState(
@@ -361,7 +358,7 @@ handleSnackbarOpen = (message, severity = "success") => {
         updatedValue: updatedRow,
       }),
       () => {
-        console.log(this.state.updatedValue);
+        console.log('');
       }
     );
 
@@ -369,12 +366,11 @@ handleSnackbarOpen = (message, severity = "success") => {
   };
 
   // 유효성 검사 후 빈행을 추가한다,
-  handleSaveRowButtonClick =async(params)=>{
+  handleSaveRowButtonClick = async (params) => {
 
-    const {updatedValue}=this.state;
+    const { updatedValue } = this.state;
 
-    console.log(" 저장 시작 ");
-    console.log(updatedValue)
+
 
     const fieldsToCheck = [
       "bookmark_cd",
@@ -388,7 +384,7 @@ handleSnackbarOpen = (message, severity = "success") => {
       const value = updatedValue[field];
       return value !== undefined && value !== null && value !== "";
     });
-    
+
 
     if (!allFieldsHaveValue) {
       this.handleSnackbarOpen(
@@ -399,7 +395,7 @@ handleSnackbarOpen = (message, severity = "success") => {
     }
 
     if (updatedValue.origin === "N") {
-      console.log("신규 저장하고 새로운행 시작");
+
 
       // bookmark_cd 중복체크
       const isDuplicate = this.state.rows.some(
@@ -414,7 +410,7 @@ handleSnackbarOpen = (message, severity = "success") => {
         return;
       }
 
-      
+
 
       try {
         this.handleSnackbarOpen(
@@ -434,8 +430,8 @@ handleSnackbarOpen = (message, severity = "success") => {
         this.setState((prevState) => ({
           rows: updatedRows,
           addedrows: [...prevState.addedrows, updatedValue], //추가된 행만 저장한 변수
-        }),()=>{
-          console.log(this.state.addedrows)
+        }), () => {
+          console.log('')
         });
 
         // 새로운 즐겨찾기 저장시 빈행 추가
@@ -458,22 +454,21 @@ handleSnackbarOpen = (message, severity = "success") => {
 
         this.setState((prevState) => ({
           rows: [...prevState.rows, emptyRow],
-          updatedValue:"",
+          updatedValue: "",
         }));
       } catch (error) {
         console.error(error);
         this.handleSnackbarOpen("문제가 발생했습니다.다시 시도해주세요", "error");
       }
-    }else if(updatedValue.origin === "Y"){
-      console.log("수정 하기 위한 임시저장?")
-      console.log(updatedValue)
+    } else if (updatedValue.origin === "Y") {
+
       this.handleSnackbarOpen(
         "임시저장 되었습니다.",
         "success"
       );
 
-      
-      
+
+
     }
 
   }
@@ -481,7 +476,7 @@ handleSnackbarOpen = (message, severity = "success") => {
 
   render() {
     const user = JSON.parse(sessionStorage.getItem("user"));
-    
+
     const { isModalOpen } = this.state;
 
     const columns = [
@@ -609,7 +604,7 @@ handleSnackbarOpen = (message, severity = "success") => {
           return time;
         },
       },
-      
+
       {
         field: "start_fg",
         headerName: "출발구분",
@@ -734,7 +729,7 @@ handleSnackbarOpen = (message, severity = "success") => {
                   display: "flex",
                   justifyContent: "left",
                   marginTop: "10px",
-                  marginLeft:"10px"
+                  marginLeft: "10px"
                 }}
               >
                 <button
@@ -845,9 +840,9 @@ handleSnackbarOpen = (message, severity = "success") => {
               severity={this.state.severity}
               sx={{
                 width: "100%",
-                backgroundColor:"#FBFBFB",
+                backgroundColor: "#FBFBFB",
                 ".MuiAlert-icon": {
-                  iconColor:"#ffffff",
+                  iconColor: "#ffffff",
                 },
                 // color: "white",
                 fontWeight: "bold",

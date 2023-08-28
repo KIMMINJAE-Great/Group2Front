@@ -44,7 +44,7 @@ class MileageModal extends Component {
     this.setState({
       mileageCards: this.props.content
     });
-    console.log("모달 디드마운트 : " + this.state.mileageCards);
+
   }
 
   // Snackbar 표시 함수
@@ -93,8 +93,7 @@ class MileageModal extends Component {
   //카드 클릭
   handleCardClick = (seq_nb) => {
     const selectedCard = this.state.mileageCards.find(item => item.seq_nb === seq_nb);
-    console.log("selectedCard이다." + JSON.stringify(selectedCard));
-    console.log("selectedCard의 km이다.." + JSON.stringify(selectedCard.mileage_km));
+
 
     //seq_nb값 가져오는 코드 ace1010으로 (카드클릭할때)
     this.props.callback.handleGetSeqNbBySeletedCard(selectedCard.seq_nb);
@@ -160,7 +159,7 @@ class MileageModal extends Component {
   };
 
   render() {
-    console.log("content 마일모달: " + JSON.stringify(this.props.mileageCards))
+
     const { mileageCards, selectedItems } = this.state;
     const { distanceRealtime, distanceBased, distanceFree } = this.state;
 

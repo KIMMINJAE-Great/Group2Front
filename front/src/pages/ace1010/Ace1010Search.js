@@ -113,8 +113,7 @@ class Ace1010Search extends Component {
 
       const queryString = `?car_cd=${car_cd}&startDate=${formattedFirstUse}&endDate=${formattedLastUse}`;
       const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
-      console.log('검색직후 ')
-      console.log(response.data)
+
       if (response.data === 'not found') {
         this.props.searchcarforabizperson(null, car_cd);
       } else if (response.data === 'not using') {
@@ -132,8 +131,7 @@ class Ace1010Search extends Component {
       const response2 = await post('/ace1010/selectStartaccKm', { car_cd }); // 두 번째 엔드포인트 호출
       const startacc_km = response2.data.startacc_km
       this.props.setStartacckm(startacc_km)
-      console.log("startacc_km", startacc_km)
-      console.log("두 번째 엔드포인트 호출")
+
 
 
       this.setState({
@@ -150,7 +148,7 @@ class Ace1010Search extends Component {
   searchCallback = {
     handleCallBackData: (code) => {
       this.setState({ car_cd: code }, () =>
-        console.log("@@@car_cd :car_cdcar_cdcar_cd" + this.state.car_cd));
+        console.log(""));
     },
 
   }

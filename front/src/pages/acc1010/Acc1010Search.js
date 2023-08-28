@@ -44,7 +44,6 @@ class Acc1010Search extends Component {
       const queryString = `?company=${company || ""}&status=${status || ""}&nameIdEmail=${nameIdEmail || ""}`;
       const response = await getByQueryString(`/emp/empsearch${queryString}`);
       const employeeCards = response.data;
-      console.log(employeeCards)
       this.props.empSearch(employeeCards);
       // this.handleclearFields();
     } catch (error) {

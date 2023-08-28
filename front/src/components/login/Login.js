@@ -22,7 +22,6 @@ class Login extends Component {
   // 로그인 요청
   handleLogin = async (event) => {
     event.preventDefault();
-    console.log(this.state.username + ' && ' + this.state.password)
 
     try {
       const response = await post('/auth/login', {
@@ -31,14 +30,12 @@ class Login extends Component {
       });
 
       this.setState({ usernameError: false });
-      console.log(response.data);
-      console.log('로그인 성공');
       sessionStorage.setItem('user', JSON.stringify(response.data));
       // localStorage.setItem('user', JSON.stringify(response.data))
       this.props.history.push("/mainpage");
 
     } catch (error) {
-      console.log('로그인 요청 에러 ', error);
+
       if (error.response && error.response.status === 404) {
         this.setState({
           usernameError: true,

@@ -46,12 +46,10 @@ class Nav extends Component {
         [index]: !prevState.openSections[index]
       }
     }));
-    console.log('메뉴열기')
   };
 
   // 메뉴 컴포넌트 호출
   handleButtonClick = (value, url, menucd) => {
-    console.log('메뉴 컴포넌트 호출')
     this.props.history.push(`/mainpage/${url}`);
     this.props.onButtonClick(value, url, menucd);
   };

@@ -22,9 +22,9 @@ class Ace1010SendYn extends Component {
 
   }
   setSendYn = () => {
-    console.log('sendYn')
+
     let selectedCheckedRows = this.props.selectedCheckedRows;
-    console.log(selectedCheckedRows)
+
 
     if (selectedCheckedRows.length < 1) {
       this.setState({ snackBarMessage: '마감할 운행기록을 선택해 주십시오.' });
@@ -52,7 +52,6 @@ class Ace1010SendYn extends Component {
     else {
       update('/ace1010/updatesendyn', selectedCheckedRows)
         .then((response) => {
-          console.log(response.data)
           this.props.updateSendYnSnackBar()
         })
         .catch((error) => {

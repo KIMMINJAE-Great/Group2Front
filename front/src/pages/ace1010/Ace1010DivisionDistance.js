@@ -102,14 +102,12 @@ class Ace1010DivisionDistance extends Component {
   };
 
   handleOpen = (rows) => {
-    console.log('안분열림')
-    console.log(rows)
+
     if (rows.length === 0) {
       this.showErrorSnackbar()
       return
     }
-    console.log('안분 열림')
-    console.log(rows)
+
     this.setState({
       isModalOpen: true,
       cureentAfterKm: '',
@@ -123,8 +121,7 @@ class Ace1010DivisionDistance extends Component {
     //const response = await getByQueryString(`/ace1010/searchcarforabizperson${queryString}`);
     getByQueryString(`/ace1010/getstartaccfordivision?car_cd=${car_cd}`)
       .then((response) => {
-        console.log('안분에서 기초거리 갖고오기')
-        console.log(response.data)
+
 
         // let accumulatedMileage = response.data;
 
@@ -155,7 +152,7 @@ class Ace1010DivisionDistance extends Component {
   };
   // 안분 요청
   onConfirm = () => {
-    console.log('안분 요청시작')
+
     const updateRowsForDivisionDistance = [...this.state.rows];
 
     updateRowsForDivisionDistance.sort((a, b) => a.seq_nb - b.seq_nb);
@@ -170,7 +167,7 @@ class Ace1010DivisionDistance extends Component {
     this.props.updateLoadingStateTrue();
     post(`/ace1010/savedivisiondistance`, data)
       .then(response => {
-        console.log(response.data)
+
         this.props.researchAfterSaveDivisionDistance()
         this.closeModal()
         setTimeout(() => {
@@ -356,8 +353,7 @@ class Ace1010DivisionDistance extends Component {
   render() {
     const { isModalOpen } = this.state;
     const { selectedCheckedRows, } = this.props;
-    console.log('안분 실행')
-    console.log(selectedCheckedRows)
+
 
     return (
       <div>

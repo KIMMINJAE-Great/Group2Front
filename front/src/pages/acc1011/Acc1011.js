@@ -115,7 +115,6 @@ class Acc1011 extends Component {
   }
   // 카드를 클릭했을때
   handleCardClick = async (dept_cd, index) => {
-    console.log(dept_cd);
 
     try {
       const response = await post(`/depmanagement/getdept`, {
@@ -153,12 +152,10 @@ class Acc1011 extends Component {
 
     // 부서코드가 비어있는지 확인합니다.
     if (!selectedDept.dept_cd) {
-      console.log("부서코드를 입력해주세요.");
       return;
     }
     // 부서명이 비엉있는지 확인합니다.
     if (!selectedDept.dept_nm) {
-      console.log("부서명을 입력해주세요.");
       return;
     }
 
@@ -170,7 +167,6 @@ class Acc1011 extends Component {
       try {
 
         const response = await post(`/depmanagement/adddept`, selectedDept);
-        console.log("서버 응답:", response.data);
 
         this.setState((prevState) => ({
           // 추가된 부서 정보를 departmentCards에 추가.
@@ -190,9 +186,7 @@ class Acc1011 extends Component {
     } else {
 
       try {
-        console.log(selectedDept);
         const response = await update(`/depmanagement/updatedept`, selectedDept);
-        console.log("서버 응답:", response.data);
         this.DouzoneContainer.current.handleSnackbarOpen('부서 수정이 완료됐습니다', 'success');
 
 
@@ -214,7 +208,6 @@ class Acc1011 extends Component {
           `/depmanagement/deletedept`,
           { data: selectedchecked }
         );
-        console.log(response.data);
 
         const newCardList = departmentCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.dept_cd === item.dept_cd)
@@ -236,8 +229,6 @@ class Acc1011 extends Component {
         const response = await del(
           `/depmanagement/deletedept/${selectedDept.dept_cd}`
         );
-        console.log("서버 응답", response.data);
-
         // 서버 응답에 따라 삭제된 부서 정보를 departmentCards에서 제거
         const newCardList = departmentCards.filter(
           (item) => item.dept_cd !== selectedDept.dept_cd
@@ -367,8 +358,8 @@ class Acc1011 extends Component {
         selectedchecked: selectedchecked,
       };
     }, () => {
-      console.log(this.state.selectedchecked);
-      console.log(this.state.selectAllCheckbox)
+      console.log('');
+      console.log('')
     });
   };
   // 체크박스 토글 처리하는 함수
@@ -383,7 +374,7 @@ class Acc1011 extends Component {
         return { content: updatedContent, selectedchecked: selectedchecked };
       },
       () => {
-        console.log(this.state.selectedchecked);
+        console.log('');
       }
     );
   };

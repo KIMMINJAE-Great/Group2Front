@@ -28,7 +28,6 @@ export function MenuCollection() {
     section.menucd.push(item.menucd);
   });
 
-  console.log(sections);
 
   return sections;
 }

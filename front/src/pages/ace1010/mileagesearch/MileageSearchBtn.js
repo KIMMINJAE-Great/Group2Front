@@ -24,7 +24,7 @@ class MileageSearchBtn extends Component {
         try {
             const response = await axios.get('https://map.naver.com/v5/api/dir/findcar', {
                 params: {
-                    mainoption:'traoptimal,avoidhipassonly:traoptimal,multiroute,avoidhipassonly:traoptimal,avoidtoll,avoidhipassonly:traoptdist,avoidhipassonly',
+                    mainoption: 'traoptimal,avoidhipassonly:traoptimal,multiroute,avoidhipassonly:traoptimal,avoidtoll,avoidhipassonly:traoptdist,avoidhipassonly',
                     start: this.props.startCoordinate,//start
                     goal: this.props.endCoordinate, //end
                     // name: this.props.startName,  //start
@@ -33,13 +33,13 @@ class MileageSearchBtn extends Component {
                     // name: this.props.endName, //end
                     output: 'json',
                     crs: 'EPSG:4326',
-                    
-                    responsetype:'web',
-                    rptype:'4',
-                    cartype:'1',
-                    fueltype:'1',
-                    mileage:'11.4',
-                    lang:'ko',
+
+                    responsetype: 'web',
+                    rptype: '4',
+                    cartype: '1',
+                    fueltype: '1',
+                    mileage: '11.4',
+                    lang: 'ko',
                 },
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
@@ -47,7 +47,7 @@ class MileageSearchBtn extends Component {
                 },
             });
 
-            this.setState({ 
+            this.setState({
                 data: response.data,
                 distanceRealTime: Math.round(response.data.route["3,1,0,0,0,0"][0].summary.distance / 1000),
                 distanceBased: Math.round(response.data.route["9,1,0,0,0,0"][0].summary.distance / 1000),
@@ -73,33 +73,30 @@ class MileageSearchBtn extends Component {
 
 
     render() {
-        
+
         const { data, isLoading, distanceRealTime, distanceBased, distanceFree } = this.state;
 
-        console.log("distanceRealtime : "+distanceRealTime);
-        console.log("distanceBased : "+distanceBased);
-        console.log("distanceFree : "+distanceFree);
-        return (   
+        return (
             <div>
-            {isLoading ? (
-                <p>경로를 탐색중입니다...</p>
-            ) : data ? (
-                <Button
-                    variant="outlined" 
-                    style={{ width: '100px', height: '30px', padding: '2px 5px' }}
-                    onClick={this.MapData}        
+                {isLoading ? (
+                    <p>경로를 탐색중입니다...</p>
+                ) : data ? (
+                    <Button
+                        variant="outlined"
+                        style={{ width: '100px', height: '30px', padding: '2px 5px' }}
+                        onClick={this.MapData}
                     >
-                    주행거리검색
+                        주행거리검색
                     </Button>
-            ) : <Button
-                    variant="outlined" 
+                ) : <Button
+                    variant="outlined"
                     style={{ width: '100px', height: '30px', padding: '2px 5px' }}
-                    onClick={this.MapData}        
-                    >
+                    onClick={this.MapData}
+                >
                     주행거리검색
-                    </Button>}
-        </div>           
-      );
+                </Button>}
+            </div>
+        );
     }
 }
 

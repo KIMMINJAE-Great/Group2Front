@@ -59,14 +59,12 @@ class Acd1010Search extends Component {
   };
 
   carSearch = async () => {
-    const { lease_yn, car_cd} = this.state;
+    const { lease_yn, car_cd } = this.state;
 
     try {
       const queryString = `?car_cd=${car_cd || ""}&lease_yn=${lease_yn || ""}`;
       const response = await getByQueryString(`/regcar/carsearch${queryString}`);
       const carCards = response.data;
-      console.log(carCards)
-      console.log("response.data가 궁금해")
       this.props.carSearch(carCards);
       // this.clearFields();
     } catch (error) {
@@ -76,7 +74,7 @@ class Acd1010Search extends Component {
   //서치 콜백  //car_cd 넘어옴 확인
   searchCallback = {
     handleCallBackData: (code) => {
-      this.setState({ car_cd: code, lease_yn:''});
+      this.setState({ car_cd: code, lease_yn: '' });
     },
   }
 
