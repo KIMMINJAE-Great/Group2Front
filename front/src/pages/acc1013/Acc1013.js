@@ -234,6 +234,7 @@ class Acc1013 extends Component {
         console.log(error);
       }
     }
+    this.getCardList();
   };
 
   //삭제 버튼을 눌렀을 때 실행할 함수
@@ -337,7 +338,6 @@ class Acc1013 extends Component {
   /* 조회 했을 때 기능 */
   handleSearch = async () => {
     const { selectedCompanyCards, searchCom } = this.state;
-    console.log("@#@#searchCOm 은? "+JSON.stringify(searchCom))
     console.log("handleSearch 기능 실행!!");
     try {
       const queryString = `?co_cd=${this.state.co_cd || ""}&use_yn=${searchCom?.defaultUse || ""}`;
@@ -351,7 +351,6 @@ class Acc1013 extends Component {
     } catch (error) {
       console.log(error);
     }
-    
   };
 
 
@@ -723,12 +722,8 @@ class Acc1013 extends Component {
 
   render() {
     const { companyCards, companyCardData, defaultUse } = this.state;
-
-
-    //일부러 생성자에서 바인딩, 이 메서드를 콜백으로 사용할때 올바른 컨텍스트가 유지됨
-    //또한 컴포넌트의 상태, 다른 메서드에 안전하게 접근가능
-    this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
-    this.handleSaveButton = this.handleSaveButton.bind(this);
+    // this.handleInputChange = this.handleInputChange.bind(this); //con의 인스턴스와 바인딩하기위해 사용
+    // this.handleSaveButton = this.handleSaveButton.bind(this);
 
 
 

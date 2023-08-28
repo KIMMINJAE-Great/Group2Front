@@ -22,12 +22,12 @@ import DrivingCodePicker from "./DrivingCodePicker";
 // ex) searchCallback = {  콜백함수 : (e) => { this.setState({변화값: e}, 콜백함수2 : (e) => { this.setState({변화값2: e} );
 // ex) <CodePickerManager onChange={(e) => {}} callback={this.searchCallback} helpId={"DrivingCodePicker"} 
 
+// HelpId 를 통해서 코드피커로 접근 .     // 전달할 데이터가 있다면 callback에 값을 담으면 된다.
+// 사원코드도움과 부서코드도움은 사용안하는 것으로 바뀌었음
 class CodePickerManager extends React.Component {
 
-// HelpId 를 통해서 코드피커로 접근 .     // 전달할 데이터가 있다면 callback에 값을 담으면 된다.
   render() {
     return (
-      // 사원코드도움과 부서코드도움은 사용안하는 것으로 바꼈음
       this.props.helpId === 'CompanyCodePicker' ? <CompanyCodePicker callback={this.props.callback} ></CompanyCodePicker> //회사코드도움
       // : this.props.helpId === 'DeptCodePicker' ? <DeptCodePicker></DeptCodePicker> //부서코드도움
       // : this.props.helpId === 'EmpCodePicker' ? <EmpCodePicker></EmpCodePicker> //사원코드도움 

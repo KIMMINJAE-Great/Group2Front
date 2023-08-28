@@ -419,7 +419,7 @@ handleReg_nbChange = (input) => {
                         <Grid item xs={12} container>
                           <Grid
                             item xs={0} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "6px" }} >
-                            <MyTextField name="adr_zp" onChange={this.props.onInputChange}
+                            <MyTextField name="adr_zp" onChange={(e) => this.props.handleAdrZpChange(e.target.value)}
 
                               value={selectedCompanyCards?.adr_zp || ""}
                               variant="outlined" />

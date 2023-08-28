@@ -210,7 +210,6 @@ class DrivingCodePicker extends React.Component {
   };
 
   render() {
-
     return (
       <CodePicker
         style={{ backgroundColor: 'grey' }}

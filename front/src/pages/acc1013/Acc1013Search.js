@@ -89,7 +89,6 @@ class Acc1013Search extends React.Component {
                 helpId={'CompanyCodePicker'}
                 callback={this.props.callback}
                 variant="outlined"
-
               />
             </Grid>
 
