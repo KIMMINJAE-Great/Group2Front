@@ -5,6 +5,8 @@ import Acd1010Presentation from "./Acd1010Presentation"; // Acd1010Presentation 
 import { Card, CardContent, Checkbox, Grid, ThemeProvider, Typography, createTheme } from "@mui/material";
 import DouzoneContainer from "../../components/douzonecontainer/DouzoneContainer";
 import Acd1010Search from "./Acd1010Search";
+import { DateTime } from 'luxon';
+
 
 import { Divider, MenuItem, Select, TextField, } from "@mui/material";
 import TaxiAlertIcon from '@mui/icons-material/TaxiAlert';
@@ -157,6 +159,12 @@ class Acd1010 extends Component {
     });
   };
 
+  toLocalISOString = (date) => {
+    const off = date.getTimezoneOffset();
+    const offset = (off < 0 ? '+' : '-') + String(Math.abs(off / 60)).padStart(2, '0');
+    const adjustedDate = new Date(date.getTime() - off * 60 * 1000);
+    return (adjustedDate.toISOString().substring(0, 23) + offset + ':00');
+  }
 
   //저장버튼
   handleSaveClick = async (e) => {
@@ -166,22 +174,27 @@ class Acd1010 extends Component {
 
     // 차량코드가 비어있는지 확인합니다.
     if (!selectedregcar.car_cd) {
+      console.log("차량코드를 입력해주세요.");
       return;
     }
     // 차량번호이 비엉있는지 확인합니다.
     if (!selectedregcar.car_nb) {
+      console.log("차량번호을 입력해주세요.");
       return;
     }
     // 차량명이 비엉있는지 확인합니다.
     if (!selectedregcar.car_nm) {
+      console.log("차량명을 입력해주세요.");
       return;
     }
     // 사원코드가 비어있는지 확인합니다.
     if (!selectedregcar.emp_cd) {
+      console.log("사원코드를 입력해주세요.");
       return;
     }
     // 임차구분 비엉있는지 확인합니다.
     if (!selectedregcar.lease_yn) {
+      console.log("임차구분을 입력해주세요.");
       return;
     }
 
@@ -191,8 +204,21 @@ class Acd1010 extends Component {
     if (selectedRead === "Y") {
 
       try {
+        // 모든 날짜 필드를 지역 시간대로 변환
+        const transformedCar = {
+          ...selectedregcar,
+          get_dt: selectedregcar.get_dt ? this.toLocalISOString(new Date(selectedregcar.get_dt)) : null,
+          disposal_dt: selectedregcar.disposal_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.disposal_dt).toJSDate()) : null,
+          lfr_dt: selectedregcar.lfr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lfr_dt).toJSDate()) : null,
+          lto_dt: selectedregcar.lto_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lto_dt).toJSDate()) : null,
+          ifr_dt: selectedregcar.ifr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ifr_dt).toJSDate()) : null,
+          ito_dt: selectedregcar.ito_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ito_dt).toJSDate()) : null,
+        };
 
-        const response = await post(`/regcar/addcar`, selectedregcar);
+
+        console.log(transformedCar)
+        const response = await post(`/regcar/addcar`, transformedCar);
+        console.log("서버 응답:", response.data);
 
         this.setState((prevState) => ({
           // 추가된 부서 정보를 regcarCards에 추가.
@@ -208,10 +234,27 @@ class Acd1010 extends Component {
         this.DouzoneContainer.current.handleSnackbarOpen('차량정보 등록 에러', 'error');
       }
     }// 수정 기능
-    else {
+    else if (selectedRead === "N") {
 
       try {
-        const response = await update(`/regcar/updatecar`, selectedregcar);
+
+
+        // 모든 날짜 필드를 지역 시간대로 변환
+        const transformedCar = {
+          ...selectedregcar,
+          get_dt: selectedregcar.get_dt ? this.toLocalISOString(new Date(selectedregcar.get_dt)) : null,
+          disposal_dt: selectedregcar.disposal_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.disposal_dt).toJSDate()) : null,
+          lfr_dt: selectedregcar.lfr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lfr_dt).toJSDate()) : null,
+          lto_dt: selectedregcar.lto_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lto_dt).toJSDate()) : null,
+          ifr_dt: selectedregcar.ifr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ifr_dt).toJSDate()) : null,
+          ito_dt: selectedregcar.ito_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ito_dt).toJSDate()) : null,
+        };
+
+
+
+        console.log(selectedregcar);
+        const response = await update(`/regcar/updatecar`, transformedCar);
+        console.log("서버 응답:", response.data);
         this.DouzoneContainer.current.handleSnackbarOpen('차량정보 수정이 완료됐습니다', 'success');
 
 
@@ -232,6 +275,7 @@ class Acd1010 extends Component {
       const response = await del(
         `/regcar/deletecar/${selectedregcar.car_cd}`
       );
+      console.log("서버 응답", response.data);
 
       // 서버 응답에 따라 삭제된 차량 정보를 regcarCards에서 제거
       const newCardList = regcarCards.filter(
@@ -265,6 +309,7 @@ class Acd1010 extends Component {
           `/regcar/deletecar`,
           { data: selectedchecked }
         );
+        console.log(response.data);
 
         const newCardList = regcarCards.filter(
           (item) => !selectedchecked.some((checkedItem) => checkedItem.car_cd === item.car_cd)
@@ -285,6 +330,7 @@ class Acd1010 extends Component {
         const response = await del(
           `/regcar/deletecar/${selectedregcar.car_cd}`
         );
+        console.log("서버 응답", response.data);
 
         // 서버 응답에 따라 삭제된 부서 정보를 regcarCards에서 제거
         const newCardList = regcarCards.filter(
@@ -330,6 +376,7 @@ class Acd1010 extends Component {
         selectedchecked: selectedchecked,
       };
     }, () => {
+      console.log(this.state.selectedchecked);
     });
   };
   // 체크박스 토글 처리하는 함수
@@ -344,6 +391,7 @@ class Acd1010 extends Component {
         return { content: updatedContent, selectedchecked: selectedchecked };
       },
       () => {
+        console.log(this.state.selectedchecked);
       }
     );
   };
