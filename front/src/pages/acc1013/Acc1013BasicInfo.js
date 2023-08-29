@@ -496,10 +496,8 @@ class Acc1013BasicInfo extends React.Component {
                     alignItems: "center",
                   }}
                 >
-                  <p style={{ height: '3px' }}></p>
 
                 </div>
-                <hr style={{ height: '3px', color: 'black' }} />
               </div>
             </div>
           </div>
