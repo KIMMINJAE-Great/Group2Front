@@ -3,7 +3,12 @@ import {
   Button, Typography,
   Alert,
   Snackbar,
-  Slide
+  Slide,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from "@mui/material";
 import { update } from "../../components/api_url/API_URL";
 
@@ -25,7 +30,14 @@ class Ace1010SendYn extends Component {
 
     let selectedCheckedRows = this.props.selectedCheckedRows;
 
+    console.log('aaaaaaaaaaaaaaaaaaa')
+    console.log(selectedCheckedRows)
 
+    if (selectedCheckedRows[0].seq_nb === 0) {
+      this.setState({ snackBarMessage: '운행기록을 입력 후 마감해 주십시오.' });
+      this.showErrorSnackbar();
+      return;
+    }
     if (selectedCheckedRows.length < 1) {
       this.setState({ snackBarMessage: '마감할 운행기록을 선택해 주십시오.' });
       this.showErrorSnackbar();
@@ -66,6 +78,21 @@ class Ace1010SendYn extends Component {
 
     }
   }
+
+  // Dialog 열기 함수
+  handleOpenDialog = () => {
+    this.setState({ openDeleteModal: true });
+  };
+
+  // Dialog 닫기 함수
+  handleCloseDialog = () => {
+    this.setState({ openDeleteModal: false });
+  };
+
+  onConfirm = () => {
+    this.setSendYn();
+    this.handleCloseDialog(); // Dialog 닫기
+  };
   // Snackbar 표시 함수
   showErrorSnackbar = () => {
     this.setState({ openSnackBar: true });
@@ -76,7 +103,7 @@ class Ace1010SendYn extends Component {
     this.setState({ openSnackBar: false });
   };
   render() {
-    const { show } = this.state;
+    const { show, openDeleteModal } = this.state;
 
     return (
       <div style={{ marginRight: '10px' }}>
@@ -107,12 +134,33 @@ class Ace1010SendYn extends Component {
         </Snackbar>
         {show && (
           <Button sx={{ marginRight: '10px' }}
-            onClick={this.setSendYn}
+            onClick={this.handleOpenDialog}
           >
 
             마감
           </Button>
         )}
+
+        <Dialog
+          open={openDeleteModal}
+          onClose={this.handleCloseDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"마감 하시겠습니까?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              선택한 운행기록을 마감하시겠습니까?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseDialog}>아니오</Button>
+            <Button onClick={this.onConfirm} autoFocus>
+              네
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </div>
     )
   }

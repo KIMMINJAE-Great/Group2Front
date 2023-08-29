@@ -43,6 +43,13 @@ class Login extends Component {
           errorMessage: '아이디 혹은 비밀번호가 잘못되었습니다.'
         });
       }
+      if (error.response && error.response.status === 403) {
+        this.setState({
+          usernameError: true,
+          passwordError: true,
+          errorMessage: '퇴사한 사원은 로그인이 불가합니다.'
+        });
+      }
     }
   };
   setUsername = (username) => {
