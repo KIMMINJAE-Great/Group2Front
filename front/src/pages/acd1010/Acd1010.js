@@ -161,8 +161,12 @@ class Acd1010 extends Component {
 
   toLocalISOString = (date) => {
     const off = date.getTimezoneOffset();
+    console.log(off)
     const offset = (off < 0 ? '+' : '-') + String(Math.abs(off / 60)).padStart(2, '0');
+    console.log(offset)
+
     const adjustedDate = new Date(date.getTime() - off * 60 * 1000);
+    console.log(adjustedDate)
     return (adjustedDate.toISOString().substring(0, 23) + offset + ':00');
   }
 
@@ -208,11 +212,11 @@ class Acd1010 extends Component {
         const transformedCar = {
           ...selectedregcar,
           get_dt: selectedregcar.get_dt ? this.toLocalISOString(new Date(selectedregcar.get_dt)) : null,
-          disposal_dt: selectedregcar.disposal_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.disposal_dt).toJSDate()) : null,
-          lfr_dt: selectedregcar.lfr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lfr_dt).toJSDate()) : null,
-          lto_dt: selectedregcar.lto_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.lto_dt).toJSDate()) : null,
-          ifr_dt: selectedregcar.ifr_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ifr_dt).toJSDate()) : null,
-          ito_dt: selectedregcar.ito_dt ? this.toLocalISOString(DateTime.fromISO(selectedregcar.ito_dt).toJSDate()) : null,
+          disposal_dt: selectedregcar.disposal_dt ? this.toLocalISOString(new Date(selectedregcar.disposal_dt)) : null,
+          lfr_dt: selectedregcar.lfr_dt ? this.toLocalISOString(new Date(selectedregcar.lfr_dt)) : null,
+          lto_dt: selectedregcar.lto_dt ? this.toLocalISOString(new Date(selectedregcar.lto_dt)) : null,
+          ifr_dt: selectedregcar.ifr_dt ? this.toLocalISOString(new Date(selectedregcar.ifr_dt)) : null,
+          ito_dt: selectedregcar.ito_dt ? this.toLocalISOString(new Date(selectedregcar.ito_dt)) : null,
         };
 
 
