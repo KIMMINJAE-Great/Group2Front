@@ -134,11 +134,12 @@ class Acc1010 extends Component {
                 });
                 //this.setState({ complete: '완료되었습니다.' })
                 this.DouzoneContainer.current.handleSnackbarOpen('사원 등록이 완료되었습니다.', 'success');
+                this.firstEmpCard()
             } catch (error) {
                 this.setState({ errorMessage: error.response.data })
                 this.DouzoneContainer.current.handleSnackbarOpen(error.response.data, 'error');
             }
-            this.firstEmpCard()
+
             // 기존 사원 수정
         } else {
             try {
